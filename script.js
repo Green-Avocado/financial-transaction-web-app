@@ -1,4 +1,4 @@
-function addTransaction(id, date, type, security, amount, dAmount)
+function addTransaction(id, date, type, security, amount, dAmount, costBasis)
 {
     var tableBody = document.getElementById('tableBody');
     var newRow = document.createElement('tr');
@@ -6,6 +6,10 @@ function addTransaction(id, date, type, security, amount, dAmount)
     newRow.innerHTML = "<td>" + rowContents.join("</td><td>") + "</td>";
 
     tableBody.appendChild(newRow);
+}
+
+function validate(date, type, security, amount, dAmount)
+{
 }
 
 function removeTransaction(index)
