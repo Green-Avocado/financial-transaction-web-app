@@ -68,6 +68,41 @@ Within the \lstinline{head} element:
 
 \subsection{Input Fields}
 
+\subsubsection{Date}
+
+\begin{lstlisting}[firstnumber=11]
+<section>
+    <label for="date">Date:</label><br/>
+    <input id="date" name="date" type="date" required/>
+</section>
+\end{lstlisting}
+
+\subsubsection{Text}
+
+\begin{lstlisting}[firstnumber=16]
+<section>
+    <label for="account">Account Number:</label><br/>
+    <input id="account" name="account" type="text" placeholder="Account Number" required/>
+</section>
+\end{lstlisting}
+
+\subsubsection{List}
+
+\begin{lstlisting}[firstnumber=21]
+<section>
+    <label for="type">Transaction Type:</label><br/>
+    <select id="type" name="type">
+        <option value=""></option>
+        <option value="BUY">BUY</option>
+        <option value="SELL">SELL</option>
+        <option value="DIVIDEND">DIVIDEND</option>
+        <option value="INTEREST">INTEREST</option>
+        <option value="WITHDRAW">WITHDRAW</option>
+        <option value="DEPOSIT">DEPOSIT</option>
+    </select>
+</section>
+\end{lstlisting}
+
 \subsection{Table}
 
 \newpage
