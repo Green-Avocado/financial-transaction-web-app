@@ -6,7 +6,14 @@
 \usepackage[hidelinks]{hyperref}
 
 \hypersetup{colorlinks, allcolors=blue}
-\lstset{breaklines=true, postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},basicstyle=\ttfamily}
+\lstset
+    {breaklines=true,
+    postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+    basicstyle=\ttfamily,
+    numbers=left,
+    numberstyle=\normalsize,
+    numbersep=10pt,
+}
 \setlength\parindent{0pt}
 
 \begin{document}
@@ -30,22 +37,23 @@
 
 \subsection{Preamble and head}
 
-\begin{lstlisting}
+\begin{lstlisting}[firstnumber=1]
 <!DOCTYPE html>
 \end{lstlisting}
 
 This line declares that the document is an HTML5 document.
 
-\begin{lstlisting}
+\begin{lstlisting}[firstnumber=2]
 <head>
     <meta charset = "UTF-8"/>
-    <liink rel="readsheet" type="text/css" href="./style.css"/>
+    <link rel="stylesheet" type="text/css" href="./style.css"/>
     <script src="./script.js"></script>
 </head>
 \end{lstlisting}
 
 \lstinline{<head>} tags are used to contain meta information about the document.
 Within the \lstinline{head} element:
+
 \begin{itemize}
     \item The first line defines the character set of the document.
     \item The second line defines the source of an external CSS document.
