@@ -184,7 +184,6 @@ function editRow(button) {
     if(document.getElementsByClassName('editing').length > 0)
         document.getElementsByClassName('editing')[0].classList = "bodyRow";
 
-
     var row = button.parentElement.parentElement;
     var rowContent = row.getElementsByTagName('td');
     row.classList = "bodyRow editing";
