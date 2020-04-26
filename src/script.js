@@ -1,11 +1,11 @@
 function addTransactionButton()
 {
-    var date;
-    var account;
-    var type;
-    var security;
-    var amount;
-    var dAmount;
+    var date = document.getElementById("date").value;
+    var account = document.getElementById("account").value;
+    var type = document.getElementById("type").value;
+    var security = document.getElementById("security").value;
+    var amount = document.getElementById("amount").value;
+    var dAmount = document.getElementById("dAmount").value;
 
     if(validate()) {
         var id = generateId();
