@@ -28,7 +28,7 @@ function addTransaction(id, date, account, type, security, amount, dAmount, cost
     var newRow = tableBody.insertRow(0);
     newRow.classList += "bodyRow";
 
-    var actionsContent = "<button type='button'>Edit</button> <button type='button' onclick='deleteRow(this)'>Delete</button>";
+    var actionsContent = "<button type='button' onclick='editRow(this)'>Edit</button> <button type='button' onclick='deleteRow(this)'>Delete</button>";
     dAmount = '$' + dAmount.toFixed(2);
     var rowContents = [id, date, account, type, security, amount, dAmount, costBasis, actionsContent];
 
@@ -171,6 +171,11 @@ function deleteRow(button)
 
 function editRow(button)
 {
+    if(document.getElementsByClassName('editing').length > 0)
+        document.getElementsByClassName('editing')[0].classList = "bodyRow";
+
+    var row = button.parentElement.parentElement;
+    row.classList = "bodyRow editing";
 }
 
 function saveChanges()
