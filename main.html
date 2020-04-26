@@ -6,15 +6,38 @@
         <script src="./script.js"></script>
     </head>
     <body>
-        <section>
-            <input id="date" name="date" type="text"/>
-            <input id="account" name="account" type="text"/>
-            <input id="type" name="type" type="text"/>
-            <input id="security" name="security" type="text"/>
-            <input id="amount" name="amount" type="text"/>
-            <input id="dAmount" name="dAmount" type="text"/>
-        </section>
-        <section>
+        <article>
+            <section>
+                <label for="date">Date:</label><br/>
+                <input id="date" name="date" type="date" placeholder="Date"/>
+            </section>
+
+            <section>
+                <label for="account">Account Number:</label><br/>
+            </section>
+
+            <section>
+                <input id="account" name="account" type="text" placeholder="Account Number"/>
+            </section>
+
+            <section>
+                <input id="type" name="type" type="text" placeholder="Transaction Type"/>
+            </section>
+
+            <section>
+                <input id="security" name="security" type="text" placeholder="Security"/>
+            </section>
+
+            <section>
+                <input id="amount" name="amount" type="text" placeholder="Unit Amount"/>
+            </section>
+
+            <section>
+                <input id="dAmount" name="dAmount" type="text" placeholder="$ Amount"/>
+            </section>
+        </article>
+
+        <article>
             <table>
                 <thead>
                     <tr>
@@ -30,7 +53,7 @@
                 <tbody id="tableBody">
                 </tbody>
             </table>
-        </section>
+        </article>
     </body>
 </html>
 
