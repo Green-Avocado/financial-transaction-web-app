@@ -2,3 +2,13 @@
     width: 15%;
     display: inline-block;
 }
+
+table {
+    padding: 10px;
+    margin: auto;
+}
+
+    th {
+        width: 10%;
+    }
+
