@@ -6,20 +6,31 @@
         <script src="./script.js"></script>
     </head>
     <body>
-        <table id="table">
-            <thead>
-                <tr>
-                    <th>Transaction ID</th>
-                    <th>Date</th>
-                    <th>Transaction Type</th>
-                    <th>Security</th>
-                    <th>Amount</th>
-                    <th>$ Amount</th>
-                </tr>
-            </thead>
-            <tbody id="tableBody">
-            </tbody>
-        </table>
+        <section>
+            <input id="date" name="date" type="text"/>
+            <input id="account" name="account" type="text"/>
+            <input id="type" name="type" type="text"/>
+            <input id="security" name="security" type="text"/>
+            <input id="amount" name="amount" type="text"/>
+            <input id="dAmount" name="dAmount" type="text"/>
+        </section>
+        <section>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Transaction ID</th>
+                        <th>Date</th>
+                        <th>Account Number</th>
+                        <th>Transaction Type</th>
+                        <th>Security</th>
+                        <th>Amount</th>
+                        <th>$ Amount</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                </tbody>
+            </table>
+        </section>
     </body>
 </html>
 
