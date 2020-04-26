@@ -14,7 +14,7 @@ function addTransactionButton()
     }
     dAmount = Number(dAmount);
 
-    if(validate()) {
+    if(validate(date, account, type, security, amount, dAmount)) {
         var id = generateId();
         var costBasis = calculateCostBasis(amount, dAmount);
 
@@ -26,6 +26,7 @@ function addTransaction(id, date, account, type, security, amount, dAmount, cost
 {
     var tableBody = document.getElementById('tableBody');
     var newRow = tableBody.insertRow(0);
+    newRow.classList += "bodyRow";
 
     var actionsContent = "<button type='button'>Edit</button> <button type='button' onclick='deleteRow(this)'>Delete</button>";
     dAmount = '$' + dAmount.toFixed(2);
@@ -40,7 +41,7 @@ function addTransaction(id, date, account, type, security, amount, dAmount, cost
     }
 }
 
-function validate(date, type, security, amount, dAmount)
+function validate(date, account, type, security, amount, dAmount)
 {
     if(!validateDate(date)) return false;
     if(!validateAccount(account)) return false;
@@ -54,31 +55,79 @@ function validate(date, type, security, amount, dAmount)
 
 function validateDate(date)
 {
+    realDate = new Date();
+    inputDate = document.getElementById('date').valueAsNumber;
+
+    if(isNaN(inputDate)) {
+        alert('Error: No date specified');
+        return false;
+    }
+
+    if(realDate.valueOf() < inputDate) {
+        alert('Error: Date is in the future');
+        return false;
+    }
+
     return true;
 }
 
 function validateAccount(account)
 {
+    if(account == '') {
+        alert('Error: Missing Account Number');
+        return false;
+    }
+
     return true;
 }
 
 function validateType(type)
 {
+    if(type == '') {
+        alert('Error: Missing Transaction Type');
+        return false;
+    }
+
     return true;
 }
 
 function validateSecurity(security)
 {
+    if(security == '') {
+        alert('Error: Missing Security');
+        return false;
+    }
+    
     return true;
 }
 
 function validateAmount(amount)
 {
+    if(amount == '') {
+        alert('Error: Missing Amount');
+        return false;
+    }
+
+    if(isNaN(amount)) {
+        alert('Error: Invalid Amount');
+        return false;
+    }
+
     return true;
 }
 
 function validateDAmount(dAmount)
 {
+    if(dAmount == '') {
+        alert('Error: Missing $ Amount');
+        return false;
+    }
+
+    if(isNaN(dAmount)) {
+        alert('Error: Invalid $ Amount');
+        return false;
+    }
+
     return true;
 }
 
@@ -98,7 +147,7 @@ function generateId()
         }
 
         unique = true;
-        for(var i = 0; i < document.getElementsByClassName('idCell'); i++) {
+        for(var i = 0; i < document.getElementsByClassName('idCell').length; i++) {
             if(document.getElementsByClassName('idCell')[i].innerText == id) {
                 unique = false;
                 break;
@@ -132,8 +181,29 @@ function discardChanges()
 {
 }
 
-function sortTable(ascending)
+function sortTable(column, ascending)
 {
+    var tableBody = document.getElementById('tableBody');
+    var rows = document.getElementsByClassName('bodyRow');
+
+    var sorting = true;
+    while(sorting) {
+        sorting = false;
+        for(var i = 0; i < (rows.length - 1); i++) {
+            rowA = rows[i].getElementsByTagName('td')[column];
+            rowB = rows[i + 1].getElementsByTagName('td')[column];
+
+            var swap = false;
+
+            if(ascending && rowA.innerHTML.toLowerCase() > rowB.innerHTML.toLowerCase()) swap = true;
+            else if(!ascending && rowA.innerHTML.toLowerCase() < rowB.innerHTML.toLowerCase()) swap = true;
+            
+            if(swap) {
+                sorting = true;
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+            }
+        }
+    }
 }
 
 function updateTable()
