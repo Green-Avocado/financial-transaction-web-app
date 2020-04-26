@@ -1,37 +1,3 @@
-function addTransactionButton() {
-    var data = getData();
-    if(data) {
-        var date = data[0];
-        var account = data[1];
-        var type = data[2];
-        var security = data[3];
-        var amount = data[4];
-        var dAmount = data[5];
-        var costBasis = data[6];
-
-        var id = generateId();
-
-        addTransaction(id, date, account, type, security, amount, dAmount, costBasis);
-    }
-}
-
-function addTransaction(id, date, account, type, security, amount, dAmount, costBasis) {
-    var tableBody = document.getElementById('tableBody');
-    var newRow = tableBody.insertRow(0);
-    newRow.classList += "bodyRow";
-
-    var actionsContent = "<button type='button' onclick='editRow(this)'>Edit</button> <button type='button' onclick='deleteRow(this)'>Delete</button>";
-    var rowContents = [id, date, account, type, security, amount, dAmount, costBasis, actionsContent];
-
-    for(var i = 0; i < rowContents.length; i++) {
-        var newCell = newRow.insertCell(i);
-        newCell.innerHTML = rowContents[i];
-        if(i == 0) {
-            newCell.classList += "idCell";
-        }
-    }
-}
-
 function getData() {
     var date = document.getElementById("date").value;
     var account = document.getElementById("account").value;
@@ -167,6 +133,40 @@ function generateId() {
 function calculateCostBasis(amount, dAmount) {
     costBasis = '$' + (dAmount / amount).toFixed(2);
     return costBasis;
+}
+
+function addTransaction(id, date, account, type, security, amount, dAmount, costBasis) {
+    var tableBody = document.getElementById('tableBody');
+    var newRow = tableBody.insertRow(0);
+    newRow.classList += "bodyRow";
+
+    var actionsContent = "<button type='button' onclick='editRow(this)'>Edit</button> <button type='button' onclick='deleteRow(this)'>Delete</button>";
+    var rowContents = [id, date, account, type, security, amount, dAmount, costBasis, actionsContent];
+
+    for(var i = 0; i < rowContents.length; i++) {
+        var newCell = newRow.insertCell(i);
+        newCell.innerHTML = rowContents[i];
+        if(i == 0) {
+            newCell.classList += "idCell";
+        }
+    }
+}
+
+function addTransactionButton() {
+    var data = getData();
+    if(data) {
+        var date = data[0];
+        var account = data[1];
+        var type = data[2];
+        var security = data[3];
+        var amount = data[4];
+        var dAmount = data[5];
+        var costBasis = data[6];
+
+        var id = generateId();
+
+        addTransaction(id, date, account, type, security, amount, dAmount, costBasis);
+    }
 }
 
 function deleteRow(button) {
