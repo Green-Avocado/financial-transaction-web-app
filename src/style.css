@@ -31,7 +31,7 @@ table {
 
     .sort > button {
         padding: 0;
-        border: 2px;
+        border: 0;
         display: block;
     }
 
