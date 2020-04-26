@@ -8,11 +8,11 @@ function addTransaction(id, date, type, security, amount, dAmount)
     tableBody.appendChild(newRow);
 }
 
-function removeTransaction()
+function removeTransaction(index)
 {
 }
 
-function editTransaction()
+function editTransaction(index)
 {
 }
 
