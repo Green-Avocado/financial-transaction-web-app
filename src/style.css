@@ -15,5 +15,23 @@ table {
 
     th {
         width: 10%;
+        height: 10vh;
+    }
+
+    th > section {
+        width: 80%;
+        display: inline-block;
+        padding: 0;
+        margin: 0;
+    }
+
+    .sort {
+        width: 10%;
+    }
+
+    .sort > button {
+        padding: 0;
+        border: 2px;
+        display: block;
     }
 
