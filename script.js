@@ -1,11 +1,11 @@
 function addTransaction(id, date, type, security, amount, dAmount)
 {
-    var table = document.getElementById('table');
-    var newRow = document.createElement('td');
+    var tableBody = document.getElementById('tableBody');
+    var newRow = document.createElement('tr');
     var rowContents = [id, date, type, security, amount, dAmount];
     newRow.innerHTML = "<td>" + rowContents.join("</td><td>") + "</td>";
 
-    table.appendChild(newRow);
+    tableBody.appendChild(newRow);
 }
 
 function removeTransaction()
