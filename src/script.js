@@ -206,7 +206,3 @@ function sortTable(column, ascending)
     }
 }
 
-function updateTable()
-{
-}
-
