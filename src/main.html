@@ -7,39 +7,41 @@
     </head>
     <body>
         <article id="inputFields">
-            <section>
-                <label for="date">Date:</label><br/>
-                <input id="date" name="date" type="date" placeholder="Date"/>
-            </section>
+            <form onsubmit="return false">
+                <section>
+                    <label for="date">Date:</label><br/>
+                    <input id="date" name="date" type="date" placeholder="Date" required/>
+                </section>
 
-            <section>
-                <label for="account">Account Number:</label><br/>
-                <input id="account" name="account" type="text" placeholder="Account Number"/>
-            </section>
+                <section>
+                    <label for="account">Account Number:</label><br/>
+                    <input id="account" name="account" type="text" placeholder="Account Number" required/>
+                </section>
 
-            <section>
-                <label for="type">Transaction Type:</label><br/>
-                <input id="type" name="type" type="text" placeholder="Transaction Type"/>
-            </section>
+                <section>
+                    <label for="type">Transaction Type:</label><br/>
+                    <input id="type" name="type" type="text" placeholder="Transaction Type" required/>
+                </section>
 
-            <section>
-                <label for="security">Security:</label><br/>
-                <input id="security" name="security" type="text" placeholder="Security"/>
-            </section>
+                <section>
+                    <label for="security">Security:</label><br/>
+                    <input id="security" name="security" type="text" placeholder="Security" required/>
+                </section>
 
-            <section>
-                <label for="amount">Amount:</label><br/>
-                <input id="amount" name="amount" type="text" placeholder="Unit Amount"/>
-            </section>
+                <section>
+                    <label for="amount">Amount:</label><br/>
+                    <input id="amount" name="amount" type="text" placeholder="Unit Amount" required/>
+                </section>
 
-            <section>
-                <label for="dAmount">$ Amount:</label><br/>
-                <input id="dAmount" name="dAmount" type="text" placeholder="$ Amount"/>
-            </section>
+                <section>
+                    <label for="dAmount">$ Amount:</label><br/>
+                    <input id="dAmount" name="dAmount" type="text" placeholder="$ Amount" required/>
+                </section>
 
-            <section>
-                <button type="button" onclick="addTransactionButton();">Add Transaction</button>
-            </section>
+                <section>
+                    <button type="submit" onclick="addTransactionButton();">Add Transaction</button>
+                </section>
+            <form>
         </article>
 
         <article>

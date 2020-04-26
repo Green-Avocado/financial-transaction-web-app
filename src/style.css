@@ -1,4 +1,4 @@
-#inputFields > section {
+#inputFields > form > section {
     width: 14%;
     display: inline-block;
 }
