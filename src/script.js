@@ -34,12 +34,18 @@ function addTransaction(id, date, account, type, security, amount, dAmount, cost
     for(var i = 0; i < rowContents.length; i++) {
         var newCell = newRow.insertCell(i);
         newCell.innerHTML = rowContents[i];
+        if(i == 0) {
+            newCell.classList += "idCell";
+        }
     }
 }
 
 function validate(date, type, security, amount, dAmount)
 {
     if(!validateDate(date)) return false;
+    if(!validateAccount(account)) return false;
+    if(!validateType(type)) return false;
+    if(!validateSecurity(security)) return false;
     if(!validateAmount(amount)) return false;
     if(!validateDAmount(dAmount)) return false;
 
@@ -53,14 +59,17 @@ function validateDate(date)
 
 function validateAccount(account)
 {
+    return true;
 }
 
 function validateType(type)
 {
+    return true;
 }
 
 function validateSecurity(security)
 {
+    return true;
 }
 
 function validateAmount(amount)
@@ -75,7 +84,27 @@ function validateDAmount(dAmount)
 
 function generateId()
 {
-    var id;
+    var id = '';
+    var idLength = 6;
+
+    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    var charactersLength = characters.length;
+
+    var unique = false;
+
+    while(!unique) {
+        for(var i = 0; i < idLength; i++) {
+            id += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+
+        unique = true;
+        for(var i = 0; i < document.getElementsByClassName('idCell'); i++) {
+            if(document.getElementsByClassName('idCell')[i].innerText == id) {
+                unique = false;
+                break;
+            }
+        }
+    }
     return id;
 }
 
