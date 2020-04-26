@@ -7,6 +7,13 @@ function addTransactionButton()
     var amount = document.getElementById("amount").value;
     var dAmount = document.getElementById("dAmount").value;
 
+    amount = Number(amount);
+
+    if(dAmount[0] == '$') {
+        dAmount = dAmount.substr(1);
+    }
+    dAmount = Number(dAmount);
+
     if(validate()) {
         var id = generateId();
         var costBasis = calculateCostBasis(amount, dAmount);
@@ -18,14 +25,16 @@ function addTransactionButton()
 function addTransaction(id, date, account, type, security, amount, dAmount, costBasis)
 {
     var tableBody = document.getElementById('tableBody');
-    var newRow = document.createElement('tr');
+    var newRow = tableBody.insertRow(0);
 
     var actionsContent = "<button type='button'>Edit</button> <button type='button' onclick='deleteRow(this)'>Delete</button>";
-    var rowContents = [id, date, account, type, security, amount, dAmount, actionsContent];
+    dAmount = '$' + dAmount.toFixed(2);
+    var rowContents = [id, date, account, type, security, amount, dAmount, costBasis, actionsContent];
 
-    newRow.innerHTML = "<td>" + rowContents.join("</td><td>") + "</td>";
-
-    tableBody.appendChild(newRow);
+    for(var i = 0; i < rowContents.length; i++) {
+        var newCell = newRow.insertCell(i);
+        newCell.innerHTML = rowContents[i];
+    }
 }
 
 function validate(date, type, security, amount, dAmount)
@@ -72,7 +81,8 @@ function generateId()
 
 function calculateCostBasis(amount, dAmount)
 {
-    return dAmount / amount;
+    costBasis = '$' + (dAmount / amount).toFixed(2);
+    return costBasis;
 }
 
 function deleteRow(button)
@@ -93,7 +103,7 @@ function discardChanges()
 {
 }
 
-function sortTable()
+function sortTable(ascending)
 {
 }
 
