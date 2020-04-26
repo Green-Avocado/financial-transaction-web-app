@@ -1,5 +1,38 @@
-function addTransactionButton()
-{
+function addTransactionButton() {
+    var data = getData();
+    if(data) {
+        var date = data[0];
+        var account = data[1];
+        var type = data[2];
+        var security = data[3];
+        var amount = data[4];
+        var dAmount = data[5];
+        var costBasis = data[6];
+
+        var id = generateId();
+
+        addTransaction(id, date, account, type, security, amount, dAmount, costBasis);
+    }
+}
+
+function addTransaction(id, date, account, type, security, amount, dAmount, costBasis) {
+    var tableBody = document.getElementById('tableBody');
+    var newRow = tableBody.insertRow(0);
+    newRow.classList += "bodyRow";
+
+    var actionsContent = "<button type='button' onclick='editRow(this)'>Edit</button> <button type='button' onclick='deleteRow(this)'>Delete</button>";
+    var rowContents = [id, date, account, type, security, amount, dAmount, costBasis, actionsContent];
+
+    for(var i = 0; i < rowContents.length; i++) {
+        var newCell = newRow.insertCell(i);
+        newCell.innerHTML = rowContents[i];
+        if(i == 0) {
+            newCell.classList += "idCell";
+        }
+    }
+}
+
+function getData() {
     var date = document.getElementById("date").value;
     var account = document.getElementById("account").value;
     var type = document.getElementById("type").value;
@@ -15,34 +48,15 @@ function addTransactionButton()
     dAmount = Number(dAmount);
 
     if(validate(date, account, type, security, amount, dAmount)) {
-        var id = generateId();
         var costBasis = calculateCostBasis(amount, dAmount);
+        dAmount = '$' + dAmount.toFixed(2);
 
-        addTransaction(id, date, account, type, security, amount, dAmount, costBasis);
+        return [ date, account, type, security, amount, dAmount, costBasis ];
     }
+    else return false;
 }
 
-function addTransaction(id, date, account, type, security, amount, dAmount, costBasis)
-{
-    var tableBody = document.getElementById('tableBody');
-    var newRow = tableBody.insertRow(0);
-    newRow.classList += "bodyRow";
-
-    var actionsContent = "<button type='button' onclick='editRow(this)'>Edit</button> <button type='button' onclick='deleteRow(this)'>Delete</button>";
-    dAmount = '$' + dAmount.toFixed(2);
-    var rowContents = [id, date, account, type, security, amount, dAmount, costBasis, actionsContent];
-
-    for(var i = 0; i < rowContents.length; i++) {
-        var newCell = newRow.insertCell(i);
-        newCell.innerHTML = rowContents[i];
-        if(i == 0) {
-            newCell.classList += "idCell";
-        }
-    }
-}
-
-function validate(date, account, type, security, amount, dAmount)
-{
+function validate(date, account, type, security, amount, dAmount) {
     if(!validateDate(date)) return false;
     if(!validateAccount(account)) return false;
     if(!validateType(type)) return false;
@@ -53,8 +67,7 @@ function validate(date, account, type, security, amount, dAmount)
     return true;
 }
 
-function validateDate(date)
-{
+function validateDate(date) {
     realDate = new Date();
     inputDate = document.getElementById('date').valueAsNumber;
 
@@ -71,8 +84,7 @@ function validateDate(date)
     return true;
 }
 
-function validateAccount(account)
-{
+function validateAccount(account) {
     if(account == '') {
         alert('Error: Missing Account Number');
         return false;
@@ -81,8 +93,7 @@ function validateAccount(account)
     return true;
 }
 
-function validateType(type)
-{
+function validateType(type) {
     if(type == '') {
         alert('Error: Missing Transaction Type');
         return false;
@@ -91,8 +102,7 @@ function validateType(type)
     return true;
 }
 
-function validateSecurity(security)
-{
+function validateSecurity(security) {
     if(security == '') {
         alert('Error: Missing Security');
         return false;
@@ -101,8 +111,7 @@ function validateSecurity(security)
     return true;
 }
 
-function validateAmount(amount)
-{
+function validateAmount(amount) {
     if(amount == '') {
         alert('Error: Missing Amount');
         return false;
@@ -116,8 +125,7 @@ function validateAmount(amount)
     return true;
 }
 
-function validateDAmount(dAmount)
-{
+function validateDAmount(dAmount) {
     if(dAmount == '') {
         alert('Error: Missing $ Amount');
         return false;
@@ -131,8 +139,7 @@ function validateDAmount(dAmount)
     return true;
 }
 
-function generateId()
-{
+function generateId() {
     var id = '';
     var idLength = 6;
 
@@ -157,37 +164,69 @@ function generateId()
     return id;
 }
 
-function calculateCostBasis(amount, dAmount)
-{
+function calculateCostBasis(amount, dAmount) {
     costBasis = '$' + (dAmount / amount).toFixed(2);
     return costBasis;
 }
 
-function deleteRow(button)
-{
+function deleteRow(button) {
     var row = button.parentElement.parentElement;
     document.getElementById("tableBody").removeChild(row);
+
+    if(document.getElementsByClassName('editing').length == 0) {
+        document.getElementById('add').removeAttribute('hidden');
+        document.getElementById('save').setAttribute('hidden', true);
+        document.getElementById('discard').setAttribute('hidden', true);
+    }
 }
 
-function editRow(button)
-{
+function editRow(button) {
     if(document.getElementsByClassName('editing').length > 0)
         document.getElementsByClassName('editing')[0].classList = "bodyRow";
 
+
     var row = button.parentElement.parentElement;
+    var rowContent = row.getElementsByTagName('td');
     row.classList = "bodyRow editing";
+
+    document.getElementById('date').value = rowContent[1].innerText;
+    document.getElementById('account').value = rowContent[2].innerText;
+    document.getElementById('type').value = rowContent[3].innerText;
+    document.getElementById('security').value = rowContent[4].innerText;
+    document.getElementById('amount').value = rowContent[5].innerText;
+    document.getElementById('dAmount').value = rowContent[6].innerText;
+
+    document.getElementById('add').setAttribute('hidden', true);
+    document.getElementById('save').removeAttribute('hidden');
+    document.getElementById('discard').removeAttribute('hidden');
 }
 
-function saveChanges()
-{
+function saveChanges() {
+    data = getData();
+    if(data) {
+        rowToEdit = document.getElementsByClassName('editing')[0];
+        cellsToEdit = rowToEdit.getElementsByTagName('td');
+
+        for(var i = 0; i < data.length; i++) {
+            cellsToEdit[i + 1].innerHTML = data[i];
+        }
+        rowToEdit.classList = "bodyRow";
+    }
+
+    document.getElementById('add').removeAttribute('hidden');
+    document.getElementById('save').setAttribute('hidden', true);
+    document.getElementById('discard').setAttribute('hidden', true);
 }
 
-function discardChanges()
-{
+function discardChanges() {
+    document.getElementsByClassName('editing')[0].classList = "bodyRow";
+
+    document.getElementById('add').removeAttribute('hidden');
+    document.getElementById('save').setAttribute('hidden', true);
+    document.getElementById('discard').setAttribute('hidden', true);
 }
 
-function sortTable(column, ascending)
-{
+function sortTable(column, ascending) {
     var tableBody = document.getElementById('tableBody');
     var rows = document.getElementsByClassName('bodyRow');
 
