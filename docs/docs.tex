@@ -486,6 +486,25 @@ function calculateCostBasis(amount, dAmount) {
 
 \subsection{addTransaction()}
 
+\begin{lstlisting}[firstnumber=156]
+function addTransactionButton() {
+    var data = getData();
+    if(data) {
+        var date = data[0];
+        var account = data[1];
+        var type = data[2];
+        var security = data[3];
+        var amount = data[4];
+        var dAmount = data[5];
+        var costBasis = data[6];
+
+        var id = generateId();
+
+        addTransaction(id, date, account, type, security, amount, dAmount, costBasis);
+    }
+}
+\end{lstlisting}
+
 \begin{lstlisting}[firstnumber=139]
 function addTransaction(id, date, account, type, security, amount, dAmount, costBasis) {
     var tableBody = document.getElementById('tableBody');
