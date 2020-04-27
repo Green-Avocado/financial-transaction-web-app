@@ -220,7 +220,6 @@ function discardChanges() {
 }
 
 function sortTable(column, ascending) {
-    var tableBody = document.getElementById('tableBody');
     var rows = document.getElementsByClassName('bodyRow');
 
     var sorting = true;
@@ -237,7 +236,7 @@ function sortTable(column, ascending) {
             
             if(swap) {
                 sorting = true;
-                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                document.getElementById('tableBody').insertBefore(rows[i + 1], rows[i]);
             }
         }
     }
