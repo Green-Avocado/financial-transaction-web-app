@@ -38,8 +38,17 @@
 
 \newpage
 \pagenumbering{arabic}
+\parskip 10pt
 
-\section{HTML}
+\section{Foreword}
+
+Some of the code samples in this document were copied by hand.
+If there are any discrepencies between code in this document and in the source files, refer to the source files.
+
+This does not apply to the appendix.
+Code in the appendix was generated directly from the source files.
+
+\section{HTML}\label{HTML}
 
 \subsection{Preamble and head}
 
@@ -66,7 +75,51 @@ Within the \lstinline{head} element:
     \item The third line defines the source of an external Javascript document.
 \end{itemize}
 
-\subsection{Input Fields}
+\subsection{Inputs}
+
+The input section of this page is contained within \lstinline{<article>} tags for the purpose of organisation.
+This can be used to facilitate styling this part of the page with CSS if desired.
+
+\begin{lstlisting}[firstnumber=10]
+<article id="inputFields">
+\end{lstlisting}
+
+The \lstinline{article} element has been assigned a unique id for the purpose of styling.
+Specifically, this id is used to define padding and overflow.
+This is described in further detail in section~\ref{overflow-x} of this document.
+
+All input fields and buttons are contained within \lstinline{<form>} tags.
+Althought this is not strictly necessary for the purpose of this project, it is useful for organising data and specifying the fields from which data should be submitted.
+
+\begin{lstlisting}[firstnumber=11]
+<form onsubmit="return false" autocomplete="off">
+\end{lstlisting}
+
+The attribute \lstinline{onsubmit} is used to define a Javascript function to be executed when pressed.
+The form expects that \lstinline{true} is returned when data is successfully submitted.
+If so, the default behaviour is to clear the fields and enter the data in the browser URL bar as arguments.
+To prevent this behaviour, \lstinline{onsubmit} is set to \lstinline{return false}.
+
+The attribute \lstinline{autocomplete} can be used to specify whether user input from a previous session should be used to populate input fields.
+This attribute also determines whether or not suggestions are displayed when the user enters data.
+In this case, \lstinline{autocomplete} has been set to \lstinline{off} to prevent these actions from occuring, however, this does not affect the functionality of the program.
+
+The buttons and input fields within the \lstinline{form} element are contained within \lstinline{<section>} tags for organisation.
+This is primarily done to allow elements to be positioned properly by the CSS file.
+
+\subsubsection{Labels}
+
+Each of the inputs are given a label to specify to a user the type of information which should be entered in the given field.
+This is done with the \lstinline{input} element.
+
+\begin{lstlisting}[firstnumber=12]
+<label for="date">Date:</label><br/>
+\end{lstlisting}
+
+The \lstinline{for} attribute is used to specify an element which corresponds to this label.
+This is done by setting the attribute to the id of the other element.
+Labels allow a user to select an input field by clicking the label rather than the field itself.
+Labels are also used to facilitate the use of assistive technologies.
 
 \subsubsection{Date}
 
@@ -107,7 +160,7 @@ Within the \lstinline{head} element:
 
 \newpage
 
-\section{Javascript}
+\section{Javascript}\label{JS}
 
 \subsection{getData()}
 
@@ -131,11 +184,11 @@ Within the \lstinline{head} element:
 
 \newpage
 
-\section{CSS}
+\section{CSS}\label{CSS}
 
 \subsection{Vertical Scrolling Table}
 
-\subsection{Horizontal Scrolling on Overflow}
+\subsection{Horizontal Scrolling on Overflow}\label{overflow-x}
 
 \subsection{Miscellaneous}
 
