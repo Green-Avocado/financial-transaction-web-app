@@ -916,12 +916,18 @@ For the Google Sheets project, there existed a built-in function to sort a colum
 
 \subsection{Vertical Scrolling Table}
 
+The table id refers to the \lstinline{article} that contains the table, rather than the table itself.
+This article was given a max height of 80 visual heights, or approximately 80\% of the screen height.
+\lstinline{overflow: auto;} specifies that, if necessary, a scroll bar should be present, this is true for both horizontal and vertical scrolling.
+
 \begin{lstlisting}[firstnumber=29]
 #table {
     max-height: 80vh;
     overflow: auto;
 }
 \end{lstlisting}
+
+The last three properties below are important for keeping the header in place while scrolling.
 
 \begin{lstlisting}[firstnumber=39]
 th {
@@ -933,7 +939,18 @@ th {
 }
 \end{lstlisting}
 
+\begin{itemize}
+    \item \lstinline{position: sticky;} is used to keep the object in place when scrolling.
+    \item \lstinline{background: white;} is used to give the element a non-transparent background, so that data cannot be seen through the header.
+    \item \lstinline{top: 0;} is used to specify that the element should remain at the top of its parent element with no offset.
+\end{itemize}
+
 \subsection{Horizontal Scrolling on Overflow}\label{overflow-x}
+
+The inputFields id is used to identify the \lstinline{article} element that contains the \lstinline{form}.
+The important property here is the \lstinline{overflow-x: auto;} line, which specifies that, if the child element is wider than this element, a horizontal scroll bar should be present.
+
+The \lstinline{form} element, which is a child of the \lstinline{article} is given a minimum width to ensure that the scroll bar is created rather than reducing the width of the element.
 
 \begin{lstlisting}[firstnumber=5]
 #inputFields {
@@ -949,6 +966,17 @@ form {
 \subsection{Miscellaneous}
 
 \subsubsection{Sort buttons}
+
+The header cells contain two \lstinline{sections}, one of which has a special class.
+Both sections are given a \lstinline{margin} and \lstinline{padding} of 0 to minimise wasted space.
+Both sections are also set to \lstinline{display: inline-block} to specify that they should be arranged horizontally.
+
+Both sections are given a \lstinline{width} of 80\% of the parent element.
+However, this is overruled for the element with a class of \lstinline{sort}, which is assigned a \lstinline{width} of 10\% to ensure that both elements fit horizontally in the parent.
+
+To further reduce wasted space, the \lstinline{border} and \lstinline{padding} of the buttons are set to 0.
+The button's \lstinline{display} property is set to \lstinline{block} as otherwise, it would inherit the \lstinline{inline-block} property from its parent and attempt to arrange horizontally.
+Lastly, the buttons are set to take up the entire width of the parent element.
 
 \begin{lstlisting}[firstnumber=47]
 th > section {
