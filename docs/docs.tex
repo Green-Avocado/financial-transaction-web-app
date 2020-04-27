@@ -1000,6 +1000,10 @@ th > section {
 
 \subsubsection{Editing highlight}
 
+The current row selected for highlighting is specified using a class.
+As such, it is possible to give this row unique styling.
+For example, currently the row is given a yellow background.
+
 \begin{lstlisting}[firstnumber=65]
 .editing {
     background-color: yellow;
@@ -1007,6 +1011,14 @@ th > section {
 \end{lstlisting}
 
 \subsubsection{Table borders}
+
+Table borders do not render properly with a scrolling body and fixed header.
+To resolve this, borders are rendered using the \lstinline{box-shadow} property.
+
+Two box shadows are defined, one extends outwards from the right and bottom by one pixel in each direction.
+The other is given the \lstinline{inset} property, so that it extends inwards from the left and top.
+This creates a full border with a width of 1 pixel in each direction.
+As these borders are offset from the element, adjacent elements will overlap borders, preventing borders from combining into extra thick borders.
 
 \begin{lstlisting}[firstnumber=69]
 #table,
