@@ -6,8 +6,8 @@
 \usepackage[hidelinks]{hyperref}
 
 \hypersetup{colorlinks, allcolors=blue}
-\lstset
-    {breaklines=true,
+\lstset {
+    breaklines=true,
     postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
     basicstyle=\ttfamily,
     numbers=left,
@@ -275,23 +275,205 @@ Nevertheless, I consider this to be good practice as it is clear which element i
 
 \subsection{getData()}
 
+\begin{lstlisting}[firstnumber=1]
+function getData() {
+    var date = document.getElementById("date").value;
+    var account = document.getElementById("account").value;
+    var type = document.getElementById("type").value;
+    var security = document.getElementById("security").value;
+    var amount = document.getElementById("amount").value;
+    var dAmount = document.getElementById("dAmount").value;
+
+    amount = Number(amount);
+
+    if(dAmount[0] == '$') {
+        dAmount = dAmount.substr(1);
+    }
+    dAmount = Number(dAmount);
+
+    if(validate(date, account, type, security, amount, dAmount)) {
+        var costBasis = calculateCostBasis(amount, dAmount);
+        dAmount = '$' + dAmount.toFixed(2);
+
+        return [ date, account, type, security, amount, dAmount, costBasis ];
+    }
+    else return false;
+}
+\end{lstlisting}
+
 \subsection{validate()}
+
+\begin{lstlisting}[firstnumber=25]
+function validate(date, account, type, security, amount, dAmount) {
+    if(!validateDate(date)) return false;
+    if(!validateAccount(account)) return false;
+    if(!validateType(type)) return false;
+    if(!validateSecurity(security)) return false;
+    if(!validateAmount(amount)) return false;
+    if(!validateDAmount(dAmount)) return false;
+
+    return true;
+}
+\end{lstlisting}
 
 \subsection{generateId()}
 
+\begin{lstlisting}[firstnumber=108]
+function generateId() {
+    var id = '';
+    var idLength = 6;
+
+    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    var charactersLength = characters.length;
+
+    var unique = false;
+
+    while(!unique) {
+        for(var i = 0; i < idLength; i++) {
+            id += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+
+        unique = true;
+        for(var i = 0; i < document.getElementsByClassName('idCell').length; i++) {
+            if(document.getElementsByClassName('idCell')[i].innerText == id) {
+                unique = false;
+                break;
+            }
+        }
+    }
+    return id;
+}
+\end{lstlisting}
+
 \subsection{calculateCostBasis()}
+
+\begin{lstlisting}[firstnumber=133]
+function calculateCostBasis(amount, dAmount) {
+    costBasis = '$' + (dAmount / amount).toFixed(2);
+    return costBasis;
+}
+\end{lstlisting}
 
 \subsection{addTransaction()}
 
+\begin{lstlisting}[firstnumber=138]
+function addTransaction(id, date, account, type, security, amount, dAmount, costBasis) {
+    var tableBody = document.getElementById('tableBody');
+    var newRow = tableBody.insertRow(0);
+    newRow.classList += "bodyRow";
+
+    var actionsContent = "<button type='button' onclick='editRow(this)'>Edit</button> <button type='button' onclick='deleteRow(this)'>Delete</button>";
+    var rowContents = [id, date, account, type, security, amount, dAmount, costBasis, actionsContent];
+
+    for(var i = 0; i < rowContents.length; i++) {
+        var newCell = newRow.insertCell(i);
+        newCell.innerHTML = rowContents[i];
+        if(i == 0) {
+            newCell.classList += "idCell";
+        }
+    }
+}
+\end{lstlisting}
+
 \subsection{deleteRow()}
+
+\begin{lstlisting}[firstnumber=172]
+function deleteRow(button) {
+    var row = button.parentElement.parentElement;
+    document.getElementById("tableBody").removeChild(row);
+
+    if(document.getElementsByClassName('editing').length == 0) {
+        document.getElementById('add').removeAttribute('hidden');
+        document.getElementById('save').setAttribute('hidden', true);
+        document.getElementById('discard').setAttribute('hidden', true);
+    }
+}
+\end{lstlisting}
 
 \subsection{editRow()}
 
+\begin{lstlisting}[firstnumber=183]
+function editRow(button) {
+    if(document.getElementsByClassName('editing').length > 0)
+        document.getElementsByClassName('editing')[0].classList = "bodyRow";
+
+    var row = button.parentElement.parentElement;
+    var rowContent = row.getElementsByTagName('td');
+    row.classList = "bodyRow editing";
+
+    document.getElementById('date').value = rowContent[1].innerText;
+    document.getElementById('account').value = rowContent[2].innerText;
+    document.getElementById('type').value = rowContent[3].innerText;
+    document.getElementById('security').value = rowContent[4].innerText;
+    document.getElementById('amount').value = rowContent[5].innerText;
+    document.getElementById('dAmount').value = rowContent[6].innerText;
+
+    document.getElementById('add').setAttribute('hidden', true);
+    document.getElementById('save').removeAttribute('hidden');
+    document.getElementById('discard').removeAttribute('hidden');
+}
+\end{lstlisting}
+
 \subsection{saveChanges()}
+
+\begin{lstlisting}[firstnumber=203]
+function saveChanges() {
+    data = getData();
+    if(data) {
+        rowToEdit = document.getElementsByClassName('editing')[0];
+        cellsToEdit = rowToEdit.getElementsByTagName('td');
+
+        for(var i = 0; i < data.length; i++) {
+            cellsToEdit[i + 1].innerHTML = data[i];
+        }
+        rowToEdit.classList = "bodyRow";
+    }
+
+    document.getElementById('add').removeAttribute('hidden');
+    document.getElementById('save').setAttribute('hidden', true);
+    document.getElementById('discard').setAttribute('hidden', true);
+}
+\end{lstlisting}
 
 \subsection{discardChanges()}
 
+\begin{lstlisting}[firstnumber=220]
+function discardChanges() {
+    document.getElementsByClassName('editing')[0].classList = "bodyRow";
+
+    document.getElementById('add').removeAttribute('hidden');
+    document.getElementById('save').setAttribute('hidden', true);
+    document.getElementById('discard').setAttribute('hidden', true);
+}
+\end{lstlisting}
+
 \subsection{sortTable()}
+
+\begin{lstlisting}[firstnumber=228]
+function sortTable(column, ascending) {
+    var tableBody = document.getElementById('tableBody');
+    var rows = document.getElementsByClassName('bodyRow');
+
+    var sorting = true;
+    while(sorting) {
+        sorting = false;
+        for(var i = 0; i < (rows.length - 1); i++) {
+            rowA = rows[i].getElementsByTagName('td')[column];
+            rowB = rows[i + 1].getElementsByTagName('td')[column];
+
+            var swap = false;
+
+            if(ascending && rowA.innerHTML.toLowerCase() > rowB.innerHTML.toLowerCase()) swap = true;
+            else if(!ascending && rowA.innerHTML.toLowerCase() < rowB.innerHTML.toLowerCase()) swap = true;
+
+            if(swap) {
+                sorting = true;
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+            }
+        }
+    }
+}
+\end{lstlisting}
 
 \newpage
 
