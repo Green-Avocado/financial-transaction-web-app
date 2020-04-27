@@ -362,6 +362,8 @@ Lastly, the function returns a list including all the data to the caller.
 
 \subsection{validate()}
 
+The \lstinline{validate()} function is used to verify that all fields include valid data.
+
 \begin{lstlisting}[firstnumber=26]
 function validate(date, account, type, security, amount, dAmount) {
     if(!validateDate(date)) return false;
@@ -370,6 +372,53 @@ function validate(date, account, type, security, amount, dAmount) {
     if(!validateSecurity(security)) return false;
     if(!validateAmount(amount)) return false;
     if(!validateDAmount(dAmount)) return false;
+
+    return true;
+}
+\end{lstlisting}
+
+The function calls several functions, each of which validates a different input field.
+If any of the calls returns false, this function returns false.
+If none of the calls returned false, the function returns true, allowing the caller to proceed.
+
+\subsubsection{Check empty}
+
+\begin{lstlisting}[firstnumber=54]
+function validateAccount(account) {
+    if(account == '') {
+        alert('Error: Missing Account Number');
+        return false;
+    }
+
+    return true;
+}
+\end{lstlisting}
+
+\subsubsection{Check NaN}
+
+\begin{lstlisting}[firstnumber=87]
+if(isNaN(amount)) {
+    alert('Error: Invalid Amount');
+    return false;
+}
+\end{lstlisting}
+
+\subsubsection{Check future date}
+
+\begin{lstlisting}[firstnumber=37]
+function validateDate(date) {
+    realDate = new Date();
+    inputDate = date.valueAsNumber;
+
+    if(isNaN(inputDate)) {
+        alert('Error: No date specified');
+        return false;
+    }
+
+    if(realDate.valueOf() < inputDate) {
+        alert('Error: Date is in the future');
+        return false;
+    }
 
     return true;
 }
