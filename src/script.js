@@ -1,5 +1,5 @@
 function getData() {
-    var date = document.getElementById("date").value;
+    var date = document.getElementById("date");
     var account = document.getElementById("account").value;
     var type = document.getElementById("type").value;
     var security = document.getElementById("security").value;
@@ -15,6 +15,7 @@ function getData() {
 
     if(validate(date, account, type, security, amount, dAmount)) {
         var costBasis = calculateCostBasis(amount, dAmount);
+        date = date.value;
         dAmount = '$' + dAmount.toFixed(2);
 
         return [ date, account, type, security, amount, dAmount, costBasis ];
@@ -35,7 +36,7 @@ function validate(date, account, type, security, amount, dAmount) {
 
 function validateDate(date) {
     realDate = new Date();
-    inputDate = document.getElementById('date').valueAsNumber;
+    inputDate = date.valueAsNumber;
 
     if(isNaN(inputDate)) {
         alert('Error: No date specified');

@@ -276,13 +276,10 @@ Nevertheless, I consider this to be good practice as it is clear which element i
 \subsection{getData()}
 
 This function is used to retrieve and format data from the input fields.
-The function checks whether the data is valid by calling the \lstinline{validate()} function.
-If so, data is formatted and sent to the function which called \lstinline{getData()}.
-Currently, the calling function is either \lstinline{addTransactionButton()} or \lstinline{saveChanges()}.
 
 \begin{lstlisting}[firstnumber=1]
 function getData() {
-    var date = document.getElementById("date").value;
+    var date = document.getElementById("date");
     var account = document.getElementById("account").value;
     var type = document.getElementById("type").value;
     var security = document.getElementById("security").value;
@@ -298,6 +295,7 @@ function getData() {
 
     if(validate(date, account, type, security, amount, dAmount)) {
         var costBasis = calculateCostBasis(amount, dAmount);
+        date = date.value;
         dAmount = '$' + dAmount.toFixed(2);
 
         return [ date, account, type, security, amount, dAmount, costBasis ];
@@ -306,9 +304,15 @@ function getData() {
 }
 \end{lstlisting}
 
+The function checks whether the data is valid by calling the \lstinline{validate()} function.
+If so, data is formatted and sent to the function which called \lstinline{getData()}.
+Currently, the caller is either \lstinline{addTransactionButton()} or \lstinline{saveChanges()}.
+
+The function first stores the raw values of 
+
 \subsection{validate()}
 
-\begin{lstlisting}[firstnumber=25]
+\begin{lstlisting}[firstnumber=26]
 function validate(date, account, type, security, amount, dAmount) {
     if(!validateDate(date)) return false;
     if(!validateAccount(account)) return false;
@@ -323,7 +327,7 @@ function validate(date, account, type, security, amount, dAmount) {
 
 \subsection{generateId()}
 
-\begin{lstlisting}[firstnumber=108]
+\begin{lstlisting}[firstnumber=109]
 function generateId() {
     var id = '';
     var idLength = 6;
@@ -352,7 +356,7 @@ function generateId() {
 
 \subsection{calculateCostBasis()}
 
-\begin{lstlisting}[firstnumber=133]
+\begin{lstlisting}[firstnumber=134]
 function calculateCostBasis(amount, dAmount) {
     costBasis = '$' + (dAmount / amount).toFixed(2);
     return costBasis;
@@ -361,7 +365,7 @@ function calculateCostBasis(amount, dAmount) {
 
 \subsection{addTransaction()}
 
-\begin{lstlisting}[firstnumber=138]
+\begin{lstlisting}[firstnumber=139]
 function addTransaction(id, date, account, type, security, amount, dAmount, costBasis) {
     var tableBody = document.getElementById('tableBody');
     var newRow = tableBody.insertRow(0);
@@ -382,7 +386,7 @@ function addTransaction(id, date, account, type, security, amount, dAmount, cost
 
 \subsection{deleteRow()}
 
-\begin{lstlisting}[firstnumber=172]
+\begin{lstlisting}[firstnumber=173]
 function deleteRow(button) {
     var row = button.parentElement.parentElement;
     document.getElementById("tableBody").removeChild(row);
@@ -397,7 +401,7 @@ function deleteRow(button) {
 
 \subsection{editRow()}
 
-\begin{lstlisting}[firstnumber=183]
+\begin{lstlisting}[firstnumber=184]
 function editRow(button) {
     if(document.getElementsByClassName('editing').length > 0)
         document.getElementsByClassName('editing')[0].classList = "bodyRow";
@@ -421,7 +425,7 @@ function editRow(button) {
 
 \subsection{saveChanges()}
 
-\begin{lstlisting}[firstnumber=203]
+\begin{lstlisting}[firstnumber=204]
 function saveChanges() {
     data = getData();
     if(data) {
@@ -442,7 +446,7 @@ function saveChanges() {
 
 \subsection{discardChanges()}
 
-\begin{lstlisting}[firstnumber=220]
+\begin{lstlisting}[firstnumber=221]
 function discardChanges() {
     document.getElementsByClassName('editing')[0].classList = "bodyRow";
 
@@ -454,7 +458,7 @@ function discardChanges() {
 
 \subsection{sortTable()}
 
-\begin{lstlisting}[firstnumber=228]
+\begin{lstlisting}[firstnumber=229]
 function sortTable(column, ascending) {
     var tableBody = document.getElementById('tableBody');
     var rows = document.getElementsByClassName('bodyRow');
