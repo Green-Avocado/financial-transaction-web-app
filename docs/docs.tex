@@ -640,6 +640,13 @@ Therefore, the process of adding a row is significantly simpler in HTML and JS.
 
 \subsection{deleteRow()}
 
+The function takes an element as an argument, this element is supposed to be the button which called the function.
+The function gets the parent of the parent of the delete button and removes this element.
+The first parent of the delete button is the cell, the second parent is the row.
+By selecting the second parent, we are selecting the row containing the button.
+
+The function uses the \lstinline{removeChild()} method of the table to remove the specified row element.
+
 \begin{lstlisting}[firstnumber=166]
 function deleteRow(button) {
     var row = button.parentElement.parentElement;
@@ -653,7 +660,19 @@ function deleteRow(button) {
 }
 \end{lstlisting}
 
+It is possible that the delete button is used on the row being edited.
+If this is the case, the save and discard buttons would remain visible, although there would be no row being edited.
+To resolve this, the function checks if there are any rows with the class \lstinline{'editing'}.
+If so, the function hides the save and discard buttons, and unhides the add button.
+This is performed whenever the function finds no row being edited, however, it has no effect when the row being edited was not deleted.
+
 \textbf{Comparison to Google Sheets project}
+
+Deleting is far simpler as it is not necessary to transfer the rows to a separate sheet.
+HTML and JS also allows for a new button to be easily created for every row.
+
+The Google Sheets project did not hide and show buttons depending on whether or not a function was being editted, however, this is done in HTML as the process is much simpler.
+If one were to do this in Google Sheets, the buttons would have to be indexed before hand so they could be referenced in code.
 
 \subsection{editRow()}
 
