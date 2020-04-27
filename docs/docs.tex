@@ -383,6 +383,9 @@ If none of the calls returned false, the function returns true, allowing the cal
 
 \subsubsection{Check empty}
 
+In cases where the only check necessary is that the field is not empty, the function simply compares the value to an empty string.
+If the value is equal to an empty string, the function prints an alert and returns false, otherwise it returns true.
+
 \begin{lstlisting}[firstnumber=54]
 function validateAccount(account) {
     if(account == '') {
@@ -393,6 +396,9 @@ function validateAccount(account) {
     return true;
 }
 \end{lstlisting}
+
+This is the template used to check account, transaction type, and security, as these are all strings.
+Although the transaction type field is not a text box, by setting the default empty option to have a value of an empty string, this template still applies.
 
 \subsubsection{Check NaN}
 
