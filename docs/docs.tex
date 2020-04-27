@@ -190,6 +190,29 @@ For this project, the \lstinline{value} and \lstinline{innerHTML} were made to b
 
 \subsubsection{thead}
 
+The header of the table is enclosed in \lstinline{<thead>} tags.
+This element includes the first row of the table, denoted by \lstinline{<tr>} tags, which contains headers for each column.
+
+Every cell in the header is denoted by \lstinline{<td>} tags.
+These cells differ from normal cells, such as those in the body of the table, in how they format their contents.
+Using this element for header cells makes them stand out slightly as well as making it easier to differentiate when styling with CSS.
+
+\begin{lstlisting}[firstnumber=61]
+<th>
+    <section>
+        Transaction ID
+    </section>
+    <section class="sort">
+        <button type="button" onclick="sortTable(0, true)">^</button>
+        <button type="button" onclick="sortTable(0, false)">V</button>
+    </section>
+</th>
+\end{lstlisting}
+
+The first 8 header cells are split into two separate \lstinline{section} elements.
+This was done to allow for the proper positioning of the header text and the sort buttons.
+For this reason, the latter \lstinline{section} element is given the class \lstinline{sort} to differentiate between the two.
+
 \subsubsection{tbody}
 
 The table body is enclosed in \lstinline{<tbody>} tags.
@@ -199,6 +222,11 @@ This element is meant to be the main container of data in a table.
 <tbody id="tableBody">
 </tbody>
 \end{lstlisting}
+
+The table body is important for this project as it is the parent element of all data which will be manipulated.
+For this reason, it has been given a unique id to reference in Javascript.
+This was not strictly necessary, as it is also possible to reference this element by its tag name, being the only \lstinline{tbody} element.
+Nevertheless, I consider this to be good practice as it is clear which element is being referred to in Javascript and allows for other tables to be added in the future if necessary without breaking the current functionality.
 
 \newpage
 
