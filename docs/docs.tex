@@ -111,6 +111,11 @@ This is primarily done to allow elements to be positioned properly by the CSS fi
 All \lstinline{input} elements in this \lstinline{form} have been assigned a \lstinline{name} attribute.
 The \lstinline{name} attribute is not strictly relevant in this case, but is often used to identify the data when submitting to a database.
 
+All \lstinline{input} elements have the \lstinline{required} attribute.
+Normally this prevents a \lstinline{form} from being submitted unless all \lstinline{required} fields contain data.
+This does not apply to our case as we have disabled the built-in submit function.
+However, it does still outline missing fields in red.
+
 \subsubsection{Labels}
 
 Each of the inputs are given a label to specify to a user the type of information which should be entered in the given field.
