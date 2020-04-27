@@ -243,6 +243,18 @@ The first 8 header cells are split into two separate \lstinline{section} element
 This was done to allow for the proper positioning of the header text and the sort buttons.
 For this reason, the latter \lstinline{section} element is given the class \lstinline{sort} to differentiate between the two.
 
+Each of the first 8 header cells contain two buttons for sorting.
+All sorting buttons call the same function \lstinline{sort(column, ascending)}, however, they pass different arguments to this function.
+The first argument is the column number, starting from 0, which allows the Javascript function to determine which column to use when comparing rows.
+The second argument defines whether data should be sorted in ascending or descending order.
+
+The last header cell contains nothing but text.
+This column is used to contain the delete and edit buttons created for each row.
+
+\begin{lstlisting}[firstnumber=133]
+<th>Actions</th>
+\end{lstlisting}
+
 \subsubsection{tbody}
 
 The table body is enclosed in \lstinline{<tbody>} tags.
