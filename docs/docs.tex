@@ -402,6 +402,10 @@ Although the transaction type field is not a text box, by setting the default em
 
 \subsubsection{Check NaN}
 
+The function to check whether or not a value is a number is identical to the functions that check for only empty values, except for one key difference.
+In addition to checking if the value is empty, the function checks if the value is \lstinline{NaN}.
+This is done using the \lstinline{isNaN()} function, which takes a value as an argument and returns true of the value is \lstinline{NaN}.
+
 \begin{lstlisting}[firstnumber=87]
 if(isNaN(amount)) {
     alert('Error: Invalid Amount');
@@ -410,6 +414,11 @@ if(isNaN(amount)) {
 \end{lstlisting}
 
 \subsubsection{Check future date}
+
+Currently, a valid date is a date that is not in the future.
+In order to check this, the function gets the current date by creating a new \lstinline{Date} object and storing it as a variable.
+The function also stores the value of the \lstinline{date} element in a number format which can be easily compared.
+This is done by storing the \lstinline{valueAsNumber} property of the element.
 
 \begin{lstlisting}[firstnumber=37]
 function validateDate(date) {
@@ -429,6 +438,13 @@ function validateDate(date) {
     return true;
 }
 \end{lstlisting}
+
+The first check performed is whether or not the user had inputted a date.
+If the date field was left empty or incomplete, the \lstinline{valueAsNumber} property will be \lstinline{NaN}.
+Therefore, we can reuse the statement that checks whether or not a field contains a valid number.
+
+Next, the function must check that the date is not in the future.
+This is done by simply comparing the dates in number format, with a greater value indicating a later date.
 
 \subsection{generateId()}
 
