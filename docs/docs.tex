@@ -614,6 +614,8 @@ function addTransaction(data) {
 \end{lstlisting}
 
 The function creates string containing HTML code for a delete and an edit button and pushes this to the end of the \lstinline{data} array.
+The \lstinline{onclick} functions pass \lstinline{this} as an argument, which specifies the element that called the function.
+This is done so that the row to edit or delete can be selected.
 
 \begin{lstlisting}[firstnumber=144]
 var actionsContent = "<button type='button' onclick='editRow(this)'>Edit</button> <button type='button' onclick='deleteRow(this)'>Delete</button>";
