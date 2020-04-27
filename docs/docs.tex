@@ -574,7 +574,8 @@ Another minor difference is in how data is formatted, as Google Apps Script form
 
 The process of adding a transaction is initiated when the \lstinline{addTransactionButton()} function is called.
 This function calls the \lstinline{getData()} function and stores the result.
-If the result is not \lstinline{false}, the function stores the values in variables, generates a unique id for the transaction, and calls the \lstinline{addTransaction()} function to create the new row.
+If the result is not \lstinline{false}, the function generates a unique id for the transaction and adds this to the front of the \lstinline{data} array.
+The function then passes the \lstinline{data} array to the \lstinline{addTransaction()} function, which creates and populates the row.
 
 \begin{lstlisting}[firstnumber=156]
 function addTransactionButton() {
@@ -588,7 +589,7 @@ function addTransactionButton() {
 }
 \end{lstlisting}
 
-The \lstinline{addTransaction} function takes all the necessary data as arguments.
+The \lstinline{addTransaction} function gets all necessary data as an array argument.
 It stores the body of the table in a variable by referencing the element using \lstinline{document.getElementById('tableBody')}.
 A new row is created using the \lstinline{insertRow()} method of the table body and stored as a variable so that contents can be added.
 The row is assigned a class of \lstinline{bodyRow} for reference by other functions or styling.
@@ -612,7 +613,30 @@ function addTransaction(data) {
 }
 \end{lstlisting}
 
+The function creates string containing HTML code for a delete and an edit button and pushes this to the end of the \lstinline{data} array.
+
+\begin{lstlisting}[firstnumber=144]
+var actionsContent = "<button type='button' onclick='editRow(this)'>Edit</button> <button type='button' onclick='deleteRow(this)'>Delete</button>";
+data.push(actionsContent);
+\end{lstlisting}
+
+For each item in the array, the function calls the \lstinline{insertCell()} method of the row to create a new cell.
+The contents of this cell are defined by the \lstinline{innerHTML} property, which is set to the corresponding element of the array.
+For the first element, the cell is also given a special class to identify it as the cell containing the transaction id.
+
+\begin{lstlisting}[firstnumber=148]
+var newCell = newRow.insertCell(i);
+newCell.innerHTML = data[i];
+if(i == 0) {
+    newCell.classList += "idCell";
+}
+\end{lstlisting}
+
 \textbf{Comparison to Google Sheets project}
+
+The Google Sheets project copied data from the input range to the output range, whereas this function stores the values in memory then writes the new cells.
+As the table is within a self-contained element, the more complicated process of moving all contents to a separate area is not required.
+Therefore, the process of adding a row is significantly simpler in HTML and JS.
 
 \subsection{deleteRow()}
 
