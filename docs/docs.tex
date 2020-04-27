@@ -146,12 +146,20 @@ This type of input field is also useful for interpreting dates in Javascript, as
 
 \subsubsection{Text}
 
+\lstinline{input} elements with a \lstinline{type} attribute of \lstinline{text} can be used to retrieve a string from a user.
+This is also the field used for numbers, as these can be easily verified and converted in Javascript.
+
 \begin{lstlisting}[firstnumber=16]
 <section>
     <label for="account">Account Number:</label><br/>
     <input id="account" name="account" type="text" placeholder="Account Number" required/>
 </section>
 \end{lstlisting}
+
+The advantage of taking numbers from an input field is that it allows for characters such as \$ to be included.
+In the case of this project, users are able to submit Dollar Amounts as purely numberic values, or in a currency format.
+Currently, the program only accepts dollars as a currency, however, it is possible to allow and store any number of currencies.
+These characters, of course, have to be filtered out before the number is interpretted and re-inserted before displaying the value.
 
 \subsubsection{List}
 
