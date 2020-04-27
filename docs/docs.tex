@@ -102,10 +102,14 @@ To prevent this behaviour, \lstinline{onsubmit} is set to \lstinline{return fals
 
 The attribute \lstinline{autocomplete} can be used to specify whether user input from a previous session should be used to populate input fields.
 This attribute also determines whether or not suggestions are displayed when the user enters data.
-In this case, \lstinline{autocomplete} has been set to \lstinline{off} to prevent these actions from occuring, however, this does not affect the functionality of the program.
+In this case, \lstinline{autocomplete} has been set to \lstinline{off} to prevent these actions from occuring.
+This does not affect the functionality of the program.
 
 The buttons and input fields within the \lstinline{form} element are contained within \lstinline{<section>} tags for organisation.
 This is primarily done to allow elements to be positioned properly by the CSS file.
+
+All \lstinline{input} elements in this \lstinline{form} have been assigned a \lstinline{name} attribute.
+The \lstinline{name} attribute is not strictly relevant in this case, but is often used to identify the data when submitting to a database.
 
 \subsubsection{Labels}
 
@@ -123,12 +127,17 @@ Labels are also used to facilitate the use of assistive technologies.
 
 \subsubsection{Date}
 
+The date of a transaction is specified through the use of an \lstinline{input} element with a \lstinline{type} attribute of \lstinline{date}.
+This can be used to effectively restrict the input to a valid date format and provides an intuitive method for inputting data.
+
 \begin{lstlisting}[firstnumber=11]
 <section>
     <label for="date">Date:</label><br/>
     <input id="date" name="date" type="date" required/>
 </section>
 \end{lstlisting}
+
+This type of input field is also useful for interpreting dates in Javascript, as it provides methods which return the date in various formats to facilitate displaying and comparing dates.
 
 \subsubsection{Text}
 
@@ -157,6 +166,10 @@ Labels are also used to facilitate the use of assistive technologies.
 \end{lstlisting}
 
 \subsection{Table}
+
+\subsection{thead}
+
+\subsection{tbody}
 
 \newpage
 
