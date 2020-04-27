@@ -190,13 +190,31 @@ For this project, the \lstinline{value} and \lstinline{innerHTML} were made to b
 
 \subsubsection{Buttons}
 
+\lstinline{button} elements are clickable elements which can execute Javascript code specified by an \lstinline{onclick} attribute.
+Text within the \lstinline{innerHTML} of the \lstinline{button} will be displayed as text within the button, which is useful for communicating the purpose of the button.
+
 \begin{lstlisting}[firstnumber=49]
 <section>
     <button id="add" type="submit" onclick="addTransactionButton();">Add Transaction</button>
-    <button id="save" type="submit" onclick="saveChanges();">Save</button>
-    <button id="discard" type="submit" onclick="discardChanges();">Discard</button>
+    <button id="save" type="submit" hidden="true" onclick="saveChanges();">Save</button>
+    <button id="discard" type="button" hidden="true" onclick="discardChanges();">Discard</button>
 </section>
 \end{lstlisting}
+
+In this case, three buttons are present, each set to execute a different Javascript function when clicked.
+
+Two of the three buttons have a \lstinline{type} attribute of \lstinline{submit}.
+This causes each function to trigger the \lstinline{submit} event along with the Javascript function.
+However, for this project, this event has been disabled by the \lstinline{form} \lstinline{onsubmit="return false"} attribute.
+Thus, the only difference is that this causes missing fields to be outlined in red when the button is pressed.
+
+The last button is of \lstinline{type} \lstinline{button}.
+This element functions exactly the same, except it does not trigger the \lstinline{submit} event.
+For this project, this means that missing fields will not be highlighted red, as this is not necessary for the `Discard Changes' button.
+
+Two of the three buttons also have the \lstinline{hidden="true"} attribute.
+This causes the page to render as if these elements did not exist, as these elements are only relevant when editing a row.
+All three buttons are given unique ids so that \lstinline{hidden} attributes can be added or removed as needed.
 
 \subsection{Table}
 
@@ -230,9 +248,8 @@ For this reason, the latter \lstinline{section} element is given the class \lsti
 The table body is enclosed in \lstinline{<tbody>} tags.
 This element is meant to be the main container of data in a table.
 
-\begin{lstlisting}
+\begin{lstlisting}[firstnumber=136]
 <tbody id="tableBody">
-</tbody>
 \end{lstlisting}
 
 The table body is important for this project as it is the parent element of all data which will be manipulated.
