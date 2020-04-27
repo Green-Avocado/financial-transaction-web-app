@@ -394,6 +394,10 @@ If none of the calls returned false, the function returns true, allowing the cal
 
 \textbf{Comparison to Google Sheets project}
 
+The function uses the same method as the Google Sheets project for validating data, by calling different functions which return \lstinline{true} or \lstinline{false}.
+The difference here is that data is taken as arguments and passed to the validating functions, as this data is no longer read from the sheet.
+The returns of this function have also been standardised such that \lstinline{false} always indicated an invalid value, this is done mostly for readability.
+
 \subsubsection{Check empty}
 
 In cases where the only check necessary is that the field is not empty, the function simply compares the value to an empty string.
@@ -415,6 +419,12 @@ Although the transaction type field is not a text box, by setting the default em
 
 \textbf{Comparison to Google Sheets project}
 
+The function to check for an empty field is now done by the same function that check that a field is valid.
+This was done to better organise the validation process and allow functions to be modified more easily.
+
+The Google Sheets project used the \lstinline{isBlank()} method of a cell, as no data was stored and passed to it.
+This project does pass values to the function, therefore the check can be simplified by comparing it to an empty string.
+
 \subsubsection{Check NaN}
 
 The function to check whether or not a value is a number is identical to the functions that check for only empty values, except for one key difference.
@@ -430,7 +440,10 @@ if(isNaN(amount)) {
 
 \textbf{Comparison to Google Sheets project}
 
-\subsubsection{Check future date}
+This check was not performed in the Google Sheets project, however, if one were to validate a number in the Google Sheets project, one would check that the value was a numeric type, similar to how the date was validated in Google Sheets.
+In this case, the number can be validated much simpler, by checking whether or not the conversion was successful.
+
+\subsubsection{Check date}
 
 Currently, a valid date is a date that is not in the future.
 In order to check this, the function gets the current date by creating a new \lstinline{Date} object and storing it as a variable.
@@ -464,6 +477,13 @@ Next, the function must check that the date is not in the future.
 This is done by simply comparing the dates in number format, with a greater value indicating a later date.
 
 \textbf{Comparison to Google Sheets project}
+
+In Google Sheets, a date was validated by checking that it was of the \lstinline{[object Date]} type.
+In this project, we can be confident that the object is of the correct type as it was created by a specific type of input, therefore, it is not necessary to validate the type.
+
+To check that the date was not in the future, the Google Sheets project directly compared two date objects.
+This was not done for the current project, as we have two different types of data, an element and a \lstinline{Date} object.
+In order to compare these, both are converted to the same numeric format.
 
 \subsection{generateId()}
 
