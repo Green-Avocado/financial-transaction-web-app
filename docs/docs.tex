@@ -273,6 +273,11 @@ Nevertheless, I consider this to be good practice as it is clear which element i
 
 \section{Javascript}\label{JS}
 
+The following section describes all Javascript functions used in this project.
+Functions have been grouped according to their purpose, some functions have been omitted for being too similar to other functions.
+
+Each section contains a passage in which these are compared to an equivalent function from the Google Sheets project.
+
 \subsection{getData()}
 
 This function is used to retrieve and format data from the input fields.
@@ -360,6 +365,12 @@ If all data is valid, the function calculates and stores the costBasis by callin
 The function also formats the date and dollar amount in the correct formats to be exported to the table.
 Lastly, the function returns a list including all the data to the caller.
 
+\textbf{Comparison to Google Sheets project}
+
+There is no equivalent function in the Google Sheets project.
+The \lstinline{getData()} function is required to store input values in memory.
+Google Apps Script had a built-in function to move or copy cells and did not require most values to be stored like this.
+
 \subsection{validate()}
 
 The \lstinline{validate()} function is used to verify that all fields include valid data.
@@ -381,6 +392,8 @@ The function calls several functions, each of which validates a different input 
 If any of the calls returns false, this function returns false.
 If none of the calls returned false, the function returns true, allowing the caller to proceed.
 
+\textbf{Comparison to Google Sheets project}
+
 \subsubsection{Check empty}
 
 In cases where the only check necessary is that the field is not empty, the function simply compares the value to an empty string.
@@ -400,6 +413,8 @@ function validateAccount(account) {
 This is the template used to check account, transaction type, and security, as these are all strings.
 Although the transaction type field is not a text box, by setting the default empty option to have a value of an empty string, this template still applies.
 
+\textbf{Comparison to Google Sheets project}
+
 \subsubsection{Check NaN}
 
 The function to check whether or not a value is a number is identical to the functions that check for only empty values, except for one key difference.
@@ -413,6 +428,8 @@ if(isNaN(amount)) {
 }
 \end{lstlisting}
 
+\textbf{Comparison to Google Sheets project}
+
 \subsubsection{Check future date}
 
 Currently, a valid date is a date that is not in the future.
@@ -425,8 +442,8 @@ function validateDate(date) {
     realDate = new Date();
     inputDate = date.valueAsNumber;
 
-    if(isNaN(inputDate)) {
-        alert('Error: No date specified');
+    if(!date.checkValidity()) {
+        alert('Error: Invalid date');
         return false;
     }
 
@@ -439,12 +456,14 @@ function validateDate(date) {
 }
 \end{lstlisting}
 
-The first check performed is whether or not the user had inputted a date.
-If the date field was left empty or incomplete, the \lstinline{valueAsNumber} property will be \lstinline{NaN}.
+The first check performed is whether or not the user had inputted a date that exists.
+If the date field was left empty or incomplete, or the date is non-existant (e.g. November 31) the \lstinline{date.checkValidity()} function will return \lstinline{false}.
 Therefore, we can reuse the statement that checks whether or not a field contains a valid number.
 
 Next, the function must check that the date is not in the future.
 This is done by simply comparing the dates in number format, with a greater value indicating a later date.
+
+\textbf{Comparison to Google Sheets project}
 
 \subsection{generateId()}
 
@@ -475,6 +494,8 @@ function generateId() {
 }
 \end{lstlisting}
 
+\textbf{Comparison to Google Sheets project}
+
 \subsection{calculateCostBasis()}
 
 \begin{lstlisting}[firstnumber=134]
@@ -483,6 +504,8 @@ function calculateCostBasis(amount, dAmount) {
     return costBasis;
 }
 \end{lstlisting}
+
+\textbf{Comparison to Google Sheets project}
 
 \subsection{addTransaction()}
 
@@ -524,6 +547,8 @@ function addTransaction(id, date, account, type, security, amount, dAmount, cost
 }
 \end{lstlisting}
 
+\textbf{Comparison to Google Sheets project}
+
 \subsection{deleteRow()}
 
 \begin{lstlisting}[firstnumber=173]
@@ -538,6 +563,8 @@ function deleteRow(button) {
     }
 }
 \end{lstlisting}
+
+\textbf{Comparison to Google Sheets project}
 
 \subsection{editRow()}
 
@@ -562,6 +589,8 @@ function editRow(button) {
     document.getElementById('discard').removeAttribute('hidden');
 }
 \end{lstlisting}
+
+\textbf{Comparison to Google Sheets project}
 
 \subsection{saveChanges()}
 
@@ -596,6 +625,8 @@ function discardChanges() {
 }
 \end{lstlisting}
 
+\textbf{Comparison to Google Sheets project}
+
 \subsection{sortTable()}
 
 \begin{lstlisting}[firstnumber=229]
@@ -623,6 +654,8 @@ function sortTable(column, ascending) {
     }
 }
 \end{lstlisting}
+
+\textbf{Comparison to Google Sheets project}
 
 \newpage
 

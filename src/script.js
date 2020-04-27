@@ -38,8 +38,8 @@ function validateDate(date) {
     realDate = new Date();
     inputDate = date.valueAsNumber;
 
-    if(isNaN(inputDate)) {
-        alert('Error: No date specified');
+    if(!date.checkValidity()) {
+        alert('Error: Invalid date');
         return false;
     }
 
