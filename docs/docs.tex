@@ -813,9 +813,16 @@ This can be done by setting all input fields to an empty string, but I felt that
 
 \subsection{sortTable()}
 
+This function is responsible for sorting each column.
+The function takes two arguments: the column number, and a true or false value to determine whether the data should be sorted in ascending or descending order.
+
+This function utilises a simple sorting algorithm known as `bubble sort' or `sinking sort'.
+The function steps through every element in the function, comparing it to an adjacent element, and swapping when necessary.
+This is done until a loop occurs in which no swaps were made.
+Although the algorithm is considered inefficient compared to other available algorithms, it is far easier to implement and is more than sufficient for this project.
+
 \begin{lstlisting}[firstnumber=222]
 function sortTable(column, ascending) {
-    var tableBody = document.getElementById('tableBody');
     var rows = document.getElementsByClassName('bodyRow');
 
     var sorting = true;
@@ -832,14 +839,76 @@ function sortTable(column, ascending) {
 
             if(swap) {
                 sorting = true;
-                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                document.getElementById('tableBody').insertBefore(rows[i + 1], rows[i]);
             }
         }
     }
 }
 \end{lstlisting}
 
+First, all the rows are stored in a list of elements for reference.
+
+This is done by taking a list of all elements with the \lstinline{'bodyRow'} class.
+It would also be possible to do this without the class, as all body rows are contained within \lstinline{<tbody>} tags.
+One could get a list of all rows that are children of the \lstinline{tbody} element with
+\lstinline{document.getElementsByTagName('tbody')[0].getElementsByTagName('tr');}.
+
+However, I believe that the approach above makes the function less readable, and therefore, I have gone with the approach using a separate class.
+
+\begin{lstlisting}[firstnumber=223]
+var rows = document.getElementsByClassName('bodyRow');
+\end{lstlisting}
+
+Next, the main loop of the function begins.
+A variable \lstinline{sorting} is given a value of \lstinline{true} so that the function is allowed to start.
+With every loop, \lstinline{sorting} is set to \lstinline{false}.
+The value changes during the loop if any rows have been swapped, otherwise, the rows are considered to be in the correct order and the function terminates as the \lstinline{while} loop ends.
+
+Every loop, the function steps through every row excluding the last row.
+It stores the cell of the current row and the row below in the specified column.
+
+\begin{lstlisting}[firstnumber=225]
+var sorting = true;
+while(sorting) {
+    sorting = false;
+    for(var i = 0; i < (rows.length - 1); i++) {
+        rowA = rows[i].getElementsByTagName('td')[column];
+        rowB = rows[i + 1].getElementsByTagName('td')[column];
+\end{lstlisting}
+
+A variable \lstinline{swap} is initially set to false.
+All text is converted to lowercase for comparison using the \lstinline{toLowerCase()} method.
+The values in the cells defined by \lstinline{rowA} and \lstinline{rowB} are compared using a \lstinline{>} or \lstinline{<} operator depending on whether \lstinline{ascending} is \lstinline{true} or \lstinline{false}.
+If the values are determined to be in the wrong order, \lstinline{swap} is set to \lstinline{true}.
+
+If the rows are required to be swapped, the \lstinline{sorting} variable is set to true so that the \lstinline{while} loop does not terminate.
+The \lstinline{insertBefore()} method can be used to change the order of the children of an element.
+This method needs to be called by the parent element, hence why the \lstinline{tableBody} element is chosen.
+
+The method takes two elements of arguments, and places the first element above the second element.
+\lstinline{rows[i]} is always above \lstinline{rows[i + 1]}, therefore to swap them, we list \lstinline{rows[i + 1]} as the first argument.
+
+\begin{lstlisting}[firstnumber=232]
+swap = false;
+
+if(ascending && rowA.innerHTML.toLowerCase() > rowB.innerHTML.toLowerCase()) swap = true;
+else if(!ascending && rowA.innerHTML.toLowerCase() < rowB.innerHTML.toLowerCase()) swap = true;
+
+if(swap) {
+    sorting = true;
+    document.getElementById('tableBody').insertBefore(rows[i + 1], rows[i]);
+}
+\end{lstlisting}
+
 \textbf{Comparison to Google Sheets project}
+
+In Google Sheets, when buttons are assigned to a function, the arguments are not defined.
+For this reason, it was necessary to have a different button for ascending and descending orders.
+In this project, we can define both the column and whether it should sort in ascending or descending by passing different arguments.
+Therefore, only one function is required to sort any column.
+
+This function is somewhat more complex than the Google Sheets equivalent.
+For the Google Sheets project, there existed a built-in function to sort a column, whereas this had to be written from scratch for HTML and Javascript.
 
 \newpage
 
