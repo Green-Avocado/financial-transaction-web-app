@@ -186,6 +186,16 @@ The \lstinline{innerHTML} of an \lstinline{option} element is the text that will
 The \lstinline{value} attribute of the element is the value that will be read by Javascript.
 For this project, the \lstinline{value} and \lstinline{innerHTML} were made to be identical so that the text in the table would be the same as the text the user had seen in the list.
 
+\subsubsection{Buttons}
+
+\begin{lstlisting}[firstnumber=49]
+<section>
+    <button id="add" type="submit" onclick="addTransactionButton();">Add Transaction</button>
+    <button id="save" type="submit" onclick="saveChanges();">Save</button>
+    <button id="discard" type="submit" onclick="discardChanges();">Discard</button>
+</section>
+\end{lstlisting}
+
 \subsection{Table}
 
 \subsubsection{thead}
