@@ -574,7 +574,7 @@ Another minor difference is in how data is formatted, as Google Apps Script form
 
 The process of adding a transaction is initiated when the \lstinline{addTransactionButton()} function is called.
 This function calls the \lstinline{getData()} function and stores the result.
-If the result is not \lstinline{false}, the function generates a unique id for the transaction and adds this to the front of the \lstinline{data} array.
+If the result is not \lstinline{false}, the function generates a unique id for the transaction and adds this to the front of the \lstinline{data} array using the \lstinline{unshift()} method.
 The function then passes the \lstinline{data} array to the \lstinline{addTransaction()} function, which creates and populates the row.
 
 \begin{lstlisting}[firstnumber=156]
@@ -678,6 +678,8 @@ If one were to do this in Google Sheets, the buttons would have to be indexed be
 
 \subsection{editRow()}
 
+This element is responsible for highlighting the row being editted and moving the values in the row to the input fields.
+
 \begin{lstlisting}[firstnumber=177]
 function editRow(button) {
     if(document.getElementsByClassName('editing').length > 0)
@@ -700,9 +702,59 @@ function editRow(button) {
 }
 \end{lstlisting}
 
+First, the function checks whether or not there is a cell already highlighted for editing.
+This is done by geting a list of all functions with the \lstinline{'editing'} class.
+If so, it resets the class to \lstinline{'bodyRow'}.
+This is done to ensure that at most, one row is being edited at a time.
+
+\begin{lstlisting}[firstnumber=178]
+if(document.getElementsByClassName('editing').length > 0)
+    document.getElementsByClassName('editing')[0].classList = "bodyRow";
+\end{lstlisting}
+
+The function uses the same method as the \lstinline{deleteRow()} function to get the parent row of the button.
+The function finds the second parent of the calling button and stores this as a variable for reference.
+The cells in this row are stored in an array by getting all children of the row with the \lstinline{td} tag.
+The row is changed to have the classes \lstinline{bodyRow} and \lstinline{editing}.
+
+Each input field is then identified using their id and given a value of the \lstinline{innerText} of the row.
+
+\begin{lstlisting}[firstnumber=181]
+var row = button.parentElement.parentElement;
+var rowContent = row.getElementsByTagName('td');
+row.classList = "bodyRow editing";
+
+document.getElementById('date').value = rowContent[1].innerText;
+document.getElementById('account').value = rowContent[2].innerText;
+document.getElementById('type').value = rowContent[3].innerText;
+document.getElementById('security').value = rowContent[4].innerText;
+document.getElementById('amount').value = rowContent[5].innerText;
+document.getElementById('dAmount').value = rowContent[6].innerText;
+\end{lstlisting}
+
+Lastly, the add button is hidden by assigning it a \lstinline{hidden} attribute.
+The save and discard buttons are revealed by removing the \lstinline{hidden} attributes.
+
+\begin{lstlisting}[firstnumber=192]
+document.getElementById('add').setAttribute('hidden', true);
+document.getElementById('save').removeAttribute('hidden');
+document.getElementById('discard').removeAttribute('hidden');
+\end{lstlisting}
+
 \textbf{Comparison to Google Sheets project}
 
+The process is essentially the same, except that the class is used to mark a row as being editted and for formatting, whereas the Google Sheets project marked this by placing a 1 in the I column.
+
+The process of hiding and revealing buttons is unique to this project, as this is made much simpler by the fact that elements can be referred to using a unique id.
+
 \subsection{saveChanges()}
+
+The function calls \lstinline{getData()} to retrieve data from the input fields and stores this as a variable.
+If \lstinline{getData()} does not return false, the function gets the row being editted by getting the first item with a class of \lstinline{'editing'}.
+
+The function stores the cells of this row as a an array by getting all child elements with \lstinline{'td'} tags.
+Every element in the \lstinline{data} array is written to a cell in the row, starting from the second cell so that the id is not replaced.
+The function then sets the class to \lstinline{bodyRow}, removing the \lstinline{editing} class.
 
 \begin{lstlisting}[firstnumber=197]
 function saveChanges() {
@@ -723,7 +775,23 @@ function saveChanges() {
 }
 \end{lstlisting}
 
+Lastly, the function reveals the `add transaction' button and hides the `save' and `discard' buttons.
+
+\textbf{Comparison to Google Sheets project}
+
+The function differs in how data is transfered.
+Instead of using a built-in \lstinline{copyTo()} method, each cell is individually given data.
+
+This project hides and reveals buttons based on whether or not a row is being edited, as HTML and Javascript makes this process much simpler.
+This step was not taken in the Google Sheets project.
+
 \subsection{discardChanges()}
+
+This function is responsible for unmarking the editing row and changing the state of buttons.
+
+Firstly, the element with a class of \lstinline{'editing'} is reset to only have the \lstinline{'bodyRow'} class.
+
+Then the `add transaction' button is revealed, and the `save' and `discard' buttons are hidden.
 
 \begin{lstlisting}[firstnumber=214]
 function discardChanges() {
@@ -736,6 +804,12 @@ function discardChanges() {
 \end{lstlisting}
 
 \textbf{Comparison to Google Sheets project}
+
+The Google Sheets project cleared formatting and removed the edit indicator by clearing the entire I column and reseting formatting for all rows.
+With Javascript, the process is much simpler as it is easy to select the specific row to reset by referencing its class.
+
+The Google Sheets project also cleared all input fields when changes were discarded.
+This can be done by setting all input fields to an empty string, but I felt that this was unnecessary and that entering similar data would be easier without this feature.
 
 \subsection{sortTable()}
 
