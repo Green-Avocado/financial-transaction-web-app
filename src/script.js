@@ -373,6 +373,29 @@ function unfilterAll() {
     }
 }
 
+/*
+ * For toggleID():
+ *
+ * Toggling the visibility of the ID column is best done by giving all cells in this column the 'hidden' attribute.
+ * This method allows the browser to render the table as if these elements did not exist.
+ * However, the elements are still present in case we need to reference them or reveal them.
+ *
+ * The function determines whether or not the column is already hidden based on the button text:
+ *     By default, the button text will show "Hide Transaction ID", indicating that the column is currently visible.
+ *     Otherwise, we cans safely assume that the column is already hidden.
+ * 
+ * To hide the column, the cell in each row is given the attribute 'hidden' which is set to 'true'.
+ *     This is done separately for the header, as it uses the 'th' tag, but all other rows use the 'td' tag and can be hidden with a loop.
+ * 
+ * When the column is not hidden, it has the 'frozenColumn1' class to indicate that it is the first frozen column, while the date column
+ * has the 'frozenColumn2' class.
+ *     The ID column has this class removed, while the date column has class replaced by 'frozenColumn1' so that it sticks to the left of the table.
+ *
+ * To reveal the column, the above actions are reversed.
+ *     The 'hidden' attribute is removed from the previously hidden cells.
+ *     The class are changed so that the ID column is 'frozenColumn1' and the date column is 'frozenColumn2'.
+ */
+
 function toggleID() {
     var button = document.getElementById('toggleId');
     var rows = document.getElementsByTagName('tr');
