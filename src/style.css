@@ -12,6 +12,22 @@ button {
     width: 40%;
 }
 
+.sectionHead {
+}
+
+    .toggleSection {
+        width: 100px;
+    }
+
+    .sectionHead > * {
+        display: inline-block;
+    }
+
+#table {
+    max-height: 80vh;
+    overflow: auto;
+}
+
 #inputFields,
 #filter {
     padding: 10px 0;
@@ -20,7 +36,7 @@ button {
 
 #inputFields > form,
 #filter > form {
-    min-width: 1900px;
+    min-width: 1800px;
 }
 
     #inputFields > form > section {
@@ -33,21 +49,20 @@ button {
         display: inline-block;
     }
 
-#filter button {
-    width: 100%;
-}
+        #filter > form > section > button {
+            width: 100%;
+        }
 
-#toggleId,
-#fileInput {
+#options > form > section {
     display: inline-block;
     width: 300px;
     margin: 15px;
 }
 
-#table {
-    max-height: 80vh;
-    overflow: auto;
-}
+    #toggleId,
+    #fileInput {
+        width: 100%;
+    }
 
 table {
     width: 100%;

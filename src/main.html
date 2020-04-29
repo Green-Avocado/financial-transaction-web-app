@@ -7,6 +7,10 @@
     </head>
     <body>
         <article id="inputFields">
+            <section class="sectionHead">
+                <h1>Input:</h1>
+                <button class="toggleSection" type="button" onclick="toggleSection(this)">Hide</button>
+            </section>
             <form onsubmit="return false" autocomplete="off">
                 <section>
                     <label for="date">Date:</label><br/>
@@ -55,7 +59,10 @@
         </article>
         
         <article id="filter">
-            <h1>Filters:</h1>
+            <section class="sectionHead">
+                <h1>Filters:</h1>
+                <button class="toggleSection" type="button" onclick="toggleSection(this)">Hide</button>
+            </section>
             <form onsubmit="return false" autocomplete="off">
                 <section>
                     <label for="filterId">Transaction ID:</label><br/>
@@ -125,11 +132,23 @@
         </article>
 
         <article id="options">
-            <h1>Options:</h1>
-            <button id="toggleId" type="button" onclick="toggleID()">Hide Transaction ID</button>
-            <input id="fileInput" type="file"/>
+            <section class="sectionHead">
+                <h1>Options:</h1>
+                <button class="toggleSection" type="button" onclick="toggleSection(this)">Hide</button>
+            </section>
+            <form>
+                <section>
+                    <button id="toggleId" type="button" onclick="toggleID()">Hide Transaction ID</button>
+                </section>
+                <section>
+                    <label for="fileInput">Import Transaction Type CSV file</label>
+                    <input id="fileInput" name="fileInput" type="file"/>
+                </section>
+            </form>
         </article>
 
+        <article>
+        <h1>Table:</h1>
         <article id="table">
             <table>
                 <thead>
@@ -212,6 +231,7 @@
                 <tbody id="tableBody">
                 </tbody>
             </table>
+        </article>
         </article>
     </body>
 </html>
