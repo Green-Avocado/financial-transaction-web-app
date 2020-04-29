@@ -412,6 +412,9 @@ function toggleID() {
     }
 }
 
+function applyTypes() {
+}
+
 function toggleSection(button) {
     var form = button.parentElement.parentElement.getElementsByTagName('form')[0];
 
@@ -427,5 +430,9 @@ function toggleSection(button) {
 
 window.onload = function() {
     resetDate();
+    if (window.File && window.FileReader) {
+    }
+    else
+        alert('The File APIs are not fully supported in this browser.');
 }
 

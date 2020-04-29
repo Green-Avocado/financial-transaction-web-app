@@ -136,13 +136,18 @@
                 <h1>Options:</h1>
                 <button class="toggleSection" type="button" onclick="toggleSection(this)">Hide</button>
             </section>
-            <form>
+            <form onsubmit="return false" autocomplete="off">
                 <section>
                     <button id="toggleId" type="button" onclick="toggleID()">Hide Transaction ID</button>
                 </section>
                 <section>
                     <label for="fileInput">Import Transaction Type CSV file</label>
                     <input id="fileInput" name="fileInput" type="file"/>
+                </section>
+                <section>
+                        <label for="typesArray">Transaction types (comma-separated):</label>
+                        <input id="typesArray" name="typesArray" type="text" placeholder="Transaction types"/>
+                        <button id="applyTypesButton" type="submit" onclick="applyTypes()">Apply</button>
                 </section>
             </form>
         </article>

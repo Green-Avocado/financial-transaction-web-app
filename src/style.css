@@ -64,6 +64,14 @@ button {
         width: 80%;
     }
 
+    #typesArray {
+        width: 50%;
+    }
+
+    #applyTypesButton {
+        display: inline-block;
+    }
+
 table {
     width: 100%;
     margin: auto;
