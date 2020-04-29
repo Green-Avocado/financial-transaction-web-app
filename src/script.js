@@ -146,9 +146,28 @@ function addTransaction(data) {
 
     for(var i = 0; i < data.length; i++) {
         var newCell = newRow.insertCell(i);
+        var idShowing = (document.getElementById('toggleId').innerText == "Hide Transaction ID");
         newCell.innerHTML = data[i];
+
         if(i == 0) {
-            newCell.classList += "idCell";
+            if(idShowing)
+                newCell.classList = "idCell frozenColumn1";
+            else {
+                newCell.classList = "idCell";
+                newCell.setAttribute("hidden", true);
+            }
+        }
+        else if(i == 1) {
+            if(idShowing)
+                newCell.classList = "frozenColumn2";
+            else
+                newCell.classList = "frozenColumn1";
+        }
+        else if(i == 2) {
+            if(idShowing)
+                newCell.classList = "frozenColumn3";
+            else
+                newCell.classList = "frozenColumn2";
         }
     }
 }
@@ -266,6 +285,45 @@ function clearInput(clearAccount) {
     document.getElementById('security').value = '';
     document.getElementById('amount').value = '';
     document.getElementById('dAmount').value = '';
+}
+
+function toggleID() {
+    var button = document.getElementById('toggleId');
+    var rows = document.getElementsByTagName('tr');
+    var cells = rows[0].getElementsByTagName('th');
+
+    if(button.innerText == "Hide Transaction ID") {
+        button.innerText = "Show Transaction ID";
+
+        cells[0].setAttribute('hidden', true);
+        cells[0].classList = "";
+        cells[1].classList = "frozenColumn1";
+        cells[2].classList = "frozenColumn2";
+        for(var i = 1; i < rows.length; i++) {
+            cells = rows[i].getElementsByTagName('td');
+
+            cells[0].setAttribute('hidden', true);
+            cells[0].classList = "idCell";
+            cells[1].classList = "frozenColumn1";
+            cells[2].classList = "frozenColumn2";
+        }
+    }
+    else {
+        button.innerText = "Hide Transaction ID";
+
+        cells[0].removeAttribute('hidden');
+        cells[0].classList = "frozenColumn1";
+        cells[1].classList = "frozenColumn2";
+        cells[2].classList = "frozenColumn3";
+        for(var i = 1; i < rows.length; i++) {
+            cells = rows[i].getElementsByTagName('td');
+
+            cells[0].removeAttribute('hidden');
+            cells[0].classList = "idCell frozenColumn1";
+            cells[1].classList = "frozenColumn2";
+            cells[2].classList = "frozenColumn3";
+        }
+    }
 }
 
 window.onload = function() {

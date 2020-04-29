@@ -2,6 +2,16 @@ body {
     font-size: 14px;
 }
 
+input,
+select {
+    min-width: 100px;
+    width: 80%;
+}
+
+button {
+    width: 40%;
+}
+
 #inputFields,
 #filter {
     padding: 10px 0;
@@ -22,14 +32,15 @@ body {
         display: inline-block;
     }
 
-input,
-select {
+#filter button {
     min-width: 100px;
-    width: 80%;
 }
 
-button {
-    width: 40%;
+#toggleId,
+#fileInput {
+    display: inline-block;
+    width: 300px;
+    margin: 15px;
 }
 
 #table {
@@ -46,7 +57,6 @@ table {
         min-width: 200px;
         width: 10%;
         position: sticky;
-        background: white;
         top: 0;
     }
 
@@ -55,6 +65,35 @@ table {
         display: inline-block;
         padding: 0;
         margin: 0;
+    }
+
+    th,
+    td {
+        z-index: -1;
+        background: white;
+    }
+
+    .frozenColumn1,
+    .frozenColumn2,
+    .frozenColumn3 {
+        position: sticky;
+        top: auto;
+        padding: 0;
+        left: 0;
+        min-width: 200px;
+        z-index: 0;
+    }
+
+    .frozenColumn1 {
+        left: 0;
+    }
+
+    .frozenColumn2 {
+        left: 200px;
+    }
+
+    .frozenColumn3 {
+        left: 400px;
     }
 
     .sort {
