@@ -2,29 +2,35 @@ body {
     font-size: 14px;
 }
 
-#inputFields {
+#inputFields,
+#filter {
     padding: 10px 0;
     overflow-x: auto;
 }
 
-form {
+    #filter > section {
+        width: 10%;
+        display: inline-block;
+    }
+
+#inputFields > form {
     min-width: 1900px;
 }
 
-    form > section {
+    inputFields > form > section {
         width: 14%;
         display: inline-block;
     }
 
-    input,
-    select {
-        min-width: 100px;
-        width: 80%;
-    }
+input,
+select {
+    min-width: 100px;
+    width: 80%;
+}
 
-    button {
-        width: 40%;
-    }
+button {
+    width: 40%;
+}
 
 #table {
     max-height: 80vh;
