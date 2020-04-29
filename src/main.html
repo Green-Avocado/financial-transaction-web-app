@@ -142,12 +142,13 @@
                 </section>
                 <section>
                     <label for="fileInput">Import Transaction Type CSV file</label>
-                    <input id="fileInput" name="fileInput" type="file"/>
+                    <input id="fileInput" name="fileInput" type="file" onchange="readFile(this)"/>
                 </section>
-                <section>
+                <section id="transactionTypesConfig">
                         <label for="typesArray">Transaction types (comma-separated):</label>
                         <input id="typesArray" name="typesArray" type="text" placeholder="Transaction types"/>
                         <button id="applyTypesButton" type="submit" onclick="applyTypes()">Apply</button>
+                        <button type="button" onclick="saveFile()">Save</button>
                 </section>
             </form>
         </article>

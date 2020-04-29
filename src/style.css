@@ -64,12 +64,17 @@ button {
         width: 80%;
     }
 
+    #transactionTypesConfig > button {
+        display: inline-block;
+        width: 25%;
+        padding: 0;
+    }
+
     #typesArray {
-        width: 50%;
+        width: 40%;
     }
 
     #applyTypesButton {
-        display: inline-block;
     }
 
 table {

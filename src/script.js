@@ -412,7 +412,43 @@ function toggleID() {
     }
 }
 
+
+function readFile(fileIn){
+    if(fileIn.files && fileIn.files[0]){
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            var output = e.target.result;
+            document.getElementById('typesArray').value = output;
+        };
+        reader.readAsText(fileIn.files[0]);
+    }
+}
+
+function saveFile() {
+  var element = document.createElement('a');
+  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(document.getElementById('typesArray').value));
+  element.setAttribute('download', 'transaction-types.csv');
+
+  element.style.display = 'none';
+  document.body.appendChild(element);
+
+  element.click();
+
+  document.body.removeChild(element);
+}
+
 function applyTypes() {
+    var typesArray = document.getElementById('typesArray').value.split(',');
+    var type = document.getElementById('type');
+    var filterType = document.getElementById('filterType');
+
+    type.innerHTML = '<option value=""></option>';
+    filterType.innerHTML = '<option value=""></option>';
+
+    for(var i = 0; i < typesArray.length; i++) {
+        type.innerHTML += '<option value="' + typesArray[i] + '">' + typesArray[i] + '</option>';
+        filterType.innerHTML += '<option value="' + typesArray[i] + '">' + typesArray[i] + '</option>';
+    }
 }
 
 function toggleSection(button) {
@@ -430,9 +466,5 @@ function toggleSection(button) {
 
 window.onload = function() {
     resetDate();
-    if (window.File && window.FileReader) {
-    }
-    else
-        alert('The File APIs are not fully supported in this browser.');
 }
 
