@@ -312,6 +312,46 @@ function clearInput(clearAccount) {
     document.getElementById('dAmount').value = '';
 }
 
+function validateFilters(filterId, startDate, endDate, filterAccount, filterType, filterSecurity, minAmount, maxAmount, minDAmount, maxDAmount, minCostBasis, maxCostBasis) {
+    if(!validateFilterId(filterId)) return false;
+    if(!validateDateRange(startDate, endDate)) return false;
+    if(!validateFilterAccount(filterAccount)) return false;
+    if(!validateFilterSecurity(filterSecurity)) return false;
+    if(!validateAmountRange(minAmount, maxAmount)) return false;
+    if(!validateDAmountRange(minDAmount, maxDAmount)) return false;
+    if(!validateCostBasisRange(minCostBasis, maxCostBasis)) return false;
+
+    return true;
+}
+
+function validateFilterId(id) {
+    return true;
+}
+
+function validateDateRange(start, end) {
+    return true;
+}
+
+function validateFilterAccount(account) {
+    return true;
+}
+
+function validateFilterSecurity(security) {
+    return true;
+}
+
+function validateAmountRange(min, max) {
+    return true;
+}
+
+function validateDAmountRange(min, max) {
+    return true;
+}
+
+function validateCostBasisRange(min, max) {
+    return true;
+}
+
 /*
  * For applyFilter():
  *
@@ -355,48 +395,50 @@ function applyFilter() {
     if(lowCostBasis[0] == '$') lowCostBasis = lowCostBasis.substr(1);
     if(highCostBasis[0] == '$') highCostBasis = highCostBasis.substr(1);
 
-    for(var i = 0; i < rows.length; i++) {
-        cells = rows[i].getElementsByTagName('td');
-        var hide = false;
+    if(validateFilters(filterId, startDate, endDate, filterAccount, filterType, filterSecurity, minAmount, maxAmount, minDAmount, maxDAmount, minCostBasis, maxCostBasis)) {
+        for(var i = 0; i < rows.length; i++) {
+            cells = rows[i].getElementsByTagName('td');
+            var hide = false;
 
-        if(filterId != '' && filterId != cells[0].innerText)
-            hide = true;
+            if(filterId != '' && filterId != cells[0].innerText)
+                hide = true;
 
-        if(startDate != '' && startDate > cells[1].innerText)
-            hide = true;
+            if(startDate != '' && startDate > cells[1].innerText)
+                hide = true;
 
-        if(endDate != '' && endDate < cells[1].innerText)
-            hide = true;
+            if(endDate != '' && endDate < cells[1].innerText)
+                hide = true;
 
-        if(filterAccount != '' && filterAccount != cells[2].innerText)
-            hide = true;
+            if(filterAccount != '' && filterAccount != cells[2].innerText)
+                hide = true;
 
-        if(filterType != '' && filterType != cells[3].innerText)
-            hide = true;
+            if(filterType != '' && filterType != cells[3].innerText)
+                hide = true;
 
-        if(filterSecurity != '' && filterSecurity != cells[4].innerText)
-            hide = true;
+            if(filterSecurity != '' && filterSecurity != cells[4].innerText)
+                hide = true;
 
-        if(lowAmount != '' && Number(lowAmount) > Number(cells[5].innerText.substr(1)))
-            hide = true;
+            if(lowAmount != '' && Number(lowAmount) > Number(cells[5].innerText))
+                hide = true;
 
-        if(highAmount != '' && Number(highAmount) < Number(cells[5].innerText.substr(1)))
-            hide = true;
+            if(highAmount != '' && Number(highAmount) < Number(cells[5].innerText))
+                hide = true;
 
-        if(lowDAmount != '' && Number(lowDAmount) > Number(cells[6].innerText.substr(1)))
-            hide = true;
+            if(lowDAmount != '' && Number(lowDAmount) > Number(cells[6].innerText.substr(1)))
+                hide = true;
 
-        if(highDAmount != '' && Number(highDAmount) < Number(cells[6].innerText.substr(1)))
-            hide = true;
+            if(highDAmount != '' && Number(highDAmount) < Number(cells[6].innerText.substr(1)))
+                hide = true;
 
-        if(lowCostBasis != '' && Number(lowCostBasis) > Number(cells[7].innerText.substr(1)))
-            hide = true;
+            if(lowCostBasis != '' && Number(lowCostBasis) > Number(cells[7].innerText.substr(1)))
+                hide = true;
 
-        if(highCostBasis != '' && Number(highCostBasis) < Number(cells[7].innerText))
-            hide = true;
+            if(highCostBasis != '' && Number(highCostBasis) < Number(cells[7].innerText))
+                hide = true;
 
-        if(hide)
-            rows[i].setAttribute('hidden', true);
+            if(hide)
+                rows[i].setAttribute('hidden', true);
+        }
     }
 }
 
@@ -540,8 +582,10 @@ function applyTypes() {
     var type = document.getElementById('type');
     var filterType = document.getElementById('filterType');
 
+    /*
     type.innerHTML = '<option value=""></option>';
     filterType.innerHTML = '<option value=""></option>';
+    */
 
     for(var i = 0; i < typesArray.length; i++) {
         type.innerHTML += '<option value="' + typesArray[i] + '">' + typesArray[i] + '</option>';

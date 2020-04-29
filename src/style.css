@@ -136,8 +136,8 @@ table {
         width: 100%;
     }
 
-    .editing {
-        background-color: yellow;
+    .editing > td {
+        background: yellow;
     }
 
     #table,
