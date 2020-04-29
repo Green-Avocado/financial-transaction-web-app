@@ -279,6 +279,15 @@ function sortTable(column, ascending) {
     }
 }
 
+/*
+ * To set the date of an HTML5 date input, the string must be in yyy-mm-dd format
+ * 
+ * The date object does have a method to provide the current date in the correct format, however, this is in UTC when it is preferrable to get the user local time
+ *
+ * A new date object is created to get the current date
+ * Three Intl.DateTimeFormat objects are created to format the year, month, and day in the correct formats
+ * These are then combined into one string and used to set the value of the date field
+ */
 function resetDate() {
     const today = new Date();
     const year = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(today);
@@ -287,6 +296,11 @@ function resetDate() {
 
     document.getElementById('date').value = `${year}-${month}-${day}`;
 }
+
+/* 
+ * This function takes an argument 'clearAccount' to specify whether or not the account number should be cleared
+ * The function then sets all values to be cleared to an empty string
+ */
 
 function clearInput(clearAccount) {
     if(clearAccount)
@@ -475,7 +489,15 @@ function toggleID() {
     }
 }
 
-
+/*
+ * This function is set to execute whenever the input type="file" element is updated (i.e. whenever a user selects a file)
+ *
+ * The function first checks that a file exists to be read, then creates a FileReader object.
+ * This object is given an onload property which calls a function to get the output of the file read and set the 'typesArray' input field as this output string
+ *
+ * The reader then attempts to read a plaintext file specified by the user. If multiple files are chosen, it reads only the first time.
+ * Once this process is complete, the function specified by the 'onload' property is executed.
+ */
 function readFile(fileIn){
     if(fileIn.files && fileIn.files[0]){
         var reader = new FileReader();
@@ -487,6 +509,12 @@ function readFile(fileIn){
     }
 }
 
+/*
+ * The 'a' element can be used to save a file when clicked.
+ * This function creates a hidden 'a' element and adds it to the document, with attributes to download a plaintext file when clicked
+ * The content of this file is the encoded value of the 'typesArray' value so that the user specified types can be saved
+ * Javascript is used to simulate a click on this element to prompt the download, then the element is removed.
+ */
 function saveFile() {
   var element = document.createElement('a');
   element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(document.getElementById('typesArray').value));
@@ -500,6 +528,13 @@ function saveFile() {
   document.body.removeChild(element);
 }
 
+/*
+ * All child elements of the <select> elements are removed and replaced by a single blank option
+ *
+ * The function creates an array using values in the input field, separated by commas
+ * For each item in this array, the function adds a new option to the <select> elements, effectively adding a transaction type
+ * This is done for all the types specified by the user in the input field
+ */
 function applyTypes() {
     var typesArray = document.getElementById('typesArray').value.split(',');
     var type = document.getElementById('type');
@@ -514,6 +549,11 @@ function applyTypes() {
     }
 }
 
+/*
+ * This function checks the text of the calling button.
+ *     If the text is 'Hide', the section is currently visible and must be hidden by adding a 'hidden' attribute
+ *     Otherwise, the section is currently hidden and must be revealed by removing the 'hidden' attribute
+ */
 function toggleSection(button) {
     var form = button.parentElement.parentElement.getElementsByTagName('form')[0];
 
@@ -527,6 +567,9 @@ function toggleSection(button) {
     }
 }
 
+/*
+ * The date is reset to the default when all elements have loaded
+ */
 window.onload = function() {
     resetDate();
 }
