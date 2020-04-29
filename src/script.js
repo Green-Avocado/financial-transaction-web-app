@@ -149,6 +149,15 @@ function addTransaction(data) {
         var idShowing = (document.getElementById('toggleId').innerText == "Hide Transaction ID");
         newCell.innerHTML = data[i];
 
+        /*
+         * UPDATE:
+         *
+         * The code below has been changed to set the classes of the first two cells to frozen column classes if necessary.
+         * This is done by checking whether or not "Hide Transaction ID" is currently active, by checking the text of the button.
+         * This ensures that newly added rows have the correct alignment and that new IDs are hidden when necessary"
+         *
+         * This is done for the first two columns, and the solution for the third column is commented out.
+         */
         if(i == 0) {
             if(idShowing)
                 newCell.classList = "idCell frozenColumn1";
@@ -163,12 +172,14 @@ function addTransaction(data) {
             else
                 newCell.classList = "frozenColumn1";
         }
+        /*
         else if(i == 2) {
             if(idShowing)
                 newCell.classList = "frozenColumn3";
             else
                 newCell.classList = "frozenColumn2";
         }
+        */
     }
 }
 
@@ -407,14 +418,14 @@ function toggleID() {
         cells[0].setAttribute('hidden', true);
         cells[0].classList = "";
         cells[1].classList = "frozenColumn1";
-        cells[2].classList = "frozenColumn2";
+        //cells[2].classList = "frozenColumn2";
         for(var i = 1; i < rows.length; i++) {
             cells = rows[i].getElementsByTagName('td');
 
             cells[0].setAttribute('hidden', true);
             cells[0].classList = "idCell";
             cells[1].classList = "frozenColumn1";
-            cells[2].classList = "frozenColumn2";
+            //cells[2].classList = "frozenColumn2";
         }
     }
     else {
@@ -423,14 +434,14 @@ function toggleID() {
         cells[0].removeAttribute('hidden');
         cells[0].classList = "frozenColumn1";
         cells[1].classList = "frozenColumn2";
-        cells[2].classList = "frozenColumn3";
+        //cells[2].classList = "frozenColumn3";
         for(var i = 1; i < rows.length; i++) {
             cells = rows[i].getElementsByTagName('td');
 
             cells[0].removeAttribute('hidden');
             cells[0].classList = "idCell frozenColumn1";
             cells[1].classList = "frozenColumn2";
-            cells[2].classList = "frozenColumn3";
+            //cells[2].classList = "frozenColumn3";
         }
     }
 }
