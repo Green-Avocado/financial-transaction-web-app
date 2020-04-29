@@ -18,7 +18,8 @@ button {
     overflow-x: auto;
 }
 
-#inputFields > form {
+#inputFields > form,
+#filter > form {
     min-width: 1900px;
 }
 
@@ -27,13 +28,13 @@ button {
         display: inline-block;
     }
 
-    #filter > section {
+    #filter > form > section {
         width: 10%;
         display: inline-block;
     }
 
 #filter button {
-    min-width: 100px;
+    width: 100%;
 }
 
 #toggleId,

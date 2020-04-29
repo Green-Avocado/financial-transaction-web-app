@@ -51,13 +51,28 @@
                     <button id="save" type="submit" hidden="true" onclick="saveChanges();">Save</button>
                     <button id="discard" type="button" hidden="true" onclick="discardChanges();">Discard</button>
                 </section>
-            <form>
+            </form>
         </article>
         
         <article id="filter">
             <h1>Filters:</h1>
-            <form>
+            <form onsubmit="return false" autocomplete="off">
                 <section>
+                    <label for="filterId">Transaction ID:</label><br/>
+                    <input id="filterId" name="filterId" type="text" placeholder="Transaction ID"/>
+                </section>
+
+                <section>
+                    <label for="startDate">From:</label><br/>
+                    <input id="startDate" name="startDate" type="date"/>
+
+                    <label for="endDate">To:</label><br/>
+                    <input id="endDate" name="endDate" type="date"/>
+                </section>
+
+                <section>
+                    <label for="filterAccount">Account Number:</label><br/>
+                    <input id="filterAccount" name="filterAccount" type="text" placeholder="Account Number"/>
                 </section>
 
                 <section>
@@ -76,13 +91,7 @@
                 </section>
 
                 <section>
-                </section>
-
-                <section>
-                </section>
-
-                <section>
-                    <button type="button" onclick="applyFilter()">Apply</button>
+                    <button type="submit" onclick="applyFilter()">Apply</button>
                     <button type="button" onclick="clearFilter()">Clear</button>
                 </section>
             </form>
