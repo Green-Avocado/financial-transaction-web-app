@@ -202,6 +202,9 @@ function deleteRow(button) {
         document.getElementById('add').removeAttribute('hidden');
         document.getElementById('save').setAttribute('hidden', true);
         document.getElementById('discard').setAttribute('hidden', true);
+
+        document.getElementById('add').setAttribute('type','submit');
+        document.getElementById('save').setAttribute('type','button');
     }
 }
 
@@ -223,6 +226,9 @@ function editRow(button) {
     document.getElementById('add').setAttribute('hidden', true);
     document.getElementById('save').removeAttribute('hidden');
     document.getElementById('discard').removeAttribute('hidden');
+
+    document.getElementById('add').setAttribute('type','button');
+    document.getElementById('save').setAttribute('type','submit');
 }
 
 function saveChanges() {
@@ -241,6 +247,9 @@ function saveChanges() {
     document.getElementById('save').setAttribute('hidden', true);
     document.getElementById('discard').setAttribute('hidden', true);
 
+    document.getElementById('add').setAttribute('type','submit');
+    document.getElementById('save').setAttribute('type','button');
+
     resetDate();
     clearInput(true);
 }
@@ -251,6 +260,9 @@ function discardChanges() {
     document.getElementById('add').removeAttribute('hidden');
     document.getElementById('save').setAttribute('hidden', true);
     document.getElementById('discard').setAttribute('hidden', true);
+
+    document.getElementById('add').setAttribute('type','submit');
+    document.getElementById('save').setAttribute('type','button');
 
     resetDate();
     clearInput(true);
