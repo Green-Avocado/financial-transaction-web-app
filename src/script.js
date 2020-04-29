@@ -290,9 +290,68 @@ function clearInput(clearAccount) {
 function applyFilter() {
     unfilterAll();
 
-    rows = document.getElementByClassName('bodyRow');
+    rows = document.getElementsByClassName('bodyRow');
+
+    filterId = document.getElementById('filterId').value;
+    startDate = document.getElementById('startDate').value;
+    endDate = document.getElementById('endDate').value;
+    filterAccount = document.getElementById('filterAccount').value;
+    filterType = document.getElementById('filterType').value;
+    filterSecurity = document.getElementById('filterSecurity').value;
+    lowAmount = document.getElementById('lowAmount').value;
+    highAmount = document.getElementById('highAmount').value;
+    lowDAmount = document.getElementById('lowDAmount').value;
+    highDAmount = document.getElementById('highDAmount').value;
+    lowCostBasis = document.getElementById('lowCostBasis').value;
+    highCostBasis = document.getElementById('highCostBasis').value;
+
+    if(lowDAmount[0] == '$') lowDAmount = lowDAmount.substr(1);
+    if(highDAmount[0] == '$') highAmount = highDAmount.substr(1);
+    if(lowCostBasis[0] == '$') lowCostBasis = lowCostBasis.substr(1);
+    if(highCostBasis[0] == '$') highCostBasis = highCostBasis.substr(1);
 
     for(var i = 0; i < rows.length; i++) {
+        cells = rows[i].getElementsByTagName('td');
+        var hide = false;
+
+        if(filterId != '' && filterId != cells[0].innerText)
+            hide = true;
+
+        if(startDate != '' && startDate > cells[1].innerText)
+            hide = true;
+
+        if(endDate != '' && endDate < cells[1].innerText)
+            hide = true;
+
+        if(filterAccount != '' && filterAccount != cells[2].innerText)
+            hide = true;
+
+        if(filterType != '' && filterType != cells[3].innerText)
+            hide = true;
+
+        if(filterSecurity != '' && filterSecurity != cells[4].innerText)
+            hide = true;
+
+        if(lowAmount != '' && Number(lowAmount) > Number(cells[5].innerText.substr(1)))
+            hide = true;
+
+        if(highAmount != '' && Number(highAmount) < Number(cells[5].innerText.substr(1)))
+            hide = true;
+
+        if(lowDAmount != '' && Number(lowDAmount) > Number(cells[6].innerText.substr(1)))
+            hide = true;
+
+        if(highDAmount != '' && Number(highDAmount) < Number(cells[6].innerText.substr(1)))
+            hide = true;
+
+        if(lowCostBasis != '' && Number(lowCostBasis) > Number(cells[7].innerText.substr(1)))
+            hide = true;
+
+        if(highCostBasis != '' && Number(highCostBasis) < Number(cells[7].innerText))
+            hide = true;
+
+        if(hide)
+            rows[i].setAttribute('hidden', true);
     }
 }
 
@@ -309,8 +368,8 @@ function clearFilter() {
 function unfilterAll() {
     rows = document.getElementsByClassName('bodyRow');
     
-    for(var i = 0; i < rows; i++) {
-        row[i].removeAttribute('hidden');
+    for(var i = 0; i < rows.length; i++) {
+        rows[i].removeAttribute('hidden');
     }
 }
 

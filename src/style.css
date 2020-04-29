@@ -85,7 +85,7 @@ table {
 
     th,
     td {
-        z-index: -1;
+        z-index: 0;
         background: white;
     }
 
@@ -97,7 +97,7 @@ table {
         padding: 0;
         left: 0;
         min-width: 200px;
-        z-index: 0;
+        z-index: 1;
     }
 
     .frozenColumn1 {
