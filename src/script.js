@@ -287,6 +287,12 @@ function clearInput(clearAccount) {
     document.getElementById('dAmount').value = '';
 }
 
+function applyFilter() {
+}
+
+function clearFilter() {
+}
+
 function toggleID() {
     var button = document.getElementById('toggleId');
     var rows = document.getElementsByTagName('tr');
@@ -323,6 +329,19 @@ function toggleID() {
             cells[1].classList = "frozenColumn2";
             cells[2].classList = "frozenColumn3";
         }
+    }
+}
+
+function toggleSection(button) {
+    var form = button.parentElement.parentElement.getElementsByTagName('form')[0];
+
+    if(button.innerText == "Hide") {
+        form.setAttribute("hidden",true);
+        button.innerText = "Show";
+    }
+    else {
+        form.removeAttribute("hidden");
+        button.innerText = "Hide";
     }
 }
 
