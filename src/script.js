@@ -298,6 +298,26 @@ function clearInput(clearAccount) {
     document.getElementById('dAmount').value = '';
 }
 
+/*
+ * For applyFilter():
+ *
+ * The function removes the effects of any previous filters by calling unfilterAll().
+ *
+ * The rows of the table are stored in an array, all the values of filters are stored as variables for future reference.
+ *
+ * Dollar signs are removed from applicable values if necessary.
+ *
+ * The for loop goes through every row, creates an array of its cells, and compares each value to each filter.
+ *
+ * If and only if the filter has data and does not match the contents of the row is the row hidden.
+ *
+ * Each filter performs its own check, if any of them do not match the data, the cell is hidden.
+ *
+ * For number values, such as account number, dollar amount, cost basis, everything is converted to a numeric type and compared as > or <.
+ *
+ * For dates, strings can be compared directly as long as they are in the same format.
+ */
+
 function applyFilter() {
     unfilterAll();
 
@@ -366,6 +386,10 @@ function applyFilter() {
     }
 }
 
+/*
+ * This function removed the content of all filter fields and unhides all rows
+ */
+
 function clearFilter() {
     unfilterAll();
 
@@ -375,6 +399,11 @@ function clearFilter() {
         fields[i].value = '';
     }
 }
+
+/*
+ * Every row with a class of 'bodyRow' has the 'hidden' attribute removed.
+ * This unhides all rows that may have been hidden from previous filtering
+ */
 
 function unfilterAll() {
     rows = document.getElementsByClassName('bodyRow');
