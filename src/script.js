@@ -288,9 +288,23 @@ function clearInput(clearAccount) {
 }
 
 function applyFilter() {
+    unfilterAll();
+
+    rows = document.getElementByClassName('bodyRow');
 }
 
 function clearFilter() {
+    ulfilterAll();
+
+    rows = document.getElementByClassName('bodyRow');
+}
+
+function unfilterAll() {
+    rows = document.getElementByClassName('bodyRow');
+    
+    for(var i = 0; i < rows; i++) {
+        row[i].removeAttribute('hidden');
+    }
 }
 
 function toggleID() {
