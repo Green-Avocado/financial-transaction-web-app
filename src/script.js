@@ -291,16 +291,23 @@ function applyFilter() {
     unfilterAll();
 
     rows = document.getElementByClassName('bodyRow');
+
+    for(var i = 0; i < rows.length; i++) {
+    }
 }
 
 function clearFilter() {
-    ulfilterAll();
+    unfilterAll();
 
-    rows = document.getElementByClassName('bodyRow');
+    var fields = document.getElementsByClassName('filterField');
+
+    for(var i = 0; i < fields.length; i++) {
+        fields[i].value = '';
+    }
 }
 
 function unfilterAll() {
-    rows = document.getElementByClassName('bodyRow');
+    rows = document.getElementsByClassName('bodyRow');
     
     for(var i = 0; i < rows; i++) {
         row[i].removeAttribute('hidden');
