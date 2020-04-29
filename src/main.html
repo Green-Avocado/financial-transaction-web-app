@@ -76,18 +76,45 @@
                 </section>
 
                 <section>
+                    <label for="type">Transaction Type:</label><br/>
+                    <select id="filterType" name="filterType">
+                        <option value=""></option>
+                        <option value="BUY">BUY</option>
+                        <option value="SELL">SELL</option>
+                        <option value="DIVIDEND">DIVIDEND</option>
+                        <option value="INTEREST">INTEREST</option>
+                        <option value="WITHDRAW">WITHDRAW</option>
+                        <option value="DEPOSIT">DEPOSIT</option>
+                    </select>
                 </section>
 
                 <section>
+                    <label for="filterSecurity">Security:</label><br/>
+                    <input id="filterSecurity" name="filterSecurity" type="text" placeholder="Security"/>
                 </section>
 
                 <section>
+                    <label for="lowAmount">Min Amount:</label><br/>
+                    <input id="lowAmount" name="lowAmount" type="text" placeholder="Min Amount"/>
+
+                    <label for="highAmount">Max Amount:</label><br/>
+                    <input id="highAmount" name="highAmount" type="text" placeholder="Max Amount"/>
                 </section>
 
                 <section>
+                    <label for="lowDAmount">Min $ Amount:</label><br/>
+                    <input id="lowDAmount" name="lowDAmount" type="text" placeholder="Min $ Amount"/>
+
+                    <label for="highDAmount">Max $ Amount:</label><br/>
+                    <input id="highDAmount" name="highDAmount" type="text" placeholder="Max $ Amount"/>
                 </section>
 
                 <section>
+                    <label for="lowCostBasis">Min Cost Basis:</label><br/>
+                    <input id="lowCostBasis" name="lowCostBasis" type="text" placeholder="Min Cost Basis"/>
+
+                    <label for="highCostBasis">Max Cost Basis:</label><br/>
+                    <input id="highCostBasis" name="highCostBasis" type="text" placeholder="Max Cost Basis"/>
                 </section>
 
                 <section>
