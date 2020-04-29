@@ -8,17 +8,17 @@ body {
     overflow-x: auto;
 }
 
-    #filter > section {
-        width: 10%;
-        display: inline-block;
-    }
-
 #inputFields > form {
     min-width: 1900px;
 }
 
-    inputFields > form > section {
+    #inputFields > form > section {
         width: 14%;
+        display: inline-block;
+    }
+
+    #filter > section {
+        width: 10%;
         display: inline-block;
     }
 

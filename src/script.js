@@ -160,6 +160,7 @@ function addTransactionButton() {
         data.unshift(id);
 
         addTransaction(data);
+        clearInput(false);
     }
 }
 
@@ -209,6 +210,9 @@ function saveChanges() {
     document.getElementById('add').removeAttribute('hidden');
     document.getElementById('save').setAttribute('hidden', true);
     document.getElementById('discard').setAttribute('hidden', true);
+
+    resetDate();
+    clearInput(true);
 }
 
 function discardChanges() {
@@ -217,6 +221,9 @@ function discardChanges() {
     document.getElementById('add').removeAttribute('hidden');
     document.getElementById('save').setAttribute('hidden', true);
     document.getElementById('discard').setAttribute('hidden', true);
+
+    resetDate();
+    clearInput(true);
 }
 
 function sortTable(column, ascending) {
@@ -240,5 +247,28 @@ function sortTable(column, ascending) {
             }
         }
     }
+}
+
+function resetDate() {
+    const today = new Date();
+    const year = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(today);
+    const month = new Intl.DateTimeFormat('en', { month: '2-digit' }).format(today);
+    const day = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(today);
+
+    document.getElementById('date').value = `${year}-${month}-${day}`;
+}
+
+function clearInput(clearAccount) {
+    if(clearAccount)
+        document.getElementById('account').value = '';
+
+    document.getElementById('type').value = '';
+    document.getElementById('security').value = '';
+    document.getElementById('amount').value = '';
+    document.getElementById('dAmount').value = '';
+}
+
+window.onload = function() {
+    resetDate();
 }
 
