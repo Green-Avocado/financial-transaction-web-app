@@ -106,11 +106,20 @@ table {
     .frozenColumn2,
     .frozenColumn3 {
         position: sticky;
-        top: auto;
         padding: 0;
-        left: 0;
         min-width: 200px;
+    }
+
+    td.frozenColumn1,
+    td.frozenColumn2,
+    td.frozenColumn3 {
         z-index: 1;
+    }
+
+    th.frozenColumn1,
+    th.frozenColumn2,
+    th.frozenColumn3 {
+        z-index: 2;
     }
 
     .frozenColumn1 {
