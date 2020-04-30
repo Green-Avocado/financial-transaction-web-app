@@ -324,6 +324,13 @@ function clearInput(clearAccount) {
     document.getElementById('dAmount').value = '';
 }
 
+/*
+ * This function receives all filters as plain text, except for dates, which are recieved as their HTML elements
+ * The function calls each of the functions responsible for validating filter data
+ *
+ * Some of these functions do not perform validation, for example, the transaction id validation always returns true
+ * These functions exist in case these need to be validated in the future
+ */
 function validateFilters(filterId, startDate, endDate, filterAccount, filterType, filterSecurity, minAmount, maxAmount, minDAmount, maxDAmount, minCostBasis, maxCostBasis) {
     if(!validateFilterId(filterId)) return false;
     if(!validateDateRange(startDate, endDate)) return false;
