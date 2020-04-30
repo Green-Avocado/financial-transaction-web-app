@@ -341,6 +341,21 @@ function validateFilterId(id) {
 }
 
 function validateDateRange(start, end) {
+    if(!start.checkValidity()) {
+        alert('Error: Invalid Start Date');
+        return false;
+    }
+
+    if(!end.checkValidity()) {
+        alert('Error: Invalid End Date');
+        return false;
+    }
+
+    if(start.valueAsNumber > end.valueAsNumber) {
+        alert('Error: Invalid Date Range');
+        return false;
+    }
+
     return true;
 }
 
@@ -353,14 +368,59 @@ function validateFilterSecurity(security) {
 }
 
 function validateAmountRange(min, max) {
+    if(isNaN(Number(min))) {
+        alert('Error: Min Amount is NaN');
+        return false;
+    }
+
+    if(isNaN(Number(max))) {
+        alert('Error: Max Amount is NaN');
+        return false;
+    }
+
+    if(Number(min) > Number(max)) {
+        alert('Error: Invalid Amount Range');
+        return false;
+    }
+    
     return true;
 }
 
 function validateDAmountRange(min, max) {
+    if(isNaN(Number(min))) {
+        alert('Error: Min $ Amount is NaN');
+        return false;
+    }
+
+    if(isNaN(Number(max))) {
+        alert('Error: Max $ Amount is NaN');
+        return false;
+    }
+
+    if(Number(min) > Number(max)) {
+        alert('Error: Invalid $ Amount Range');
+        return false;
+    }
+    
     return true;
 }
 
 function validateCostBasisRange(min, max) {
+    if(isNaN(Number(min))) {
+        alert('Error: Min Cost Basis is NaN');
+        return false;
+    }
+
+    if(isNaN(Number(max))) {
+        alert('Error: Max Cost Basis is NaN');
+        return false;
+    }
+
+    if(Number(min) > Number(max)) {
+        alert('Error: Invalid Cost Basis Range');
+        return false;
+    }
+    
     return true;
 }
 
@@ -390,8 +450,8 @@ function applyFilter() {
     rows = document.getElementsByClassName('bodyRow');
 
     filterId = document.getElementById('filterId').value;
-    startDate = document.getElementById('startDate').value;
-    endDate = document.getElementById('endDate').value;
+    startDate = document.getElementById('startDate');
+    endDate = document.getElementById('endDate');
     filterAccount = document.getElementById('filterAccount').value;
     filterType = document.getElementById('filterType').value;
     filterSecurity = document.getElementById('filterSecurity').value;
@@ -407,7 +467,7 @@ function applyFilter() {
     if(lowCostBasis[0] == '$') lowCostBasis = lowCostBasis.substr(1);
     if(highCostBasis[0] == '$') highCostBasis = highCostBasis.substr(1);
 
-    if(validateFilters(filterId, startDate, endDate, filterAccount, filterType, filterSecurity, minAmount, maxAmount, minDAmount, maxDAmount, minCostBasis, maxCostBasis)) {
+    if(validateFilters(filterId, startDate, endDate, filterAccount, filterType, filterSecurity, lowAmount, highAmount, lowDAmount, highDAmount, lowCostBasis, highCostBasis)) {
         for(var i = 0; i < rows.length; i++) {
             cells = rows[i].getElementsByTagName('td');
             var hide = false;
@@ -415,10 +475,10 @@ function applyFilter() {
             if(filterId != '' && filterId != cells[0].innerText)
                 hide = true;
 
-            if(startDate != '' && startDate > cells[1].innerText)
+            if(startDate.value != '' && startDate.value > cells[1].innerText)
                 hide = true;
 
-            if(endDate != '' && endDate < cells[1].innerText)
+            if(endDate.value != '' && endDate.value < cells[1].innerText)
                 hide = true;
 
             if(filterAccount != '' && filterAccount != cells[2].innerText)
