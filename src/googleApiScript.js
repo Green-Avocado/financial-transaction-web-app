@@ -1,5 +1,4 @@
 var auth2;
-var test;
 
 function tableToArrays() {
     var rows = document.getElementsByClassName('bodyRow');
@@ -73,7 +72,6 @@ function readGoogleTypes() {
         .then(function(response) {
             console.log("Response", response);
             var typesArr = JSON.parse(response.body).values[0];
-            test = typesArr;
             setTransactionTypesList(typesArr);
         },
         function(err) { console.error("Execute error", err); });
