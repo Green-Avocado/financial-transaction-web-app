@@ -29,8 +29,9 @@ function arraysToTable(dataArr) {
     document.getElementById('add').setAttribute('type', 'submit');
     document.getElementById('save').setAttribute('type', 'button');
 
-    for(var i = dataArr.length - 1; i >= 0; i++) {
-        addTransaction(dataArr[i]);
+    while(dataArr.length > 0) {
+        addTransaction(dataArr[dataArr.length - 1]);
+        dataArr.pop();
     }
 }
 
@@ -55,8 +56,8 @@ function readGoogleSheetDB() {
     })
         .then(function(response) {
             console.log("Response", response);
-            var dataArr = JSON.parse(response.Pf.body);
-            console.log(dataArr);
+            var dataArr = JSON.parse(response.body).values;
+            arraysToTable(dataArr);
         },
         function(err) { console.error("Execute error", err); });
 }
