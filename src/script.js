@@ -662,10 +662,8 @@ function applyTypes() {
     var type = document.getElementById('type');
     var filterType = document.getElementById('filterType');
 
-    /*
     type.innerHTML = '<option value=""></option>';
     filterType.innerHTML = '<option value=""></option>';
-    */
 
     for(var i = 0; i < typesArray.length; i++) {
         type.innerHTML += '<option value="' + typesArray[i] + '">' + typesArray[i] + '</option>';
