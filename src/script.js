@@ -656,6 +656,10 @@ function saveFile() {
  * The function creates an array using values in the input field, separated by commas
  * For each item in this array, the function adds a new option to the <select> elements, effectively adding a transaction type
  * This is done for all the types specified by the user in the input field
+ *
+ * UPDATE: applyTypes() now only splits the input field into an array and passes it to the setTransactionTypesList() function
+ *
+ *      setTransactionTypesList() does exactly what applyTypes used to do, it has been separated to accomodate use by the database
  */
 function applyTypes() {
     var typesArray = document.getElementById('typesArray').value.split(',');
