@@ -659,6 +659,10 @@ function saveFile() {
  */
 function applyTypes() {
     var typesArray = document.getElementById('typesArray').value.split(',');
+    setTransactionTypesList(typesArray);
+}
+
+function setTransactionTypesList(typesArray) {
     var type = document.getElementById('type');
     var filterType = document.getElementById('filterType');
 
