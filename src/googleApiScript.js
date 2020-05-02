@@ -1,6 +1,9 @@
 //This is the OAuth instance, by storing it, we can check if a user is already logged in
 var auth2;
 
+var spreadsheetId = "1R0HpaAIUw-JHX8SrzvkEPCG1qgI-siJ9oucY6g5e4Co"
+var sheetId = "Sheet1"
+
 /*
  * This function goes through each of the body rows of the table and stores the text in the cells as an array of arrays
  *
@@ -76,7 +79,7 @@ function arraysToTable(dataArr) {
  */
 function authenticate() {
 return gapi.auth2.getAuthInstance()
-    .signIn({scope: "https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/spreadsheets"})
+    .signIn({scope: "https://www.googleapis.com/auth/drive"})
     .then(function() { console.log("Sign-in successful"); },
         function(err) { console.error("Error signing in", err); });
 }
@@ -113,8 +116,8 @@ return gapi.client.load("https://content.googleapis.com/discovery/v1/apis/sheets
  */
 function readGoogleSheetDB() {
     return gapi.client.sheets.spreadsheets.values.get({
-        "spreadsheetId": "1R0HpaAIUw-JHX8SrzvkEPCG1qgI-siJ9oucY6g5e4Co",
-        "range": "A1:H214748354"
+        "spreadsheetId": spreadsheetId,
+        "range": sheetId + "!A1:H214748354"
     })
         .then(function(response) {
             console.log("Response", response);
@@ -141,8 +144,8 @@ function readGoogleSheetDB() {
  */
 function readGoogleTypes() {
     return gapi.client.sheets.spreadsheets.values.get({
-        "spreadsheetId": "1R0HpaAIUw-JHX8SrzvkEPCG1qgI-siJ9oucY6g5e4Co",
-        "range": "J1:J214748354",
+        "spreadsheetId": spreadsheetId,
+        "range": sheetId + "!J1:J214748354",
         "majorDimension": "COLUMNS"
 
     })
@@ -204,7 +207,7 @@ function writeGoogleSheetDB() {
  */
 function setGoogleRows() {
     return gapi.client.sheets.spreadsheets.batchUpdate({
-        "spreadsheetId": "1R0HpaAIUw-JHX8SrzvkEPCG1qgI-siJ9oucY6g5e4Co",
+        "spreadsheetId": spreadsheetId,
         "resource": {
         "requests": [
             {
@@ -238,8 +241,8 @@ function setGoogleRows() {
  */
 function clearGoogleRow() {
     return gapi.client.sheets.spreadsheets.values.clear({
-    "spreadsheetId": "1R0HpaAIUw-JHX8SrzvkEPCG1qgI-siJ9oucY6g5e4Co",
-    "range": "A1:J1",
+    "spreadsheetId": spreadsheetId,
+    "range": sheetId + "!A1:J1",
     "resource": {}
     })
         .then(function(response) {
@@ -265,16 +268,16 @@ function clearGoogleRow() {
  */
 function writeGoogleDB() {
     return gapi.client.sheets.spreadsheets.values.batchUpdate({
-        "spreadsheetId": "1R0HpaAIUw-JHX8SrzvkEPCG1qgI-siJ9oucY6g5e4Co",
+        "spreadsheetId": spreadsheetId,
         "resource": {
             "data": [
             {
-                "range": "A1",
+                "range": sheetId + "!A1",
                 "values": tableToArrays(),
                 "majorDimension": "ROWS"
             },
             {
-                "range": "J1",
+                "range": sheetId + "!J1",
                 "values": [readCurrentTypes()],
                 "majorDimension": "COLUMNS"
             }
