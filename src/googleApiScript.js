@@ -4,8 +4,8 @@ var auth2;
 var spreadsheetId = "1R0HpaAIUw-JHX8SrzvkEPCG1qgI-siJ9oucY6g5e4Co";
 var sheetId = "Sheet1";
 var sheetIdNum = 0;
-var response;
 
+var test;
 
 /*
  * This function checks that the user is authenticated,
@@ -206,9 +206,9 @@ function arraysToTable(dataArr) {
     document.getElementById('add').setAttribute('type', 'submit');
     document.getElementById('save').setAttribute('type', 'button');
 
-    while(dataArr[0].length > 0) {
-        addTransaction(dataArr[0][dataArr.length - 1]);
-        dataArr[0].pop();
+    while(dataArr.length > 0) {
+        addTransaction(dataArr[dataArr.length - 1]);
+        dataArr.pop();
     }
 }
 
@@ -279,11 +279,10 @@ function readGoogleSheetDB() {
         .then(function(response) {
             console.log("Response", response);
 
-            var dataArr = []
-            if(JSON.parse(response.body).values != undefined)
-                dataArr.push(JSON.parse(response.body).values);
-
-            arraysToTable(dataArr);
+            if(JSON.parse(response.body).values != undefined) {
+                dataArr = JSON.parse(response.body).values;
+                arraysToTable(dataArr);
+            }
 
             readGoogleTypes();
         },
