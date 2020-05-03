@@ -5,8 +5,6 @@ var spreadsheetId = "1R0HpaAIUw-JHX8SrzvkEPCG1qgI-siJ9oucY6g5e4Co";
 var sheetId = "Sheet1";
 var sheetIdNum = 0;
 
-var test;
-
 /*
  * This function checks that the user is authenticated,
  * If not it attempts to do so
