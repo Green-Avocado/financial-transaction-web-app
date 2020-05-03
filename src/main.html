@@ -151,20 +151,37 @@
                 <section>
                     <button id="toggleId" type="button" onclick="toggleID()">Hide Transaction ID</button>
                 </section>
+
                 <section>
                     <label for="fileInput">Import Transaction Type CSV file</label>
                     <input id="fileInput" name="fileInput" type="file" onchange="readFile(this)"/>
                 </section>
+
                 <section id="transactionTypesConfig">
                         <label for="typesArray">Transaction types (comma-separated):</label>
                         <input id="typesArray" name="typesArray" type="text" placeholder="Transaction types"/>
-                        <button id="applyTypesButton" type="submit" onclick="applyTypes()">Apply</button>
+                        <button id="applyTypesButton" type="button" onclick="applyTypes()">Apply</button>
                         <button type="button" onclick="saveFile()">Save</button>
                 </section>
+
                 <section>
                     <button type="button" onclick="writeGoogleSheetDB()">Write to Sheets</button>
                     <button type="button" onclick="readGoogleSheetDB()">Read from Sheets</button>
                 </section>
+
+                <section>
+                    <section>
+                        <select id="sheet" onchange="getNewSheetData()">
+                            <option value="1R0HpaAIUw-JHX8SrzvkEPCG1qgI-siJ9oucY6g5e4Co">default</option>
+                        </select>
+                    </section>
+
+                    <section>
+                        <select id="tab" onchange="getNewTabData()">
+                        </select>
+                    </section>
+                </section>
+
             </form>
         </article>
 

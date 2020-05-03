@@ -6,6 +6,83 @@ var sheetId = "Sheet1";
 var response;
 
 
+/*
+ * This function checks that the user is authenticated,
+ * If not it attempts to do so
+ *
+ * Once the user has successfully authenticated, it calls a function to list all of a user's sheets
+ */
+function loadSheetData() {
+    if(auth2.isSignedIn.je)
+    {
+        getAllUserSheets();
+    }
+    else {
+        authenticate()
+            .then(function() {
+                if(auth2.isSignedIn.je) getAllUserSheets();
+            });
+    }
+}
+
+
+/*
+ * This function is identical to the function above, except it is used to list tabs within a sheet
+ */
+function getNewSheetData() {
+    spreadsheetId = document.getElementById('sheet').value;
+    if(auth2.isSignedIn.je)
+    {
+        getTabsOfSheet();
+    }
+    else {
+        authenticate()
+            .then(function() {
+                if(auth2.isSignedIn.je) getTabsOfSheet();
+            });
+    }
+}
+
+
+
+
+/*
+ * This function populates a select element with a user's sheets
+ *
+ * The first option is always the default option for this project, all other options are derived from a user's drive
+ */
+function populateSheetSelector(arrayOfSheets) {
+    document.getElementById('sheet').innerHTML = '<option value="1R0HpaAIUw-JHX8SrzvkEPCG1qgI-siJ9oucY6g5e4Co">default</option>';
+
+    for(var i = 0; i < arrayOfSheets.length; i++) {
+        document.getElementById('sheet').innerHTML += '<option value="' + arrayOfSheets[i].id + '">' + arrayOfSheets[i].name + '</option>';
+    }
+}
+
+
+
+/*
+ * This function sets the sheetId to the currently selected option
+ */
+function getNewTabData() {
+    sheetId = document.getElementById('tab').value;
+}
+
+
+
+/*
+ * This function populates the tab selector with the results from getTabsOfSheet()
+ * The default option will be the first sheet in the document
+ */
+function populateTabSelector(arrayOfTabs) {
+    document.getElementById('tab').innerHTML = '';
+
+    for(var i = 0; i < arrayOfTabs.length; i++) {
+        document.getElementById('tab').innerHTML += '<option value="' + arrayOfTabs[i].properties.title + '">' + arrayOfTabs[i].properties.title + '</option>';
+    }
+}
+
+
 
 /*
  * This api call gets a list of all sheets the user owns and all sheets shared directly to the user
@@ -29,6 +106,10 @@ var response;
  * 
  * q allows us to filter results by a variety of parameters
  *      in this case, only results that are google spreadsheets will be presented
+ *
+ *
+ * The function returns a JSON object which is parsed to get the sheet IDs and sheet names,
+ * these are sent to a separate function to populate the select elements
  */
 function getAllUserSheets() {
     return gapi.client.drive.files.list({
@@ -37,19 +118,27 @@ function getAllUserSheets() {
         "q": "mimeType = 'application/vnd.google-apps.spreadsheet'",
     })
         .then(function(response) {
-            test = response;
+            populateSheetSelector(JSON.parse(response.body).files);
+            getNewSheetData();
             console.log("Response", response);
         },
         function(err) { console.error("Execute error", err); });
 }
 
 
+/*
+ * This function takes the currently selected spreadsheet and gets data about the sheet as a JSON object
+ *
+ * The JSON object is parsed and sent to a function to populate the tab selector
+ */
 function getTabsOfSheet() {
     return gapi.client.sheets.spreadsheets.get({
-      "spreadsheetId": "1R0HpaAIUw-JHX8SrzvkEPCG1qgI-siJ9oucY6g5e4Co",
+      "spreadsheetId": spreadsheetId,
       "includeGridData": false
     })
         .then(function(response) {
+            populateTabSelector(JSON.parse(response.body).sheets);
+            getNewTabData();
             console.log("Response", response);
         },
         function(err) { console.error("Execute error", err); });
@@ -142,12 +231,17 @@ return gapi.auth2.getAuthInstance()
  * This must be called before anything can be read from or written to the database, as it is reponsible for setting up the api client
  *
  * This function is called as soon as the Google API plugin is loaded
+ *
+ *
+ *
+ * UPDATE: There are now two similar functions as both API clients must be loaded, one to list sheets from the user's drive,
+ * and one to get and manipulate information within a sheet
  */
 
 function loadClientSheets() {
 gapi.client.setApiKey("AIzaSyDC6JNuMW78Q-gWsp0PFEaTsICYjHWymAo");
 return gapi.client.load("https://content.googleapis.com/discovery/v1/apis/sheets/v4/rest")
-    .then(function() { console.log("GAPI client loaded for API"); },
+    .then(function() { console.log("GAPI client loaded for API"); loadSheetData(); },
         function(err) { console.error("Error loading GAPI client for API", err); });
 }
 
