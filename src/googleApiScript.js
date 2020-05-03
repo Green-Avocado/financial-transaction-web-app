@@ -3,6 +3,7 @@ var auth2;
 
 var spreadsheetId = "1R0HpaAIUw-JHX8SrzvkEPCG1qgI-siJ9oucY6g5e4Co";
 var sheetId = "Sheet1";
+var sheetIdNum = 0;
 var response;
 
 
@@ -65,7 +66,9 @@ function populateSheetSelector(arrayOfSheets) {
  * This function sets the sheetId to the currently selected option
  */
 function getNewTabData() {
-    sheetId = document.getElementById('tab').value;
+    data = document.getElementById('tab').value.split(',');
+    sheetIdNum = data[0];
+    sheetId = data[1];
 }
 
 
@@ -78,7 +81,7 @@ function populateTabSelector(arrayOfTabs) {
     document.getElementById('tab').innerHTML = '';
 
     for(var i = 0; i < arrayOfTabs.length; i++) {
-        document.getElementById('tab').innerHTML += '<option value="' + arrayOfTabs[i].properties.title + '">' + arrayOfTabs[i].properties.title + '</option>';
+        document.getElementById('tab').innerHTML += '<option value="' + arrayOfTabs[i].properties.sheetId + ',' + arrayOfTabs[i].properties.title + '">' + arrayOfTabs[i].properties.title + '</option>';
     }
 }
 
@@ -203,9 +206,9 @@ function arraysToTable(dataArr) {
     document.getElementById('add').setAttribute('type', 'submit');
     document.getElementById('save').setAttribute('type', 'button');
 
-    while(dataArr.length > 0) {
-        addTransaction(dataArr[dataArr.length - 1]);
-        dataArr.pop();
+    while(dataArr[0].length > 0) {
+        addTransaction(dataArr[0][dataArr.length - 1]);
+        dataArr[0].pop();
     }
 }
 
@@ -367,10 +370,11 @@ function setGoogleRows() {
             {
             "updateSheetProperties": {
                 "properties": {
-                "gridProperties": {
-                    "rowCount": 1,
-                    "columnCount": 10
-                }
+                    "gridProperties": {
+                        "columnCount": 10,
+                        "rowCount": 1
+                },
+                    "sheetId": sheetIdNum
                 },
                 "fields": "gridProperties"
             }

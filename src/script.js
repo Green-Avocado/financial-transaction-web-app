@@ -145,7 +145,7 @@ function addTransaction(data) {
     var actionsContent = "<button type='button' onclick='editRow(this)'>Edit</button> <button type='button' onclick='deleteRow(this)'>Delete</button>";
     staging.push(actionsContent);
 
-    for(var i = 0; i < staging.length; i++) {
+    for(var i = 0; i < 9; i++) {
         var newCell = newRow.insertCell(i);
         var idShowing = (document.getElementById('toggleId').innerText == "Hide Transaction ID");
         newCell.innerHTML = data[i];
