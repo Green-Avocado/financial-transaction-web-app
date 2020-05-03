@@ -66,7 +66,7 @@ function populateSheetSelector(arrayOfSheets) {
  * This function sets the sheetId to the currently selected option
  */
 function getNewTabData() {
-    data = document.getElementById('tab').value.split(',');
+    data = document.getElementById('tab').value.split(/,(.+)/);
     sheetIdNum = data[0];
     sheetId = data[1];
 }
