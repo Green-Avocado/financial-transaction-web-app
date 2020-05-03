@@ -53,6 +53,10 @@ button {
             width: 100%;
         }
 
+#options > form > #googleSheetButtons {
+    width: 200px;
+}
+
 #options > form > section {
     display: inline-block;
     width: 300px;
@@ -75,6 +79,12 @@ button {
     }
 
     #applyTypesButton {
+    }
+
+    #googleSheetButtons > button {
+        width: 100%;
+        padding: 0;
+        margin: 0;
     }
 
 table {
