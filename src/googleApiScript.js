@@ -1,8 +1,60 @@
 //This is the OAuth instance, by storing it, we can check if a user is already logged in
 var auth2;
 
-var spreadsheetId = "1R0HpaAIUw-JHX8SrzvkEPCG1qgI-siJ9oucY6g5e4Co"
-var sheetId = "Sheet1"
+var spreadsheetId = "1R0HpaAIUw-JHX8SrzvkEPCG1qgI-siJ9oucY6g5e4Co";
+var sheetId = "Sheet1";
+var response;
+
+
+
+/*
+ * This api call gets a list of all sheets the user owns and all sheets shared directly to the user
+ *
+ * Note that the maximum page size is 1000, this is the max allowed by the API
+ *
+ * If the number of sheets exceeds 1000, it will return a nextPageToken which can be used in a second API request to get the next page
+ *
+ * By checking whether the nextPageToken is undefined, we can determine whether or not this is necessary
+ *
+ *
+ * For this proof-of-concept, I have not included this check as I felt that 1000 sheets was more than sufficient and that
+ * any more sheets would have been too difficult to navigate
+ *
+ *
+ *
+ * pageSize specifies the maximum number of items this API call will receive
+ *
+ * orderBy specifies the order in which these items are presented
+ *      viewedByMeTime sorts items by the most recently opened files for the authenticated user
+ * 
+ * q allows us to filter results by a variety of parameters
+ *      in this case, only results that are google spreadsheets will be presented
+ */
+function getAllUserSheets() {
+    return gapi.client.drive.files.list({
+        "pageSize": 1000,
+        "orderBy": "viewedByMeTime",
+        "q": "mimeType = 'application/vnd.google-apps.spreadsheet'",
+    })
+        .then(function(response) {
+            test = response;
+            console.log("Response", response);
+        },
+        function(err) { console.error("Execute error", err); });
+}
+
+
+function getTabsOfSheet() {
+    return gapi.client.sheets.spreadsheets.get({
+      "spreadsheetId": "1R0HpaAIUw-JHX8SrzvkEPCG1qgI-siJ9oucY6g5e4Co",
+      "includeGridData": false
+    })
+        .then(function(response) {
+            console.log("Response", response);
+        },
+        function(err) { console.error("Execute error", err); });
+}
+
 
 /*
  * This function goes through each of the body rows of the table and stores the text in the cells as an array of arrays
@@ -91,10 +143,18 @@ return gapi.auth2.getAuthInstance()
  *
  * This function is called as soon as the Google API plugin is loaded
  */
-function loadClient() {
+
+function loadClientSheets() {
 gapi.client.setApiKey("AIzaSyDC6JNuMW78Q-gWsp0PFEaTsICYjHWymAo");
 return gapi.client.load("https://content.googleapis.com/discovery/v1/apis/sheets/v4/rest")
     .then(function() { console.log("GAPI client loaded for API"); },
+        function(err) { console.error("Error loading GAPI client for API", err); });
+}
+
+function loadClient() {
+gapi.client.setApiKey("AIzaSyDC6JNuMW78Q-gWsp0PFEaTsICYjHWymAo");
+return gapi.client.load("https://content.googleapis.com/discovery/v1/apis/drive/v3/rest")
+    .then(function() { console.log("GAPI client loaded for API"); loadClientSheets(); },
         function(err) { console.error("Error loading GAPI client for API", err); });
 }
 
