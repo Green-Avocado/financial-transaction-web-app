@@ -1,0 +1,6 @@
+function writeToFirebase() {
+}
+
+function readFromFirebase() {
+}
+
