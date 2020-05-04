@@ -277,10 +277,11 @@ function readGoogleSheetDB() {
         .then(function(response) {
             console.log("Response", response);
 
+            dataArr = [];
             if(JSON.parse(response.body).values != undefined) {
                 dataArr = JSON.parse(response.body).values;
-                arraysToTable(dataArr);
             }
+            arraysToTable(dataArr);
 
             readGoogleTypes();
         },
