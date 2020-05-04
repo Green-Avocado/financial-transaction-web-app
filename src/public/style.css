@@ -53,10 +53,6 @@ button {
             width: 100%;
         }
 
-#options > form > #googleSheetButtons {
-    width: 200px;
-}
-
 #options > form > section {
     display: inline-block;
     width: 300px;
@@ -81,7 +77,16 @@ button {
     #applyTypesButton {
     }
 
-    #googleSheetButtons > button {
+    #options > form > #googleSheetButtons {
+        width: 200px;
+    }
+
+    #logoutSection#logoutSection {
+        width: 100px;
+    }
+
+    #googleSheetButtons > button,
+    #logoutSection > button {
         width: 100%;
         padding: 0;
         margin: 0;
