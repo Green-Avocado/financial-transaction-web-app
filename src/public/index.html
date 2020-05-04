@@ -278,14 +278,28 @@
         </article>
         
         <!-- The core Firebase JS SDK is always required and must be listed first -->
-        <script src="/__/firebase/7.14.2/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-app.js"></script>
 
         <!-- TODO: Add SDKs for Firebase products that you want to use
             https://firebase.google.com/docs/web/setup#available-libraries -->
-        <script src="/__/firebase/7.14.2/firebase-analytics.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-analytics.js"></script>
 
-        <!-- Initialize Firebase -->
-        <script src="/__/firebase/init.js"></script>
+        <script>
+        // Your web app's Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyAmZLFZHDAB9evhvNunxOe5GxXRd_OizmU",
+            authDomain: "financial-transactions-6f065.firebaseapp.com",
+            databaseURL: "https://financial-transactions-6f065.firebaseio.com",
+            projectId: "financial-transactions-6f065",
+            storageBucket: "financial-transactions-6f065.appspot.com",
+            messagingSenderId: "82206982479",
+            appId: "1:82206982479:web:8937bbd1bd4fb6022b053a",
+            measurementId: "G-0564DT8RNQ"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        firebase.analytics();
+        </script>
     </body>
 </html>
 
