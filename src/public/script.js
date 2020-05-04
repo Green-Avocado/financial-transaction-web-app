@@ -413,6 +413,20 @@ function validateDAmountRange(min, max) {
     return true;
 }
 
+/*
+ * UPDATE: original code lacked the
+ * !(min == '' || max == '')
+ * part of the last if condition
+ *
+ * This new check tells the function to skip the range verification if either of the strings are empty
+ *
+ * The new condition evaluates false if either of the inner conditions are true
+ *      Translated, the condition is NOT (min is empty OR max is empty)
+ *      
+ *      If either is empty, this becomes NOT (true)
+ *
+ *      If neither is empty, this becomes NOT (false)
+ */
 function validateCostBasisRange(min, max) {
     if(isNaN(Number(min))) {
         alert('Error: Min Cost Basis is NaN');
