@@ -386,7 +386,7 @@ function validateAmountRange(min, max) {
         return false;
     }
 
-    if(Number(min) > Number(max)) {
+    if(Number(min) > Number(max) || !(min == '' || max == '')) {
         alert('Error: Invalid Amount Range');
         return false;
     }
@@ -405,7 +405,7 @@ function validateDAmountRange(min, max) {
         return false;
     }
 
-    if(Number(min) > Number(max)) {
+    if(Number(min) > Number(max) || !(min == '' || max == '')) {
         alert('Error: Invalid $ Amount Range');
         return false;
     }
@@ -424,7 +424,7 @@ function validateCostBasisRange(min, max) {
         return false;
     }
 
-    if(Number(min) > Number(max)) {
+    if(Number(min) > Number(max) || !(min == '' || max == '')) {
         alert('Error: Invalid Cost Basis Range');
         return false;
     }
@@ -513,7 +513,7 @@ function applyFilter() {
             if(lowCostBasis != '' && Number(lowCostBasis) > Number(cells[7].innerText.substr(1)))
                 hide = true;
 
-            if(highCostBasis != '' && Number(highCostBasis) < Number(cells[7].innerText))
+            if(highCostBasis != '' && Number(highCostBasis) < Number(cells[7].innerText.substr(1)))
                 hide = true;
 
             if(hide)
