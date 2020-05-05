@@ -1,3 +1,11 @@
+function addCommasToNumber(numberAsString) {
+}
+
+function formattedStringToNumber(numberAsString) {
+    var number;
+    return number;
+}
+
 function getData() {
     var date = document.getElementById("date");
     var account = document.getElementById("account").value;
@@ -386,7 +394,9 @@ function validateAmountRange(min, max) {
         return false;
     }
 
-    if(Number(min) > Number(max) || !(min == '' || max == '')) {
+    if(Number(min) > Number(max) && min != '' && max != '') {
+        if(min != '') alert(min + '2');
+        if(max != '') alert(max + '1');
         alert('Error: Invalid Amount Range');
         return false;
     }
@@ -405,7 +415,7 @@ function validateDAmountRange(min, max) {
         return false;
     }
 
-    if(Number(min) > Number(max) || !(min == '' || max == '')) {
+    if(Number(min) > Number(max) && min != '' && max != '') {
         alert('Error: Invalid $ Amount Range');
         return false;
     }
@@ -438,7 +448,7 @@ function validateCostBasisRange(min, max) {
         return false;
     }
 
-    if(Number(min) > Number(max) || !(min == '' || max == '')) {
+    if(Number(min) > Number(max) && min != '' && max != '') {
         alert('Error: Invalid Cost Basis Range');
         return false;
     }
