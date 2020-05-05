@@ -153,6 +153,16 @@ function addTransaction(data) {
     var actionsContent = "<button type='button' onclick='editRow(this)'>Edit</button> <button type='button' onclick='deleteRow(this)'>Delete</button>";
     staging.push(actionsContent);
 
+    /*
+     * The function assumes that a cost basis is needed, then checks whether or not type starts with an exclamation mark, if so, it corrects
+     * the variable so that cost basis is marked as unneeded, and the type is parsed to remove the exclamation mark
+     */
+    var calculateCostBasis = true;
+    if(data[3][0] == '!') {
+        calculateCostBasis = false;
+        data[3] = data[3].substr(1);
+    }
+
     for(var i = 0; i < 9; i++) {
         var newCell = newRow.insertCell(i);
         var idShowing = (document.getElementById('toggleId').innerText == "Hide Transaction ID");
@@ -189,6 +199,13 @@ function addTransaction(data) {
                 newCell.classList = "frozenColumn2";
         }
         */
+
+        /*
+         * If the cell being added is the cost basis cell, and cost basis has been marked as unnecessary, the cell is overwritten with "N/A"
+         */
+        if(i == 7 && !calculateCostBasis) {
+            newCell.innerHTML = "N/A";
+        }
     }
 }
 
@@ -227,7 +244,14 @@ function editRow(button) {
 
     document.getElementById('date').value = rowContent[1].innerText;
     document.getElementById('account').value = rowContent[2].innerText;
+
+    /*
+     * When setting the transaction type to a type that does not exist, the value is replaced with an empty string.
+     * By checking whether or not the value is an empty string, we can determine if an exclamation mark needs to be added
+     */
     document.getElementById('type').value = rowContent[3].innerText;
+    if(document.getElementById('type').value == '') document.getElementById('type').value = '!' + rowContent[3].innerText;
+
     document.getElementById('security').value = rowContent[4].innerText;
     document.getElementById('amount').value = rowContent[5].innerText;
     document.getElementById('dAmount').value = rowContent[6].innerText;
@@ -245,6 +269,15 @@ function saveChanges() {
     if(data) {
         rowToEdit = document.getElementsByClassName('editing')[0];
         cellsToEdit = rowToEdit.getElementsByTagName('td');
+
+        /*
+         * If the first character of the transaction type is an exclamation mark,
+         * the type has the first character removed, and the cost basis is replaced with "N/A"
+         */
+        if(data[2][0] == '!') {
+            data[2] = data[2].substr(1);
+            data[6] = "N/A";
+        }
 
         for(var i = 0; i < data.length; i++) {
             cellsToEdit[i + 1].innerHTML = data[i];
@@ -698,8 +731,15 @@ function setTransactionTypesList(typesArray) {
     filterType.innerHTML = '<option value=""></option>';
 
     for(var i = 0; i < typesArray.length; i++) {
-        type.innerHTML += '<option value="' + typesArray[i] + '">' + typesArray[i] + '</option>';
-        filterType.innerHTML += '<option value="' + typesArray[i] + '">' + typesArray[i] + '</option>';
+        var typeAsText = typesArray[i];
+        if(typesArray[i][0] == '!') typeAsText = typesArray[i].substr(1);
+
+        /*
+         * typeAsText is the transaction type with the exclamation mark removed
+         * This is used in all fields except the value attribute of the input field
+         */
+        type.innerHTML += '<option value="' + typesArray[i] + '">' + typeAsText + '</option>';
+        filterType.innerHTML += '<option value="' + typeAsText + '">' + typeAsText + '</option>';
     }
 }
 
