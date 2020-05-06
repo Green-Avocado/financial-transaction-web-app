@@ -3,7 +3,22 @@ function addCommasToNumber(numberAsString) {
 
 function formattedStringToNumber(numberAsString) {
     var number;
+
+    if(numberAsString[0] == '$') {
+        numberAsString = numberAsString.substr(1);
+    }
+
+    number = Number(numberAsString.replace(/,/g, ''));
+
     return number;
+}
+
+function numberToFormattedString(number) {
+    var numberAsString;
+
+    numberAsString = String(number).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+    return numberAsString;
 }
 
 function getData() {
@@ -14,17 +29,16 @@ function getData() {
     var amount = document.getElementById("amount").value;
     var dAmount = document.getElementById("dAmount").value;
 
-    amount = Number(amount);
+    amount = formattedStringToNumber(amount);
 
-    if(dAmount[0] == '$') {
-        dAmount = dAmount.substr(1);
-    }
-    dAmount = Number(dAmount);
+    dAmount = formattedStringToNumber(dAmount);
 
     if(validate(date, account, type, security, amount, dAmount)) {
-        var costBasis = calculateCostBasis(amount, dAmount);
+        var costBasis = '$' + numberToFormattedString(calculateCostBasis(amount, dAmount));
         date = date.value;
-        dAmount = '$' + dAmount.toFixed(2);
+
+        amount = numberToFormattedString(amount);
+        dAmount = '$' + numberToFormattedString(dAmount.toFixed(2));
 
         return [ date, account, type, security, amount, dAmount, costBasis ];
     }
@@ -140,7 +154,7 @@ function generateId() {
 }
 
 function calculateCostBasis(amount, dAmount) {
-    costBasis = '$' + (dAmount / amount).toFixed(2);
+    costBasis = (dAmount / amount).toFixed(2);
     return costBasis;
 }
 
@@ -555,22 +569,22 @@ function applyFilter() {
             if(filterSecurity != '' && filterSecurity != cells[4].innerText)
                 hide = true;
 
-            if(lowAmount != '' && Number(lowAmount) > Number(cells[5].innerText))
+            if(lowAmount != '' && Number(lowAmount) > formattedStringToNumber(cells[5].innerText))
                 hide = true;
 
-            if(highAmount != '' && Number(highAmount) < Number(cells[5].innerText))
+            if(highAmount != '' && Number(highAmount) < formattedStringToNumber(cells[5].innerText))
                 hide = true;
 
-            if(lowDAmount != '' && Number(lowDAmount) > Number(cells[6].innerText.substr(1)))
+            if(lowDAmount != '' && Number(lowDAmount) > formattedStringToNumber(cells[6].innerText.substr(1)))
                 hide = true;
 
-            if(highDAmount != '' && Number(highDAmount) < Number(cells[6].innerText.substr(1)))
+            if(highDAmount != '' && Number(highDAmount) < formattedStringToNumber(cells[6].innerText.substr(1)))
                 hide = true;
 
-            if(lowCostBasis != '' && Number(lowCostBasis) > Number(cells[7].innerText.substr(1)))
+            if(lowCostBasis != '' && Number(lowCostBasis) > formattedStringToNumber(cells[7].innerText.substr(1)))
                 hide = true;
 
-            if(highCostBasis != '' && Number(highCostBasis) < Number(cells[7].innerText.substr(1)))
+            if(highCostBasis != '' && Number(highCostBasis) < formattedStringToNumber(cells[7].innerText.substr(1)))
                 hide = true;
 
             if(hide)
