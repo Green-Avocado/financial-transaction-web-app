@@ -1,6 +1,6 @@
-function addCommasToNumber(numberAsString) {
-}
-
+/*
+ * Removes a dollar sign if necessary, then replaces all commas with an empty string and converts to a number
+ */
 function formattedStringToNumber(numberAsString) {
     var number;
 
@@ -13,6 +13,10 @@ function formattedStringToNumber(numberAsString) {
     return number;
 }
 
+/*
+ * The regex operation groups the number into groups of 3 digits and places commas at the beginning of each group, except the first group
+ * This operation applies separately to digits after a decimal or other special character.
+ */
 function numberToFormattedString(number) {
     var numberAsString;
 
