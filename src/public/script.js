@@ -64,6 +64,11 @@ function validateDate(date) {
     realDate = new Date();
     inputDate = date.valueAsNumber;
 
+    if(date.value == '') {
+        alert('Error: Missing date');
+        return false;
+    }
+
     if(!date.checkValidity()) {
         alert('Error: Invalid date');
         return false;
@@ -301,17 +306,17 @@ function saveChanges() {
             cellsToEdit[i + 1].innerHTML = data[i];
         }
         rowToEdit.classList = "bodyRow";
+
+        document.getElementById('add').removeAttribute('hidden');
+        document.getElementById('save').setAttribute('hidden', true);
+        document.getElementById('discard').setAttribute('hidden', true);
+
+        document.getElementById('add').setAttribute('type','submit');
+        document.getElementById('save').setAttribute('type','button');
+
+        resetDate();
+        clearInput(true);
     }
-
-    document.getElementById('add').removeAttribute('hidden');
-    document.getElementById('save').setAttribute('hidden', true);
-    document.getElementById('discard').setAttribute('hidden', true);
-
-    document.getElementById('add').setAttribute('type','submit');
-    document.getElementById('save').setAttribute('type','button');
-
-    resetDate();
-    clearInput(true);
 }
 
 function discardChanges() {
