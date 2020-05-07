@@ -115,7 +115,7 @@ function populateTabSelector(arrayOfTabs) {
 function getAllUserSheets() {
     return gapi.client.drive.files.list({
         "pageSize": 1000,
-        "orderBy": "viewedByMeTime",
+        "orderBy": "name",
         "q": "mimeType = 'application/vnd.google-apps.spreadsheet'",
     })
         .then(function(response) {
