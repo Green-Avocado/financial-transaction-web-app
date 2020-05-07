@@ -530,6 +530,25 @@ function validateCostBasisRange(min, max) {
  * For number values, such as account number, dollar amount, cost basis, everything is converted to a numeric type and compared as > or <.
  *
  * For dates, strings can be compared directly as long as they are in the same format.
+ *
+ *
+ *
+ * UPDATE:
+ *
+ * Though this has not been implemented, to support multiple filters for the same category, and to support exclusive filters:
+ *      Each filter that deals with a string would be parsed to get an array of rules
+ *      A function would loop through every rule, hiding rows that did not meet these requirements
+ *
+ *      First, a parsing function would split a filter field into an array
+ *          For example: "!ABC AND !DEF" would be split as ["!ABC", "!DEF"] and each one would be handled separately.
+ *              Other operators might exist, such as OR. In the case of OR, the two arguments would have to be grouped as one
+ *
+ *      For each item in the array, the filter would be parsed further to interpret it.
+ *          The condition "!ABC"[0] == "!" could be used to determine if the first character was an exclamation mark,
+ *          which would indicate that the following string is to be excluded.
+ *              The function would then go through each row and only hide those matching "ABC"
+ *
+ *          This process would be repeated for each filter in the array
  */
 
 function applyFilter() {
