@@ -615,6 +615,9 @@ function applyFilter() {
             if(highCostBasis != '' && Number(highCostBasis) < formattedStringToNumber(cells[7].innerText.substr(1)))
                 hide = true;
 
+            if(filterNA.checked && cells[7].innerText == "N/A")
+                hide = true;
+
             if(hide)
                 rows[i].setAttribute('hidden', true);
         }
@@ -633,6 +636,8 @@ function clearFilter() {
     for(var i = 0; i < fields.length; i++) {
         fields[i].value = '';
     }
+
+    document.getElementById('filterNA').checked = false;
 }
 
 /*
