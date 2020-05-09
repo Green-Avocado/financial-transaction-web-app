@@ -19,6 +19,7 @@ function writeToFirebase() {
     clearFirebase();
 
     var data = tableToArrays();
+    var typesArr = readCurrentTypes();
 
     for(var i = 0; i < data.length - 1; i++) {
         firebase.database().ref('Data/' + String(i)).set({
@@ -30,6 +31,11 @@ function writeToFirebase() {
             amount: data[i + 1][5],
             dAmount: data[i + 1][6],
             costBasis: data[i + 1][7]
+        });
+    }
+    for(var i = 0; i < typesArr.length; i++) {
+        firebase.database().ref('Types/' + String(i)).set({
+            value: typesArr[i]
         });
     }
 }
@@ -52,11 +58,18 @@ function readFromFirebase() {
         document.getElementById("tableBody").removeChild(document.getElementsByClassName('bodyRow')[0]);
     }
 
-    return firebase.database().ref('Data').once('value').then(function(snapshot) {
-        data = snapshot.val();
+    return firebase.database().ref('/').once('value').then(function(snapshot) {
+        data = snapshot.val().Data;
         for(var i = data.length - 1; i >= 0; i--) {
             addTransaction([data[i].id, data[i].date, data[i].account, data[i].type, data[i].security, data[i].amount, data[i].dAmount, data[i].costBasis]);
         }
+
+        types = snapshot.val().Types;
+        var typesArr = [];
+        for(var i = 0; i < types.length; i++) {
+            typesArr.push(types[i].value);
+        }
+        setTransactionTypesList(typesArr);
     });
 }
 
