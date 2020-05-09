@@ -53,6 +53,12 @@ button {
             width: 100%;
         }
 
+#filterNA {
+    display: inline-block;
+    width: 50%;
+    min-width: 16px;
+}
+
 #options > form > section {
     display: inline-block;
     width: 300px;

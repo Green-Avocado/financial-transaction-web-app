@@ -551,6 +551,24 @@ function validateCostBasisRange(min, max) {
  *          This process would be repeated for each filter in the array
  */
 
+function stringFilter(filtertext, tableitem) {
+    filters = filtertext.split(" && ");
+
+    for(var i = 0; i < filters.length; i++) {
+        filterORs = filters[i].split(" || ");
+        var meetsCriteria = false;
+
+        for(var ii = 0; ii < filterORs.length; ii++) {
+            if(filterORs[ii][0] == "!" && !tableitem.includes(filterORs[ii].substr(1))) meetsCriteria = true;
+            if(filterORs[ii][0] != "!" && tableitem.includes(filterORs[ii])) meetsCriteria = true;
+        }
+
+        if(!meetsCriteria) return false;
+    }
+
+    return true;
+}
+
 function applyFilter() {
     unfilterAll();
 
@@ -579,7 +597,7 @@ function applyFilter() {
             cells = rows[i].getElementsByTagName('td');
             var hide = false;
 
-            if(filterId != '' && filterId != cells[0].innerText)
+            if(filterId != '' && !stringFilter(filterId,cells[0].innerText))
                 hide = true;
 
             if(startDate.value != '' && startDate.value > cells[1].innerText)
@@ -588,13 +606,13 @@ function applyFilter() {
             if(endDate.value != '' && endDate.value < cells[1].innerText)
                 hide = true;
 
-            if(filterAccount != '' && filterAccount != cells[2].innerText)
+            if(filterAccount != '' && !stringFilter(filterAccount, cells[2].innerText))
                 hide = true;
 
             if(filterType != '' && filterType != cells[3].innerText)
                 hide = true;
 
-            if(filterSecurity != '' && filterSecurity != cells[4].innerText)
+            if(filterSecurity != '' && !stringFilter(filterSecurity, cells[4].innerText))
                 hide = true;
 
             if(lowAmount != '' && Number(lowAmount) > formattedStringToNumber(cells[5].innerText))
@@ -615,6 +633,9 @@ function applyFilter() {
             if(highCostBasis != '' && Number(highCostBasis) < formattedStringToNumber(cells[7].innerText.substr(1)))
                 hide = true;
 
+            if(filterNA.checked && cells[7].innerText == "N/A")
+                hide = true;
+
             if(hide)
                 rows[i].setAttribute('hidden', true);
         }
@@ -633,6 +654,8 @@ function clearFilter() {
     for(var i = 0; i < fields.length; i++) {
         fields[i].value = '';
     }
+
+    document.getElementById('filterNA').checked = false;
 }
 
 /*
