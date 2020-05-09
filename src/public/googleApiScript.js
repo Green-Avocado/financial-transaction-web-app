@@ -1,6 +1,151 @@
 //This is the OAuth instance, by storing it, we can check if a user is already logged in
 var auth2;
 
+var spreadsheetId = "1R0HpaAIUw-JHX8SrzvkEPCG1qgI-siJ9oucY6g5e4Co";
+var sheetId = "Sheet1";
+var sheetIdNum = 0;
+
+/*
+ * This function checks that the user is authenticated,
+ * If not it attempts to do so
+ *
+ * Once the user has successfully authenticated, it calls a function to list all of a user's sheets
+ */
+function loadSheetData() {
+    if(auth2.isSignedIn.je)
+    {
+        getAllUserSheets();
+    }
+    else {
+        authenticate()
+            .then(function() {
+                if(auth2.isSignedIn.je) getAllUserSheets();
+            });
+    }
+}
+
+
+/*
+ * This function is identical to the function above, except it is used to list tabs within a sheet
+ */
+function getNewSheetData() {
+    spreadsheetId = document.getElementById('sheet').value;
+    if(auth2.isSignedIn.je)
+    {
+        getTabsOfSheet();
+    }
+    else {
+        authenticate()
+            .then(function() {
+                if(auth2.isSignedIn.je) getTabsOfSheet();
+            });
+    }
+}
+
+
+
+
+/*
+ * This function populates a select element with a user's sheets
+ *
+ * The first option is always the default option for this project, all other options are derived from a user's drive
+ */
+function populateSheetSelector(arrayOfSheets) {
+    document.getElementById('sheet').innerHTML = '<option value="1R0HpaAIUw-JHX8SrzvkEPCG1qgI-siJ9oucY6g5e4Co">default</option>';
+
+    for(var i = 0; i < arrayOfSheets.length; i++) {
+        document.getElementById('sheet').innerHTML += '<option value="' + arrayOfSheets[i].id + '">' + arrayOfSheets[i].name + '</option>';
+    }
+}
+
+
+
+/*
+ * This function sets the sheetId to the currently selected option
+ */
+function getNewTabData() {
+    data = document.getElementById('tab').value.split(/,(.+)/);
+    sheetIdNum = data[0];
+    sheetId = data[1];
+}
+
+
+
+/*
+ * This function populates the tab selector with the results from getTabsOfSheet()
+ * The default option will be the first sheet in the document
+ */
+function populateTabSelector(arrayOfTabs) {
+    document.getElementById('tab').innerHTML = '';
+
+    for(var i = 0; i < arrayOfTabs.length; i++) {
+        document.getElementById('tab').innerHTML += '<option value="' + arrayOfTabs[i].properties.sheetId + ',' + arrayOfTabs[i].properties.title + '">' + arrayOfTabs[i].properties.title + '</option>';
+    }
+}
+
+
+
+/*
+ * This api call gets a list of all sheets the user owns and all sheets shared directly to the user
+ *
+ * Note that the maximum page size is 1000, this is the max allowed by the API
+ *
+ * If the number of sheets exceeds 1000, it will return a nextPageToken which can be used in a second API request to get the next page
+ *
+ * By checking whether the nextPageToken is undefined, we can determine whether or not this is necessary
+ *
+ *
+ * For this proof-of-concept, I have not included this check as I felt that 1000 sheets was more than sufficient and that
+ * any more sheets would have been too difficult to navigate
+ *
+ *
+ *
+ * pageSize specifies the maximum number of items this API call will receive
+ *
+ * orderBy specifies the order in which these items are presented
+ *      viewedByMeTime sorts items by the most recently opened files for the authenticated user
+ * 
+ * q allows us to filter results by a variety of parameters
+ *      in this case, only results that are google spreadsheets will be presented
+ *
+ *
+ * The function returns a JSON object which is parsed to get the sheet IDs and sheet names,
+ * these are sent to a separate function to populate the select elements
+ */
+function getAllUserSheets() {
+    return gapi.client.drive.files.list({
+        "pageSize": 1000,
+        "orderBy": "name",
+        "q": "mimeType = 'application/vnd.google-apps.spreadsheet'",
+    })
+        .then(function(response) {
+            populateSheetSelector(JSON.parse(response.body).files);
+            getNewSheetData();
+            console.log("Response", response);
+        },
+        function(err) { console.error("Execute error", err); });
+}
+
+
+/*
+ * This function takes the currently selected spreadsheet and gets data about the sheet as a JSON object
+ *
+ * The JSON object is parsed and sent to a function to populate the tab selector
+ */
+function getTabsOfSheet() {
+    return gapi.client.sheets.spreadsheets.get({
+      "spreadsheetId": spreadsheetId,
+      "includeGridData": false
+    })
+        .then(function(response) {
+            populateTabSelector(JSON.parse(response.body).sheets);
+            getNewTabData();
+            console.log("Response", response);
+        },
+        function(err) { console.error("Execute error", err); });
+}
+
+
 /*
  * This function goes through each of the body rows of the table and stores the text in the cells as an array of arrays
  *
@@ -16,6 +161,7 @@ var auth2;
 function tableToArrays() {
     var rows = document.getElementsByClassName('bodyRow');
     var data = [];
+    data.push(["Transaction Id", "Date", "Account Number", "Transaction Type", "Security", "Amount", "$ Amount", "Cost Basis"]);
 
     for(var i = 0; i < rows.length; i++) {
         var cells = rows[i].getElementsByTagName('td');
@@ -76,7 +222,7 @@ function arraysToTable(dataArr) {
  */
 function authenticate() {
 return gapi.auth2.getAuthInstance()
-    .signIn({scope: "https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/spreadsheets"})
+    .signIn({scope: "https://www.googleapis.com/auth/drive"})
     .then(function() { console.log("Sign-in successful"); },
         function(err) { console.error("Error signing in", err); });
 }
@@ -87,11 +233,24 @@ return gapi.auth2.getAuthInstance()
  * This must be called before anything can be read from or written to the database, as it is reponsible for setting up the api client
  *
  * This function is called as soon as the Google API plugin is loaded
+ *
+ *
+ *
+ * UPDATE: There are now two similar functions as both API clients must be loaded, one to list sheets from the user's drive,
+ * and one to get and manipulate information within a sheet
  */
-function loadClient() {
+
+function loadClientSheets() {
 gapi.client.setApiKey("AIzaSyDC6JNuMW78Q-gWsp0PFEaTsICYjHWymAo");
 return gapi.client.load("https://content.googleapis.com/discovery/v1/apis/sheets/v4/rest")
-    .then(function() { console.log("GAPI client loaded for API"); },
+    .then(function() { console.log("GAPI client loaded for API"); loadSheetData(); },
+        function(err) { console.error("Error loading GAPI client for API", err); });
+}
+
+function loadClient() {
+gapi.client.setApiKey("AIzaSyDC6JNuMW78Q-gWsp0PFEaTsICYjHWymAo");
+return gapi.client.load("https://content.googleapis.com/discovery/v1/apis/drive/v3/rest")
+    .then(function() { console.log("GAPI client loaded for API"); loadClientSheets(); },
         function(err) { console.error("Error loading GAPI client for API", err); });
 }
 
@@ -113,16 +272,16 @@ return gapi.client.load("https://content.googleapis.com/discovery/v1/apis/sheets
  */
 function readGoogleSheetDB() {
     return gapi.client.sheets.spreadsheets.values.get({
-        "spreadsheetId": "1R0HpaAIUw-JHX8SrzvkEPCG1qgI-siJ9oucY6g5e4Co",
-        "range": "A1:H214748354"
+        "spreadsheetId": spreadsheetId,
+        "range": sheetId + "!A2:H214748354"
     })
         .then(function(response) {
             console.log("Response", response);
 
-            var dataArr = []
-            if(JSON.parse(response.body).values != undefined)
-                dataArr.push(JSON.parse(response.body).values);
-
+            dataArr = [];
+            if(JSON.parse(response.body).values != undefined) {
+                dataArr = JSON.parse(response.body).values;
+            }
             arraysToTable(dataArr);
 
             readGoogleTypes();
@@ -141,8 +300,8 @@ function readGoogleSheetDB() {
  */
 function readGoogleTypes() {
     return gapi.client.sheets.spreadsheets.values.get({
-        "spreadsheetId": "1R0HpaAIUw-JHX8SrzvkEPCG1qgI-siJ9oucY6g5e4Co",
-        "range": "J1:J214748354",
+        "spreadsheetId": spreadsheetId,
+        "range": sheetId + "!J1:J214748354",
         "majorDimension": "COLUMNS"
 
     })
@@ -204,16 +363,17 @@ function writeGoogleSheetDB() {
  */
 function setGoogleRows() {
     return gapi.client.sheets.spreadsheets.batchUpdate({
-        "spreadsheetId": "1R0HpaAIUw-JHX8SrzvkEPCG1qgI-siJ9oucY6g5e4Co",
+        "spreadsheetId": spreadsheetId,
         "resource": {
         "requests": [
             {
             "updateSheetProperties": {
                 "properties": {
-                "gridProperties": {
-                    "rowCount": 1,
-                    "columnCount": 10
-                }
+                    "gridProperties": {
+                        "columnCount": 10,
+                        "rowCount": 1
+                },
+                    "sheetId": sheetIdNum
                 },
                 "fields": "gridProperties"
             }
@@ -238,8 +398,8 @@ function setGoogleRows() {
  */
 function clearGoogleRow() {
     return gapi.client.sheets.spreadsheets.values.clear({
-    "spreadsheetId": "1R0HpaAIUw-JHX8SrzvkEPCG1qgI-siJ9oucY6g5e4Co",
-    "range": "A1:J1",
+    "spreadsheetId": spreadsheetId,
+    "range": sheetId + "!A1:J1",
     "resource": {}
     })
         .then(function(response) {
@@ -265,16 +425,16 @@ function clearGoogleRow() {
  */
 function writeGoogleDB() {
     return gapi.client.sheets.spreadsheets.values.batchUpdate({
-        "spreadsheetId": "1R0HpaAIUw-JHX8SrzvkEPCG1qgI-siJ9oucY6g5e4Co",
+        "spreadsheetId": spreadsheetId,
         "resource": {
             "data": [
             {
-                "range": "A1",
+                "range": sheetId + "!A1",
                 "values": tableToArrays(),
                 "majorDimension": "ROWS"
             },
             {
-                "range": "J1",
+                "range": sheetId + "!J1",
                 "values": [readCurrentTypes()],
                 "majorDimension": "COLUMNS"
             }
