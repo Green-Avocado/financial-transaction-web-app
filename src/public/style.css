@@ -12,6 +12,11 @@ button {
     width: 40%;
 }
 
+span {
+    border: solid;
+    border-width: 1px;
+}
+
 .sectionHead {
 }
 
