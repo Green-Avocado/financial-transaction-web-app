@@ -1,0 +1,6 @@
+function writeToMySQL() {
+}
+
+function readFromMySQL() {
+}
+

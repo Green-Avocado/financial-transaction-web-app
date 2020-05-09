@@ -14,7 +14,7 @@
                 <h1>Input:</h1>
                 <button class="toggleSection" type="button" onclick="toggleSection(this)">Hide</button>
             </section>
-            <form onsubmit="return false" autocomplete="off">
+            <form onsubmit="return false" autocomplete="on">
                 <section>
                     <label for="date">Date:</label><br/>
                     <input id="date" name="date" type="date" placeholder="yyyy-mm-dd"/>
@@ -31,10 +31,10 @@
                         <option value=""></option>
                         <option value="BUY">BUY</option>
                         <option value="SELL">SELL</option>
-                        <option value="DIVIDEND">DIVIDEND</option>
-                        <option value="INTEREST">INTEREST</option>
-                        <option value="WITHDRAW">WITHDRAW</option>
-                        <option value="DEPOSIT">DEPOSIT</option>
+                        <option value="!DIVIDEND">DIVIDEND</option>
+                        <option value="!INTEREST">INTEREST</option>
+                        <option value="!WITHDRAW">WITHDRAW</option>
+                        <option value="!DEPOSIT">DEPOSIT</option>
                     </select>
                 </section>
 
@@ -133,6 +133,11 @@
 
                     <label for="highCostBasis">Max Cost Basis:</label><br/>
                     <input id="highCostBasis" class="filterField" name="highCostBasis" type="text" placeholder="Max Cost Basis"/>
+
+                    <br/>
+
+                    <label for="filterNa">Filter N/A:</label>
+                    <input id="filterNA" name="filterNA" type="checkbox"/>
                 </section>
 
                 <section>
@@ -164,7 +169,7 @@
                         <button type="button" onclick="saveFile()">Save</button>
                 </section>
 
-                <section>
+                <section id="googleSheetButtons">
                     <button type="button" onclick="writeGoogleSheetDB()">Write to Sheets</button>
                     <button type="button" onclick="readGoogleSheetDB()">Read from Sheets</button>
                 </section>
@@ -182,6 +187,20 @@
                     </section>
                 </section>
 
+                <section id="logoutSection">
+                    <button type="button" onclick="loadSheetData()">Reload Sheets</button>
+                    <button type="button" onclick="auth2.disconnect()">Log out</button>
+                </section>
+
+                <section>
+                    <button type="button" onclick="writeToFirebase()">Write to Firebase</button>
+                    <button type="button" onclick="readFromFirebase()">Read from Firebase</button>
+                </section>
+
+                <section>
+                    <button type="button" onclick="writeToMySQL()">Write to MySQL</button>
+                    <button type="button" onclick="readFromMySQL()">Read from MySQL</button>
+                </section>
             </form>
         </article>
 
@@ -271,6 +290,33 @@
             </table>
         </article>
         </article>
+        
+        <!-- The core Firebase JS SDK is always required and must be listed first -->
+        <script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-app.js"></script>
+
+        <script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-analytics.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-database.js"></script>
+
+        <script>
+        // Your web app's Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyAmZLFZHDAB9evhvNunxOe5GxXRd_OizmU",
+            authDomain: "financial-transactions-6f065.firebaseapp.com",
+            databaseURL: "https://financial-transactions-6f065.firebaseio.com",
+            projectId: "financial-transactions-6f065",
+            storageBucket: "financial-transactions-6f065.appspot.com",
+            messagingSenderId: "82206982479",
+            appId: "1:82206982479:web:8937bbd1bd4fb6022b053a",
+            measurementId: "G-0564DT8RNQ"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        firebase.analytics();
+        
+        var database = firebase.database();
+        </script>
+
+        <script src="./firebaseScript.js"></script>
     </body>
 </html>
 

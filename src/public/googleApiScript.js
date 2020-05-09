@@ -115,7 +115,7 @@ function populateTabSelector(arrayOfTabs) {
 function getAllUserSheets() {
     return gapi.client.drive.files.list({
         "pageSize": 1000,
-        "orderBy": "viewedByMeTime",
+        "orderBy": "name",
         "q": "mimeType = 'application/vnd.google-apps.spreadsheet'",
     })
         .then(function(response) {
@@ -161,6 +161,7 @@ function getTabsOfSheet() {
 function tableToArrays() {
     var rows = document.getElementsByClassName('bodyRow');
     var data = [];
+    data.push(["Transaction Id", "Date", "Account Number", "Transaction Type", "Security", "Amount", "$ Amount", "Cost Basis"]);
 
     for(var i = 0; i < rows.length; i++) {
         var cells = rows[i].getElementsByTagName('td');
@@ -272,15 +273,16 @@ return gapi.client.load("https://content.googleapis.com/discovery/v1/apis/drive/
 function readGoogleSheetDB() {
     return gapi.client.sheets.spreadsheets.values.get({
         "spreadsheetId": spreadsheetId,
-        "range": sheetId + "!A1:H214748354"
+        "range": sheetId + "!A2:H214748354"
     })
         .then(function(response) {
             console.log("Response", response);
 
+            dataArr = [];
             if(JSON.parse(response.body).values != undefined) {
                 dataArr = JSON.parse(response.body).values;
-                arraysToTable(dataArr);
             }
+            arraysToTable(dataArr);
 
             readGoogleTypes();
         },
