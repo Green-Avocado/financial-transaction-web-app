@@ -1,3 +1,30 @@
+/*
+ * Removes a dollar sign if necessary, then replaces all commas with an empty string and converts to a number
+ */
+function formattedStringToNumber(numberAsString) {
+    var number;
+
+    if(numberAsString[0] == '$') {
+        numberAsString = numberAsString.substr(1);
+    }
+
+    number = Number(numberAsString.replace(/,/g, ''));
+
+    return number;
+}
+
+/*
+ * The regex operation groups the number into groups of 3 digits and places commas at the beginning of each group, except the first group
+ * This operation applies separately to digits after a decimal or other special character.
+ */
+function numberToFormattedString(number) {
+    var numberAsString;
+
+    numberAsString = String(number).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+    return numberAsString;
+}
+
 function getData() {
     var date = document.getElementById("date");
     var account = document.getElementById("account").value;
@@ -6,17 +33,16 @@ function getData() {
     var amount = document.getElementById("amount").value;
     var dAmount = document.getElementById("dAmount").value;
 
-    amount = Number(amount);
+    amount = formattedStringToNumber(amount);
 
-    if(dAmount[0] == '$') {
-        dAmount = dAmount.substr(1);
-    }
-    dAmount = Number(dAmount);
+    dAmount = formattedStringToNumber(dAmount);
 
     if(validate(date, account, type, security, amount, dAmount)) {
-        var costBasis = calculateCostBasis(amount, dAmount);
+        var costBasis = '$' + numberToFormattedString(calculateCostBasis(amount, dAmount));
         date = date.value;
-        dAmount = '$' + dAmount.toFixed(2);
+
+        amount = numberToFormattedString(amount);
+        dAmount = '$' + numberToFormattedString(dAmount.toFixed(2));
 
         return [ date, account, type, security, amount, dAmount, costBasis ];
     }
@@ -37,6 +63,11 @@ function validate(date, account, type, security, amount, dAmount) {
 function validateDate(date) {
     realDate = new Date();
     inputDate = date.valueAsNumber;
+
+    if(date.value == '') {
+        alert('Error: Missing date');
+        return false;
+    }
 
     if(!date.checkValidity()) {
         alert('Error: Invalid date');
@@ -132,19 +163,30 @@ function generateId() {
 }
 
 function calculateCostBasis(amount, dAmount) {
-    costBasis = '$' + (dAmount / amount).toFixed(2);
+    costBasis = (dAmount / amount).toFixed(2);
     return costBasis;
 }
 
 function addTransaction(data) {
+    var staging = data;
     var tableBody = document.getElementById('tableBody');
     var newRow = tableBody.insertRow(0);
     newRow.classList += "bodyRow";
 
     var actionsContent = "<button type='button' onclick='editRow(this)'>Edit</button> <button type='button' onclick='deleteRow(this)'>Delete</button>";
-    data.push(actionsContent);
+    staging.push(actionsContent);
 
-    for(var i = 0; i < data.length; i++) {
+    /*
+     * The function assumes that a cost basis is needed, then checks whether or not type starts with an exclamation mark, if so, it corrects
+     * the variable so that cost basis is marked as unneeded, and the type is parsed to remove the exclamation mark
+     */
+    var calculateCostBasis = true;
+    if(data[3][0] == '!') {
+        calculateCostBasis = false;
+        data[3] = data[3].substr(1);
+    }
+
+    for(var i = 0; i < 9; i++) {
         var newCell = newRow.insertCell(i);
         var idShowing = (document.getElementById('toggleId').innerText == "Hide Transaction ID");
         newCell.innerHTML = data[i];
@@ -180,6 +222,13 @@ function addTransaction(data) {
                 newCell.classList = "frozenColumn2";
         }
         */
+
+        /*
+         * If the cell being added is the cost basis cell, and cost basis has been marked as unnecessary, the cell is overwritten with "N/A"
+         */
+        if(i == 7 && !calculateCostBasis) {
+            newCell.innerHTML = "N/A";
+        }
     }
 }
 
@@ -218,7 +267,14 @@ function editRow(button) {
 
     document.getElementById('date').value = rowContent[1].innerText;
     document.getElementById('account').value = rowContent[2].innerText;
+
+    /*
+     * When setting the transaction type to a type that does not exist, the value is replaced with an empty string.
+     * By checking whether or not the value is an empty string, we can determine if an exclamation mark needs to be added
+     */
     document.getElementById('type').value = rowContent[3].innerText;
+    if(document.getElementById('type').value == '') document.getElementById('type').value = '!' + rowContent[3].innerText;
+
     document.getElementById('security').value = rowContent[4].innerText;
     document.getElementById('amount').value = rowContent[5].innerText;
     document.getElementById('dAmount').value = rowContent[6].innerText;
@@ -237,21 +293,30 @@ function saveChanges() {
         rowToEdit = document.getElementsByClassName('editing')[0];
         cellsToEdit = rowToEdit.getElementsByTagName('td');
 
+        /*
+         * If the first character of the transaction type is an exclamation mark,
+         * the type has the first character removed, and the cost basis is replaced with "N/A"
+         */
+        if(data[2][0] == '!') {
+            data[2] = data[2].substr(1);
+            data[6] = "N/A";
+        }
+
         for(var i = 0; i < data.length; i++) {
             cellsToEdit[i + 1].innerHTML = data[i];
         }
         rowToEdit.classList = "bodyRow";
+
+        document.getElementById('add').removeAttribute('hidden');
+        document.getElementById('save').setAttribute('hidden', true);
+        document.getElementById('discard').setAttribute('hidden', true);
+
+        document.getElementById('add').setAttribute('type','submit');
+        document.getElementById('save').setAttribute('type','button');
+
+        resetDate();
+        clearInput(true);
     }
-
-    document.getElementById('add').removeAttribute('hidden');
-    document.getElementById('save').setAttribute('hidden', true);
-    document.getElementById('discard').setAttribute('hidden', true);
-
-    document.getElementById('add').setAttribute('type','submit');
-    document.getElementById('save').setAttribute('type','button');
-
-    resetDate();
-    clearInput(true);
 }
 
 function discardChanges() {
@@ -385,7 +450,9 @@ function validateAmountRange(min, max) {
         return false;
     }
 
-    if(Number(min) > Number(max)) {
+    if(Number(min) > Number(max) && min != '' && max != '') {
+        if(min != '') alert(min + '2');
+        if(max != '') alert(max + '1');
         alert('Error: Invalid Amount Range');
         return false;
     }
@@ -404,7 +471,7 @@ function validateDAmountRange(min, max) {
         return false;
     }
 
-    if(Number(min) > Number(max)) {
+    if(Number(min) > Number(max) && min != '' && max != '') {
         alert('Error: Invalid $ Amount Range');
         return false;
     }
@@ -412,6 +479,20 @@ function validateDAmountRange(min, max) {
     return true;
 }
 
+/*
+ * UPDATE: original code lacked the
+ * !(min == '' || max == '')
+ * part of the last if condition
+ *
+ * This new check tells the function to skip the range verification if either of the strings are empty
+ *
+ * The new condition evaluates false if either of the inner conditions are true
+ *      Translated, the condition is NOT (min is empty OR max is empty)
+ *      
+ *      If either is empty, this becomes NOT (true)
+ *
+ *      If neither is empty, this becomes NOT (false)
+ */
 function validateCostBasisRange(min, max) {
     if(isNaN(Number(min))) {
         alert('Error: Min Cost Basis is NaN');
@@ -423,7 +504,7 @@ function validateCostBasisRange(min, max) {
         return false;
     }
 
-    if(Number(min) > Number(max)) {
+    if(Number(min) > Number(max) && min != '' && max != '') {
         alert('Error: Invalid Cost Basis Range');
         return false;
     }
@@ -449,7 +530,44 @@ function validateCostBasisRange(min, max) {
  * For number values, such as account number, dollar amount, cost basis, everything is converted to a numeric type and compared as > or <.
  *
  * For dates, strings can be compared directly as long as they are in the same format.
+ *
+ *
+ *
+ * UPDATE:
+ *
+ * Though this has not been implemented, to support multiple filters for the same category, and to support exclusive filters:
+ *      Each filter that deals with a string would be parsed to get an array of rules
+ *      A function would loop through every rule, hiding rows that did not meet these requirements
+ *
+ *      First, a parsing function would split a filter field into an array
+ *          For example: "!ABC AND !DEF" would be split as ["!ABC", "!DEF"] and each one would be handled separately.
+ *              Other operators might exist, such as OR. In the case of OR, the two arguments would have to be grouped as one
+ *
+ *      For each item in the array, the filter would be parsed further to interpret it.
+ *          The condition "!ABC"[0] == "!" could be used to determine if the first character was an exclamation mark,
+ *          which would indicate that the following string is to be excluded.
+ *              The function would then go through each row and only hide those matching "ABC"
+ *
+ *          This process would be repeated for each filter in the array
  */
+
+function stringFilter(filtertext, tableitem) {
+    filters = filtertext.split(" && ");
+
+    for(var i = 0; i < filters.length; i++) {
+        filterORs = filters[i].split(" || ");
+        var meetsCriteria = false;
+
+        for(var ii = 0; ii < filterORs.length; ii++) {
+            if(filterORs[ii][0] == "!" && !tableitem.includes(filterORs[ii].substr(1))) meetsCriteria = true;
+            if(filterORs[ii][0] != "!" && tableitem.includes(filterORs[ii])) meetsCriteria = true;
+        }
+
+        if(!meetsCriteria) return false;
+    }
+
+    return true;
+}
 
 function applyFilter() {
     unfilterAll();
@@ -479,7 +597,7 @@ function applyFilter() {
             cells = rows[i].getElementsByTagName('td');
             var hide = false;
 
-            if(filterId != '' && filterId != cells[0].innerText)
+            if(filterId != '' && !stringFilter(filterId,cells[0].innerText))
                 hide = true;
 
             if(startDate.value != '' && startDate.value > cells[1].innerText)
@@ -488,31 +606,34 @@ function applyFilter() {
             if(endDate.value != '' && endDate.value < cells[1].innerText)
                 hide = true;
 
-            if(filterAccount != '' && filterAccount != cells[2].innerText)
+            if(filterAccount != '' && !stringFilter(filterAccount, cells[2].innerText))
                 hide = true;
 
             if(filterType != '' && filterType != cells[3].innerText)
                 hide = true;
 
-            if(filterSecurity != '' && filterSecurity != cells[4].innerText)
+            if(filterSecurity != '' && !stringFilter(filterSecurity, cells[4].innerText))
                 hide = true;
 
-            if(lowAmount != '' && Number(lowAmount) > Number(cells[5].innerText))
+            if(lowAmount != '' && Number(lowAmount) > formattedStringToNumber(cells[5].innerText))
                 hide = true;
 
-            if(highAmount != '' && Number(highAmount) < Number(cells[5].innerText))
+            if(highAmount != '' && Number(highAmount) < formattedStringToNumber(cells[5].innerText))
                 hide = true;
 
-            if(lowDAmount != '' && Number(lowDAmount) > Number(cells[6].innerText.substr(1)))
+            if(lowDAmount != '' && Number(lowDAmount) > formattedStringToNumber(cells[6].innerText.substr(1)))
                 hide = true;
 
-            if(highDAmount != '' && Number(highDAmount) < Number(cells[6].innerText.substr(1)))
+            if(highDAmount != '' && Number(highDAmount) < formattedStringToNumber(cells[6].innerText.substr(1)))
                 hide = true;
 
-            if(lowCostBasis != '' && Number(lowCostBasis) > Number(cells[7].innerText.substr(1)))
+            if(lowCostBasis != '' && Number(lowCostBasis) > formattedStringToNumber(cells[7].innerText.substr(1)))
                 hide = true;
 
-            if(highCostBasis != '' && Number(highCostBasis) < Number(cells[7].innerText))
+            if(highCostBasis != '' && Number(highCostBasis) < formattedStringToNumber(cells[7].innerText.substr(1)))
+                hide = true;
+
+            if(filterNA.checked && cells[7].innerText == "N/A")
                 hide = true;
 
             if(hide)
@@ -533,6 +654,8 @@ function clearFilter() {
     for(var i = 0; i < fields.length; i++) {
         fields[i].value = '';
     }
+
+    document.getElementById('filterNA').checked = false;
 }
 
 /*
@@ -655,20 +778,33 @@ function saveFile() {
  * The function creates an array using values in the input field, separated by commas
  * For each item in this array, the function adds a new option to the <select> elements, effectively adding a transaction type
  * This is done for all the types specified by the user in the input field
+ *
+ * UPDATE: applyTypes() now only splits the input field into an array and passes it to the setTransactionTypesList() function
+ *
+ *      setTransactionTypesList() does exactly what applyTypes used to do, it has been separated to accomodate use by the database
  */
 function applyTypes() {
     var typesArray = document.getElementById('typesArray').value.split(',');
+    setTransactionTypesList(typesArray);
+}
+
+function setTransactionTypesList(typesArray) {
     var type = document.getElementById('type');
     var filterType = document.getElementById('filterType');
 
-    /*
     type.innerHTML = '<option value=""></option>';
     filterType.innerHTML = '<option value=""></option>';
-    */
 
     for(var i = 0; i < typesArray.length; i++) {
-        type.innerHTML += '<option value="' + typesArray[i] + '">' + typesArray[i] + '</option>';
-        filterType.innerHTML += '<option value="' + typesArray[i] + '">' + typesArray[i] + '</option>';
+        var typeAsText = typesArray[i];
+        if(typesArray[i][0] == '!') typeAsText = typesArray[i].substr(1);
+
+        /*
+         * typeAsText is the transaction type with the exclamation mark removed
+         * This is used in all fields except the value attribute of the input field
+         */
+        type.innerHTML += '<option value="' + typesArray[i] + '">' + typeAsText + '</option>';
+        filterType.innerHTML += '<option value="' + typeAsText + '">' + typeAsText + '</option>';
     }
 }
 
