@@ -5,6 +5,10 @@
   "hosting": {
     "site": "financialtransactions",
     "public": "./public",
+    "rewrites": [{
+        "source": "**",
+        "function": "app"
+    }],
     "ignore": [
       "firebase.json",
       "**/.*",
