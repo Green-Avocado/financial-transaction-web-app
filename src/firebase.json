@@ -6,7 +6,7 @@
     "site": "financialtransactions",
     "public": "./public",
     "rewrites": [{
-        "source": "api",
+        "source": "**/api",
         "function": "api"
     }],
     "ignore": [
