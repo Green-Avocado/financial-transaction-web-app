@@ -1,3 +1,19 @@
+There are currently two options for running the server: through firebase and through the standalone localserver.js
+
+As we haven't set up the Firebase project on your machine, for now I would suggest testing it on the local server. To do so, run:
+
+    node localserver.js
+
+in the source directory.
+
+
+This should host a server on port 5000, you can access it by typing:
+
+    localhost:5000
+
+in the URL bar of a browser.
+
+
 The webpage is currently set up to support a locally hosted MySQL database. To do so, install the MySQL program for your machine.
 A password should be generated for you some time during the installation process.
 
