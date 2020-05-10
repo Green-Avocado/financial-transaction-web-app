@@ -33,6 +33,9 @@ function getData() {
     var amount = document.getElementById("amount").value;
     var dAmount = document.getElementById("dAmount").value;
 
+    // set security string to all upper case
+    security = security.toUpperCase();
+
     amount = formattedStringToNumber(amount);
 
     dAmount = formattedStringToNumber(dAmount);
@@ -559,8 +562,9 @@ function stringFilter(filtertext, tableitem) {
         var meetsCriteria = false;
 
         for(var ii = 0; ii < filterORs.length; ii++) {
-            if(filterORs[ii][0] == "!" && !tableitem.includes(filterORs[ii].substr(1))) meetsCriteria = true;
-            if(filterORs[ii][0] != "!" && tableitem.includes(filterORs[ii])) meetsCriteria = true;
+            // Note the .toUpperCase() methods to set all strings to all upper case for comparison
+            if(filterORs[ii][0] == "!" && !tableitem.toUpperCase().includes(filterORs[ii].toUpperCase().substr(1))) meetsCriteria = true;
+            if(filterORs[ii][0] != "!" && tableitem.toUpperCase().includes(filterORs[ii].toUpperCase())) meetsCriteria = true;
         }
 
         if(!meetsCriteria) return false;
