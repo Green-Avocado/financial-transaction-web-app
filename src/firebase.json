@@ -6,8 +6,8 @@
     "site": "financialtransactions",
     "public": "./public",
     "rewrites": [{
-        "source": "**",
-        "function": "app"
+        "source": "api",
+        "function": "api"
     }],
     "ignore": [
       "firebase.json",
