@@ -137,41 +137,31 @@ function writeToFirestore() {
     });
 }
 
-function readDataFromFirestore(cb) {
+function readFromFirestore() {
+    while(document.getElementsByClassName('bodyRow').length > 0) {
+        document.getElementById("tableBody").removeChild(document.getElementsByClassName('bodyRow')[0]);
+    }
+    
     firestore.collection("Data").get().then((querySnapshot) => {
         var data = [];
 
-        for(var i = 0; i < querySnapshot.length; i++) {
-            data[querySnapshot[i].data().id] = querySnapshot[i].data().value;
-        }
+        querySnapshot.forEach((doc) => {
+            data[doc.data().index] = doc.data();
+        });
+            console.log(data);
 
-        cb(data);
-    });
-}
-var banana;
-
-function readTypesFromFirestore(cb) {
-    firestore.collection("Types").get().then((querySnapshot) => {
-        console.log(querySnapshot);
-        banana= querySnapshot;
-        var typesArr = [];
-
-        for(var i = 0; i < querySnapshot.length; i++) {
-            typesArr[querySnapshot[i].data().id] = querySnapshot[i].data().value;
-            console.log(typesArr);
-        }
-
-        cb(typesArr);
-    });
-}
-
-function readFromFirestore() {
-    readDataFromFirestore(function(data) {
         for(var i = data.length - 1; i >= 0; i--) {
             addTransaction([data[i].id, data[i].date, data[i].account, data[i].type, data[i].security, data[i].amount, data[i].dAmount, data[i].costBasis]);
         }
     });
-    readTypesFromFirestore(function(typesArr) {
+
+    firestore.collection("Types").get().then((querySnapshot) => {
+        var typesArr = [];
+
+        querySnapshot.forEach((doc) => {
+            typesArr[doc.data().index] = doc.data().value;
+        });
+
         setTransactionTypesList(typesArr);
     });
 }
