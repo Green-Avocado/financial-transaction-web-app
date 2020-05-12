@@ -74,3 +74,105 @@ function readFromFirebase() {
     });
 }
 
+function clearFirestore() {
+    firestore.collection("Data").get().then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+            firestore.collection("Data").doc(doc.id).delete();
+        });
+    }).then(function() {
+        firestore.collection("Types").get().then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                firestore.collection("Types").doc(doc.id).delete();
+            });
+        })
+    }).then(function() { return 0 });
+}
+
+function writeToFirestore() {
+    firestore.collection("Data").get().then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+            firestore.collection("Data").doc(doc.id).delete();
+        });
+    }).then(function() {
+        firestore.collection("Types").get().then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                firestore.collection("Types").doc(doc.id).delete();
+            });
+        }).then(function() {
+            var data = tableToArrays();
+            var typesArr = readCurrentTypes();
+
+            for(var i = 0; i < data.length - 1; i++) {
+                firestore.collection("Data").add({
+                    id: data[i + 1][0],
+                    date: data[i + 1][1],
+                    account: data[i + 1][2],
+                    type: data[i + 1][3],
+                    security: data[i + 1][4],
+                    amount: data[i + 1][5],
+                    dAmount: data[i + 1][6],
+                    costBasis: data[i + 1][7],
+                    index: i
+                })
+                .then(function(docRef) {
+                    console.log("Document written with ID: ", docRef.id);
+                })
+                .catch(function(error) {
+                    console.error("Error adding document: ", error);
+                });
+            }
+            for(var i = 0; i < typesArr.length; i++) {
+                firestore.collection("Types").add({
+                    value: typesArr[i],
+                    index: i
+                })
+                .then(function(docRef) {
+                    console.log("Document written with ID: ", docRef.id);
+                })
+                .catch(function(error) {
+                    console.error("Error adding document: ", error);
+                });
+            }
+        })
+    });
+}
+
+function readDataFromFirestore(cb) {
+    firestore.collection("Data").get().then((querySnapshot) => {
+        var data = [];
+
+        for(var i = 0; i < querySnapshot.length; i++) {
+            data[querySnapshot[i].data().id] = querySnapshot[i].data().value;
+        }
+
+        cb(data);
+    });
+}
+var banana;
+
+function readTypesFromFirestore(cb) {
+    firestore.collection("Types").get().then((querySnapshot) => {
+        console.log(querySnapshot);
+        banana= querySnapshot;
+        var typesArr = [];
+
+        for(var i = 0; i < querySnapshot.length; i++) {
+            typesArr[querySnapshot[i].data().id] = querySnapshot[i].data().value;
+            console.log(typesArr);
+        }
+
+        cb(typesArr);
+    });
+}
+
+function readFromFirestore() {
+    readDataFromFirestore(function(data) {
+        for(var i = data.length - 1; i >= 0; i--) {
+            addTransaction([data[i].id, data[i].date, data[i].account, data[i].type, data[i].security, data[i].amount, data[i].dAmount, data[i].costBasis]);
+        }
+    });
+    readTypesFromFirestore(function(typesArr) {
+        setTransactionTypesList(typesArr);
+    });
+}
+

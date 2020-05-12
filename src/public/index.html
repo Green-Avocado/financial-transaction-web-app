@@ -200,6 +200,11 @@
                 </section>
 
                 <section>
+                    <button type="button" onclick="writeToFirestore()">Write to Firestore</button>
+                    <button type="button" onclick="readFromFirestore()">Read from Firestore</button>
+                </section>
+
+                <section>
                     <button type="button" onclick="writeToMySQL()">Write to MySQL</button>
                     <button type="button" onclick="readFromMySQL()">Read from MySQL</button>
                 </section>
@@ -298,6 +303,7 @@
 
         <script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-analytics.js"></script>
         <script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-database.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/7.14.3/firebase-firestore.js"></script>
 
         <script>
         // Your web app's Firebase configuration
@@ -316,6 +322,7 @@
         firebase.analytics();
         
         var database = firebase.database();
+        var firestore = firebase.firestore();
         </script>
 
         <script src="./firebaseScript.js"></script>
