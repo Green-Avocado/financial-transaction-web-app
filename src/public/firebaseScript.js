@@ -138,17 +138,16 @@ function writeToFirestore() {
 }
 
 function readFromFirestore() {
-    while(document.getElementsByClassName('bodyRow').length > 0) {
-        document.getElementById("tableBody").removeChild(document.getElementsByClassName('bodyRow')[0]);
-    }
-    
     firestore.collection("Data").get().then((querySnapshot) => {
         var data = [];
 
         querySnapshot.forEach((doc) => {
             data[doc.data().index] = doc.data();
         });
-            console.log(data);
+
+        while(document.getElementsByClassName('bodyRow').length > 0) {
+            document.getElementById("tableBody").removeChild(document.getElementsByClassName('bodyRow')[0]);
+        }
 
         for(var i = data.length - 1; i >= 0; i--) {
             addTransaction([data[i].id, data[i].date, data[i].account, data[i].type, data[i].security, data[i].amount, data[i].dAmount, data[i].costBasis]);
