@@ -792,6 +792,33 @@ function applyTypes() {
     setTransactionTypesList(typesArray);
 }
 
+/*
+ * The editTypes() function sets the value of the types input field to the return value of readCurrentTypes() as a comma-separated string.
+ *
+ * readCurrentTypes() is a function that gets the current types by reading the elements in the dropdown menu and saves these as an array.
+ * It is located in the googleApiScript.js file, as it was originally created to store types in a database/spreadsheet.
+ *
+ * By taking this array and calling the 'join()' method, passing ',' as the argument, we can convert the array to a string where
+ * items are separated by commas.
+ */
+
+function editTypes() {
+    document.getElementById('typesArray').value = readCurrentTypes().join(',');
+}
+
+/*
+ * NOTE REGARDING ADDING TRANSACTION TYPES
+ *
+ * An "add" button for transaction types would be identical to the 'setTransactionTypesList()' function below,
+ * except it would exclude the lines:
+ *
+ *      type.innerHTML = '<option value=""></option>';
+ *      filterType.innerHTML = '<option value=""></option>';
+ *
+ * as these lines are responsible for clearing the types before setting them.
+ * With these removed, the function is simply adding as usual.
+ */
+
 function setTransactionTypesList(typesArray) {
     var type = document.getElementById('type');
     var filterType = document.getElementById('filterType');
