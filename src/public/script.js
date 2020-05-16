@@ -177,7 +177,7 @@ function addTransaction(data) {
     newRow.classList += "bodyRow";
 
     var actionsContent = "<button type='button' onclick='editRow(this)'>Edit</button> <button type='button' onclick='deleteRow(this)'>Delete</button>";
-    staging.push(actionsContent);
+    staging[9] = actionsContent;
 
     /*
      * The function assumes that a cost basis is needed, then checks whether or not type starts with an exclamation mark, if so, it corrects
@@ -189,9 +189,10 @@ function addTransaction(data) {
         data[3] = data[3].substr(1);
     }
 
-    for(var i = 0; i < 9; i++) {
+    for(var i = 0; i < 10; i++) {
         var newCell = newRow.insertCell(i);
         var idShowing = (document.getElementById('toggleId').innerText == "Hide Transaction ID");
+        
         newCell.innerHTML = data[i];
 
         /*
