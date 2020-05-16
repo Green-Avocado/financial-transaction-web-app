@@ -244,6 +244,7 @@ function addTransactionButton() {
         addTransaction(data);
         clearInput(false);
     }
+    loadDataLists();
 }
 
 function deleteRow(button) {
@@ -258,6 +259,7 @@ function deleteRow(button) {
         document.getElementById('add').setAttribute('type','submit');
         document.getElementById('save').setAttribute('type','button');
     }
+    loadDataLists();
 }
 
 function editRow(button) {
@@ -319,6 +321,7 @@ function saveChanges() {
 
         resetDate();
         clearInput(true);
+        loadDataLists();
     }
 }
 
@@ -854,6 +857,34 @@ function toggleSection(button) {
     else {
         form.removeAttribute("hidden");
         button.innerText = "Hide";
+    }
+}
+
+function loadDataLists() {
+    var accountsList = document.getElementById("accountsList");
+    var securitiesList = document.getElementById("securitiesList");
+    var rows = document.getElementsByClassName("bodyRow");
+
+    var accounts = [];
+    var securities = [];
+
+    for(var i = 0; i < rows.length; i++) {
+        var tableAccount = rows[i].getElementsByTagName("td")[2].innerText;
+        var tableSecurity = rows[i].getElementsByTagName("td")[4].innerText;
+
+        if(!accounts.includes(tableAccount)) accounts.push(tableAccount);
+        if(!securities.includes(tableSecurity)) securities.push(tableSecurity);
+    }
+
+    accountsList.innerHTML = '';
+    securitiesList.innerHTML = '';
+
+    for(var i = 0; i < accounts.length; i++) {
+        accountsList.innerHTML += '<option value="' + accounts[i] + '"/>';
+    }
+
+    for(var i = 0; i < securities.length; i++) {
+        securitiesList.innerHTML += '<option value="' + securities[i] + '"/>';
     }
 }
 

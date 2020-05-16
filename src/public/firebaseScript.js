@@ -71,6 +71,7 @@ function readFromFirebase() {
             typesArr.push(types[i].value);
         }
         setTransactionTypesList(typesArr);
+        loadDataLists();
     });
 }
 
@@ -152,6 +153,7 @@ function readFromFirestore() {
         for(var i = data.length - 1; i >= 0; i--) {
             addTransaction([data[i].id, data[i].date, data[i].account, data[i].type, data[i].security, data[i].amount, data[i].dAmount, data[i].costBasis]);
         }
+        loadDataLists();
     });
 
     firestore.collection("Types").get().then((querySnapshot) => {

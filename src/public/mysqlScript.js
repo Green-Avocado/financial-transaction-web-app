@@ -23,6 +23,7 @@ function readFromMySQL() {
             for(var i = data.length - 1; i >= 0; i--) {
                 addTransaction([data[i].id, data[i].date, data[i].account, data[i].type, data[i].security, data[i].amount, data[i].dAmount, data[i].costBasis]);
             }
+            loadDataLists();
 
             var types = fullresponse[1];
             var typesArr = [];

@@ -209,6 +209,7 @@ function arraysToTable(dataArr) {
         addTransaction(dataArr[dataArr.length - 1]);
         dataArr.pop();
     }
+    loadDataLists();
 }
 
 /*
