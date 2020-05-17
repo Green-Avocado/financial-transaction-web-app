@@ -38,55 +38,36 @@ function fileUploadChanged() {
 function uploadFile(fileId, data, cb) {
     fileIn = document.getElementById('fileUpload');
     if(fileIn.files && fileIn.files[0]) {
-        removeExistingFile(fileId, data, cb);
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            console.log(e.target.result);
+
+            let bits = e.target.result;
+            let ob = {
+                id: fileId,
+                type: fileIn.files[0].type,
+                name: fileIn.files[0].name,
+                data: bits
+            };
+
+            let trans = db.transaction(['files'], 'readwrite');
+            let addReq = trans.objectStore('files').put(ob);
+
+            addReq.onerror = function(e) {
+                console.log('error storing data');
+                console.error(e);
+            }
+
+            trans.oncomplete = function(e) {
+                console.log('data stored');
+                data.push(fileIn.files[0].name);
+                removeFileUpload();
+                cb(data);
+            }
+        };
+        reader.readAsBinaryString(fileIn.files[0])
     }
     else cb(data);
-}
-
-function uploadFileFinalise(fileId, data, cb) {
-    var reader = new FileReader();
-    reader.onload = function (e) {
-        console.log(e.target.result);
-
-        let bits = e.target.result;
-        let ob = {
-            id: fileId,
-            type: fileIn.files[0].type,
-            name: fileIn.files[0].name,
-            data: bits
-        };
-
-        let trans = db.transaction(['files'], 'readwrite');
-        let addReq = trans.objectStore('files').add(ob);
-
-        addReq.onerror = function(e) {
-            console.log('error storing data');
-            console.error(e);
-        }
-
-        trans.oncomplete = function(e) {
-            console.log('data stored');
-            data.push(fileIn.files[0].name);
-            removeFileUpload();
-            cb(data);
-        }
-    };
-    reader.readAsBinaryString(fileIn.files[0])
-}
-
-function removeExistingFile(fileId, data, cb) {
-    var trans = db.transaction(['files'], 'readwrite');
-    var dlReq = trans.objectStore('files').get(fileId);
-    dlReq.onerror = function(e) {
-        uploadFileFinalise(fileId, data, cb);
-    };
-    
-    dlReq.onsuccess = function(e) {
-        var delReq = trans.objectStore('files').delete(fileId);
-        delReq.onsuccess = function(e) {
-            uploadFileFinalise(fileId, data, cb);
-        }
-    }
 }
 
 function updateExistingFileName(data) {
