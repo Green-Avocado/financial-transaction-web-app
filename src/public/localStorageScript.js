@@ -57,7 +57,7 @@ function uploadFile(fileId, data, cb) {
     else cb(data);
 }
 
-function removeFile() {
+function removeFileUpload() {
     document.getElementById('fileUpload').value = null;
 }
 
