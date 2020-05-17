@@ -8,6 +8,7 @@
         <script src="https://apis.google.com/js/api.js"></script>
         <script src="./googleApiScript.js"></script>
         <script src="./mysqlScript.js"></script>
+        <script src="./localStorageScript.js"></script>
     </head>
     <body>
         <article id="inputFields">
@@ -60,7 +61,7 @@
 
                 <section>
                     <label for="fileUpload">Upload file</label>
-                    <input id="fileUpload" name="fileUpload" type="file" onchange="uploadFile(this)"/>
+                    <input id="fileUpload" name="fileUpload" type="file"/>
                     <button id="removeFile" type="button" onclick="removeFile();">X</button>
                 </section>
 

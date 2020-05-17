@@ -176,7 +176,9 @@ function addTransaction(data) {
     var newRow = tableBody.insertRow(0);
     newRow.classList += "bodyRow";
 
-    var actionsContent = "<button type='button' onclick='editRow(this)'>Edit</button> <button type='button' onclick='deleteRow(this)'>Delete</button>";
+    var actionsContent = "<button type='button' onclick='editRow(this)'>Edit</button><button type='button' onclick='deleteRow(this)'>Delete</button>";
+    var fileContent = "<a onclick='downloadFile(`" + data[0] + "`);' href='javascript:void(0);'>" + data[8] + "</a>";
+    staging[8] = fileContent;
     staging[9] = actionsContent;
 
     /*
@@ -242,9 +244,14 @@ function addTransactionButton() {
         var id = generateId();
         data.unshift(id);
 
-        addTransaction(data);
+        uploadFile(id, data, addTransactionWithFileName);
         clearInput(false);
     }
+}
+
+function addTransactionWithFileName(data, fileName) {
+    data.push(fileName);
+    addTransaction(data);
     loadDataLists();
 }
 
@@ -751,7 +758,7 @@ function toggleID() {
  * Once this process is complete, the function specified by the 'onload' property is executed.
  */
 function readFile(fileIn){
-    if(fileIn.files && fileIn.files[0]){
+    if(fileIn.files && fileIn.files[0]) {
         var reader = new FileReader();
         reader.onload = function (e) {
             var output = e.target.result;
@@ -894,5 +901,6 @@ function loadDataLists() {
  */
 window.onload = function() {
     resetDate();
+    initDb();
 }
 
