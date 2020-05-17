@@ -82,7 +82,10 @@ function removeExistingFile(fileId, data, cb) {
     };
     
     dlReq.onsuccess = function(e) {
-        uploadFileFinalise(fileId, data, cb);
+        var delReq = trans.objectStore('files').delete(fileId);
+        delReq.onsuccess = function(e) {
+            uploadFileFinalise(fileId, data, cb);
+        }
     }
 }
 
