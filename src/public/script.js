@@ -177,7 +177,9 @@ function addTransaction(data) {
     newRow.classList += "bodyRow";
 
     var actionsContent = "<button type='button' onclick='editRow(this)'>Edit</button><button type='button' onclick='deleteRow(this)'>Delete</button>";
-    var fileContent = "<a onclick='downloadFile(`" + data[0] + "`);' href='javascript:void(0);'>" + data[8] + "</a>";
+    var fileContent = '';
+    if(data.length > 8)
+        fileContent = "<a onclick='downloadFile(`" + data[0] + "`);' href='javascript:void(0);'>" + data[8] + "</a>";
     staging[8] = fileContent;
     staging[9] = actionsContent;
 
@@ -250,8 +252,8 @@ function addTransactionButton() {
 }
 
 function addTransactionWithFileName(data, fileName) {
-    data.push(fileName);
     addTransaction(data);
+    console.log(data);
     loadDataLists();
 }
 

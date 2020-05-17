@@ -48,11 +48,13 @@ function uploadFile(fileId, data, cb) {
 
             trans.oncomplete = function(e) {
                 console.log('data stored');
-                cb(data, fileIn.files[0].name);
+                data.push(fileIn.files[0].name);
+                cb(data);
             }
         };
         reader.readAsBinaryString(fileIn.files[0])
     }
+    else cb(data);
 }
 
 function removeFile() {
