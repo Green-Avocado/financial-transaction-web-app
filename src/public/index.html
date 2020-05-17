@@ -60,8 +60,8 @@
                 </section>
 
                 <section>
-                    <label for="fileUpload">Upload file</label>
-                    <input id="fileUpload" name="fileUpload" type="file"/>
+                    <label id="fileUploadLabel" for="fileUpload">Upload file</label>
+                    <input id="fileUpload" name="fileUpload" type="file" onchange="fileUploadChanged();" style="display:none"/>
                     <button id="removeFile" type="button" onclick="removeFileUpload();">X</button>
                 </section>
 

@@ -2,6 +2,8 @@ let db;
 let dbVersion = 1;
 let dbReady = false;
 
+var fileEditted = false;
+
 function initDb() {
     let reset = indexedDB.deleteDatabase('FileStorage');
     reset.onsuccess = function(a) {
@@ -24,41 +26,79 @@ function initDb() {
     }
 }
 
+function fileUploadChanged() {
+    fileIn = document.getElementById('fileUpload');
+    if(fileIn.files && fileIn.files[0]) {
+        document.getElementById('fileUploadLabel').innerHTML = fileIn.files[0].name;
+    }
+    fileEditted = true;
+    console.log("updated file upload");
+}
+
 function uploadFile(fileId, data, cb) {
     fileIn = document.getElementById('fileUpload');
     if(fileIn.files && fileIn.files[0]) {
-        var reader = new FileReader();
-        reader.onload = function (e) {
-            console.log(e.target.result);
-
-            let bits = e.target.result;
-            let ob = {
-                id: fileId,
-                name: fileIn.files[0].name,
-                data: bits
-            };
-
-            let trans = db.transaction(['files'], 'readwrite');
-            let addReq = trans.objectStore('files').add(ob);
-
-            addReq.onerror = function(e) {
-                console.log('error storing data');
-                console.error(e);
-            }
-
-            trans.oncomplete = function(e) {
-                console.log('data stored');
-                data.push(fileIn.files[0].name);
-                cb(data);
-            }
-        };
-        reader.readAsBinaryString(fileIn.files[0])
+        removeExistingFile(fileId, data, cb);
     }
     else cb(data);
 }
 
+function uploadFileFinalise(fileId, data, cb) {
+    var reader = new FileReader();
+    reader.onload = function (e) {
+        console.log(e.target.result);
+
+        let bits = e.target.result;
+        let ob = {
+            id: fileId,
+            type: fileIn.files[0].type,
+            name: fileIn.files[0].name,
+            data: bits
+        };
+
+        let trans = db.transaction(['files'], 'readwrite');
+        let addReq = trans.objectStore('files').add(ob);
+
+        addReq.onerror = function(e) {
+            console.log('error storing data');
+            console.error(e);
+        }
+
+        trans.oncomplete = function(e) {
+            console.log('data stored');
+            data.push(fileIn.files[0].name);
+            removeFileUpload();
+            cb(data);
+        }
+    };
+    reader.readAsBinaryString(fileIn.files[0])
+}
+
+function removeExistingFile(fileId, data, cb) {
+    var trans = db.transaction(['files'], 'readwrite');
+    var dlReq = trans.objectStore('files').get(fileId);
+    dlReq.onerror = function(e) {
+        uploadFileFinalise(fileId, data, cb);
+    };
+    
+    dlReq.onsuccess = function(e) {
+        uploadFileFinalise(fileId, data, cb);
+    }
+}
+
+function updateExistingFileName(data) {
+    if(data.length > 2) {
+        data[1].innerHTML = "<a onclick='downloadFile(`" + data[0] + "`);' href='javascript:void(0);'>" + data[2] + "</a>"
+    }
+    else {
+        data[1].innerHTML = '';
+    }
+}
+
 function removeFileUpload() {
     document.getElementById('fileUpload').value = null;
+    document.getElementById('fileUploadLabel').innerHTML = "Upload file";
+    fileEditted = true;
 }
 
 function downloadFile(fileId) {
@@ -73,9 +113,9 @@ function downloadFile(fileId) {
     
     dlReq.onsuccess = function(e) {
         console.log('data read');
-        console.log(dlReq.result.data);
+        console.log(dlReq.result);
         var element = document.createElement('a');
-        element.setAttribute('href', 'data:' + fileUpload.files[0].type + ';charset=utf-8,' + encodeURIComponent(dlReq.result.data));
+        element.setAttribute('href', 'data:' + dlReq.result.type + ';charset=utf-8,' + encodeURIComponent(dlReq.result.data));
         element.setAttribute('download', dlReq.result.name);
 
         element.style.display = 'none';
@@ -85,5 +125,9 @@ function downloadFile(fileId) {
 
         document.body.removeChild(element);
     };
+}
+
+window.onbeforeunload = function(){
+    indexedDB.deleteDatabase('FileStorage');
 }
 

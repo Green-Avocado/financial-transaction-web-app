@@ -300,6 +300,13 @@ function editRow(button) {
 
     document.getElementById('add').setAttribute('type','button');
     document.getElementById('save').setAttribute('type','submit');
+
+    removeFileUpload();
+    uploadLabel = document.getElementById('fileUploadLabel');
+    if(rowContent[8].children.length > 0) {
+        uploadLabel.innerHTML = rowContent[8].children[0].innerHTML
+    }
+    fileEditted = false;
 }
 
 function saveChanges() {
@@ -329,6 +336,13 @@ function saveChanges() {
         document.getElementById('add').setAttribute('type','submit');
         document.getElementById('save').setAttribute('type','button');
 
+        if(fileEditted) {
+            uploadFile(cellsToEdit[0].innerText, [cellsToEdit[0].innerText, cellsToEdit[8]], updateExistingFileName);
+        }
+        else {
+            removeFileUpload();
+        }
+
         resetDate();
         clearInput(true);
         loadDataLists();
@@ -347,6 +361,7 @@ function discardChanges() {
 
     resetDate();
     clearInput(true);
+    removeFileUpload();
 }
 
 function sortTable(column, ascending) {
