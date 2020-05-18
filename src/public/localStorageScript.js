@@ -42,7 +42,7 @@ function uploadFile(fileId, data, cb) {
         reader.onload = function (e) {
             console.log(e.target.result);
 
-            let bits = e.target.result;
+            let bits = btoa(e.target.result);
             let ob = {
                 id: fileId,
                 type: fileIn.files[0].type,
@@ -87,7 +87,7 @@ function removeFileUpload() {
 
 function downloadFile(fileId) {
     console.log('downloading');
-    var trans = db.transaction(['files'], 'readwrite');
+    var trans = db.transaction(['files'], 'readonly');
     var dlReq = trans.objectStore('files').get(fileId);
     
     dlReq.onerror = function(e) {
@@ -99,7 +99,7 @@ function downloadFile(fileId) {
         console.log('data read');
         console.log(dlReq.result);
         var element = document.createElement('a');
-        element.setAttribute('href', 'data:' + dlReq.result.type + ';charset=utf-8,' + encodeURIComponent(dlReq.result.data));
+        element.setAttribute('href', 'data:' + dlReq.result.type + ';charset=utf-8,' + encodeURIComponent(atob(dlReq.result.data)));
         element.setAttribute('download', dlReq.result.name);
 
         element.style.display = 'none';
