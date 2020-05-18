@@ -17,6 +17,10 @@ span {
     border-width: 1px;
 }
 
+#fileUpload {
+    display: none;
+}
+
 #removeFile {
     width: 16px;
     padding: 0;
