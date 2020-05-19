@@ -99,7 +99,7 @@ function downloadFile(fileId) {
         console.log('data read');
         console.log(dlReq.result);
         var element = document.createElement('a');
-        element.setAttribute('href', 'data:' + dlReq.result.type + ';charset=utf-8,' + encodeURIComponent(atob(dlReq.result.data)));
+        element.setAttribute('href', 'data:' + dlReq.result.type + ';base64,' + dlReq.result.data);
         element.setAttribute('download', dlReq.result.name);
 
         element.style.display = 'none';
