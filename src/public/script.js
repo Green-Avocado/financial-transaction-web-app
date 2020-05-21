@@ -183,7 +183,7 @@ function addTransaction(data) {
             fileContent += "<tr><td><a onclick='downloadFile(`" + data[8][i][0] + "`);' href='javascript:void(0);'>" + data[8][i][1] + "</a></td></tr>";
         }
     }
-    fileContent += '</table>';
+    fileContent += '<tr><td><button type="button" onclick="addFileToRow()">Add file</button></td></tr></table>';
     staging[8] = fileContent;
     staging[9] = actionsContent;
 
@@ -312,8 +312,8 @@ function editRow(button) {
 
     removeFileUpload();
     uploadLabel = document.getElementById('fileUploadLabel');
-    if(rowContent[8].children.length > 0) {
-        uploadLabel.innerHTML = rowContent[8].children[0].innerHTML
+    if(rowContent[8].getElementsByTagName('tr').length > 1) {
+        uploadLabel.innerHTML = String(rowContent[8].getElementsByTagName('tr').length - 1) + " file(s)";
     }
     fileEditted = false;
 }
@@ -346,7 +346,7 @@ function saveChanges() {
         document.getElementById('save').setAttribute('type','button');
 
         if(fileEditted) {
-            uploadFile(cellsToEdit[0].innerText, [cellsToEdit[0].innerText, cellsToEdit[8]], updateExistingFileName);
+            uploadFile([cellsToEdit[8]], updateExistingFileName, new Array(), 0);
         }
         else {
             removeFileUpload();

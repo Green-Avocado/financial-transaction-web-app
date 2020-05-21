@@ -29,7 +29,7 @@ function initDb() {
 function fileUploadChanged() {
     fileIn = document.getElementById('fileUpload');
     if(fileIn.files && fileIn.files[0]) {
-        document.getElementById('fileUploadLabel').innerHTML = fileIn.files[0].name;
+        document.getElementById('fileUploadLabel').innerHTML = String(fileIn.files.length) + " file(s)";
     }
     fileEditted = true;
     console.log("updated file upload");
@@ -76,12 +76,25 @@ function uploadFile(data, cb, fileList, index) {
 }
 
 function updateExistingFileName(data) {
-    if(data.length > 2) {
-        data[1].innerHTML = "<a onclick='downloadFile(`" + data[0] + "`);' href='javascript:void(0);'>" + data[2] + "</a>"
+    if(data[0].getElementsByTagName('tr').length > 1) {
+        for(let i = 0; i < data[0].getElementsByTagName('tr').length - 1; i++) {
+            let fileId = data[0].getElementsByTagName('tr')[i].getElementsByTagName('a')[0].getAttribute('onclick').split('`')[1];
+            deleteFileFromIndexedDB(fileId);
+        }
     }
-    else {
-        data[1].innerHTML = '';
+    var fileContent = '<table>';
+    if(data.length > 1) {
+        for(let i = 0; i < data[1].length; i++) {
+            fileContent += "<tr><td><a onclick='downloadFile(`" + data[1][i][0] + "`);' href='javascript:void(0);'>" + data[1][i][1] + "</a></td></tr>";
+        }
     }
+    fileContent += '<tr><td><button type="button" onclick="addFileToRow()">Add file</button></td></tr></table>';
+    data[0].innerHTML = fileContent;
+}
+
+function deleteFileFromIndexedDB(fileId) {
+    let trans = db.transaction(['files'], 'readwrite');
+    let addReq = trans.objectStore('files').delete(fileId);
 }
 
 function removeFileUpload() {
