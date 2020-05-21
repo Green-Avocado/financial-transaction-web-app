@@ -35,9 +35,10 @@ function fileUploadChanged() {
     console.log("updated file upload");
 }
 
-function uploadFile(fileId, data, cb) {
+function uploadFile(data, cb, fileList, index) {
+    fileId = fileIdGenerator();
     fileIn = document.getElementById('fileUpload');
-    if(fileIn.files && fileIn.files[0]) {
+    if(fileIn.files && fileIn.files[index]) {
         var reader = new FileReader();
         reader.onload = function (e) {
             console.log(e.target.result);
@@ -45,8 +46,8 @@ function uploadFile(fileId, data, cb) {
             let bits = btoa(e.target.result);
             let ob = {
                 id: fileId,
-                type: fileIn.files[0].type,
-                name: fileIn.files[0].name,
+                type: fileIn.files[index].type,
+                name: fileIn.files[index].name,
                 data: bits
             };
 
@@ -60,14 +61,18 @@ function uploadFile(fileId, data, cb) {
 
             trans.oncomplete = function(e) {
                 console.log('data stored');
-                data.push(fileIn.files[0].name);
-                removeFileUpload();
-                cb(data);
+                fileList.push([fileId, fileIn.files[index].name]);
+                index++;
+                uploadFile(data, cb, fileList, index);
             }
         };
-        reader.readAsBinaryString(fileIn.files[0])
+        reader.readAsBinaryString(fileIn.files[index])
     }
-    else cb(data);
+    else {
+        removeFileUpload();
+        data.push(fileList);
+        cb(data);
+    }
 }
 
 function updateExistingFileName(data) {

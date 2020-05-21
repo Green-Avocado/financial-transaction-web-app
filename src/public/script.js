@@ -177,9 +177,13 @@ function addTransaction(data) {
     newRow.classList += "bodyRow";
 
     var actionsContent = "<button type='button' onclick='editRow(this)'>Edit</button><button type='button' onclick='deleteRow(this)'>Delete</button>";
-    var fileContent = '';
-    if(data.length > 8)
-        fileContent = "<a onclick='downloadFile(`" + data[0] + "`);' href='javascript:void(0);'>" + data[8] + "</a>";
+    var fileContent = '<table>';
+    if(data.length > 8) {
+        for(let i = 0; i < data[8].length; i++) {
+            fileContent += "<tr><td><a onclick='downloadFile(`" + data[8][i][0] + "`);' href='javascript:void(0);'>" + data[8][i][1] + "</a></td></tr>";
+        }
+    }
+    fileContent += '</table>';
     staging[8] = fileContent;
     staging[9] = actionsContent;
 
@@ -240,13 +244,18 @@ function addTransaction(data) {
     }
 }
 
+function fileIdGenerator() {
+    return Math.floor(Math.random() * 1000000000000000000000000000000000000000000).toString(36);
+}
+
 function addTransactionButton() {
     var data = getData();
     if(data) {
         var id = generateId();
         data.unshift(id);
 
-        uploadFile(id, data, addTransactionWithFileName);
+        fileList = new Array()
+        uploadFile(data, addTransactionWithFileName, fileList, 0);
         clearInput(false);
     }
 }
