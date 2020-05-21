@@ -177,14 +177,14 @@ function addTransaction(data) {
     newRow.classList += "bodyRow";
 
     var actionsContent = "<button type='button' onclick='editRow(this)'>Edit</button><button type='button' onclick='deleteRow(this)'>Delete</button>";
-    var fileContent = '<table>';
+    var fileContent = '<table><tbody>';
     if(data.length > 8) {
         for(let i = 0; i < data[8].length; i++) {
             fileContent += "<tr><td><a onclick='downloadFile(`" + data[8][i][0] + "`);' href='javascript:void(0);'>" + data[8][i][1] + "</a></td>";
             fileContent += "<td><button type='button' onclick='removeFileFromTable(`" + data[8][i][0] + "`, this);'>-</button></td></tr>";
         }
     }
-    fileContent += '</table><button type="button" onclick="addFileToRow()">Add file</button>';
+    fileContent += '</tbody></table><input type="file" onchange="addFile(this, 0);" multiple/>';
     staging[8] = fileContent;
     staging[9] = actionsContent;
 
@@ -320,8 +320,8 @@ function editRow(button) {
 
     removeFileUpload();
     uploadLabel = document.getElementById('fileUploadLabel');
-    if(rowContent[8].getElementsByTagName('tr').length > 1) {
-        uploadLabel.innerHTML = String(rowContent[8].getElementsByTagName('tr').length - 1) + " file(s)";
+    if(rowContent[8].getElementsByTagName('tr').length > 0) {
+        uploadLabel.innerHTML = String(rowContent[8].getElementsByTagName('tr').length) + " file(s)";
     }
     fileEditted = false;
 }
