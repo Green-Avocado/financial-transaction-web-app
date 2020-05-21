@@ -180,10 +180,11 @@ function addTransaction(data) {
     var fileContent = '<table>';
     if(data.length > 8) {
         for(let i = 0; i < data[8].length; i++) {
-            fileContent += "<tr><td><a onclick='downloadFile(`" + data[8][i][0] + "`);' href='javascript:void(0);'>" + data[8][i][1] + "</a></td></tr>";
+            fileContent += "<tr><td><a onclick='downloadFile(`" + data[8][i][0] + "`);' href='javascript:void(0);'>" + data[8][i][1] + "</a></td>";
+            fileContent += "<td><button type='button' onclick='removeFileFromTable(`" + data[8][i][0] + "`, this);'>-</button></td></tr>";
         }
     }
-    fileContent += '<tr><td><button type="button" onclick="addFileToRow()">Add file</button></td></tr></table>';
+    fileContent += '</table><button type="button" onclick="addFileToRow()">Add file</button>';
     staging[8] = fileContent;
     staging[9] = actionsContent;
 
@@ -268,6 +269,13 @@ function addTransactionWithFileName(data, fileName) {
 
 function deleteRow(button) {
     var row = button.parentElement.parentElement;
+
+    var fileRows = row.getElementsByTagName('td')[8].getElementsByTagName('table')[0].getElementsByTagName('tr');
+    for(let i = 0; i < fileRows.length; i++) {
+        let fileId = fileRows[i].getElementsByTagName('a')[0].getAttribute('onclick').split('`')[1];
+        deleteFileFromIndexedDB(fileId);
+    }
+
     document.getElementById("tableBody").removeChild(row);
 
     if(document.getElementsByClassName('editing').length == 0) {

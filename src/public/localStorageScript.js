@@ -76,20 +76,26 @@ function uploadFile(data, cb, fileList, index) {
 }
 
 function updateExistingFileName(data) {
-    if(data[0].getElementsByTagName('tr').length > 1) {
-        for(let i = 0; i < data[0].getElementsByTagName('tr').length - 1; i++) {
-            let fileId = data[0].getElementsByTagName('tr')[i].getElementsByTagName('a')[0].getAttribute('onclick').split('`')[1];
-            deleteFileFromIndexedDB(fileId);
-        }
+    for(let i = 0; i < data[0].getElementsByTagName('tr').length; i++) {
+        let fileId = data[0].getElementsByTagName('tr')[i].getElementsByTagName('a')[0].getAttribute('onclick').split('`')[1];
+        deleteFileFromIndexedDB(fileId);
     }
+
     var fileContent = '<table>';
     if(data.length > 1) {
         for(let i = 0; i < data[1].length; i++) {
-            fileContent += "<tr><td><a onclick='downloadFile(`" + data[1][i][0] + "`);' href='javascript:void(0);'>" + data[1][i][1] + "</a></td></tr>";
+            fileContent += "<tr><td><a onclick='downloadFile(`" + data[1][i][0] + "`);' href='javascript:void(0);'>" + data[1][i][1] + "</a></td>";
+            fileContent += "<td><button type='button' onclick='removeFileFromTable(`" + data[1][i][0] + "`, this);'>-</button></td></tr>";
         }
     }
-    fileContent += '<tr><td><button type="button" onclick="addFileToRow()">Add file</button></td></tr></table>';
+    fileContent += '</table><button type="button" onclick="addFileToRow()">Add file</button>';
     data[0].innerHTML = fileContent;
+}
+
+function removeFileFromTable(fileId, cell) {
+    var row = cell.parentElement.parentElement;
+    row.parentElement.removeChild(row);
+    deleteFileFromIndexedDB(fileId);
 }
 
 function deleteFileFromIndexedDB(fileId) {
