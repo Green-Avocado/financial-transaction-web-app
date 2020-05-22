@@ -134,8 +134,11 @@ function updateExistingFileName(data) {
 
 function removeFileFromTable(fileId, cell) {
     var row = cell.parentElement.parentElement;
-    row.parentElement.removeChild(row);
-    deleteFileFromIndexedDB(fileId);
+
+    if(confirm("Delete " + row.getElementsByTagName('a')[0].innerText + "?")) {
+        row.parentElement.removeChild(row);
+        deleteFileFromIndexedDB(fileId);
+    }
 }
 
 function deleteFileFromIndexedDB(fileId) {
