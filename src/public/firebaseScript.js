@@ -1,4 +1,13 @@
 /*
+ * This function is called before writing to the database in order to clear the old data.
+ *
+ * This is done using a built-in method pointing at the 'Data' reference, which contains all table data
+ */
+function clearFirebase() {
+    firebase.database().ref('Data').remove();
+}
+
+/*
  * The function starts by clearing old data, then creates an array of all the data stored in the table.
  *
  * The array is created using the tableToArrays() function, which is contained in the googleApiScript.js file, as this perfectly suits both databases
@@ -7,6 +16,8 @@
  * Data is stored in appropriately named fields
  */
 function writeToFirebase() {
+    clearFirebase();
+
     var data = tableToArrays();
     var typesArr = readCurrentTypes();
 
