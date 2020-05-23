@@ -1,9 +1,10 @@
-function clearImagesFirestore() {
+function clearImagesFirestore(database) {
 }
 
-function writeImageToFirestore() {
+function writeImagesToFirestore(database) {
+    clearImagesFirestore(database);
 }
 
-function readImagesFromFirestore() {
+function readImagesFromFirestore(database) {
 }
 
