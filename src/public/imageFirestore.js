@@ -56,3 +56,37 @@ function readImagesFromFirestore(database) {
     });
 }
 
+function getFileNamesIds(cell) {
+    var links = cell.getElementsByTagName('a');
+    var result = '';
+
+    for(let i = 0; i < links.length; i++) {
+        result += links[i].innerText + '/' + links[i].getAttribute('onclick').split('`')[1] + '/';
+    }
+
+    return result;
+}
+
+function parseFileNamesIds(string) {
+    var result = new Array();
+
+    if(string != '') {
+        let strarr = string.split('/');
+        for(let i = 0; i < strarr.length - 1; i += 2) {
+            result.push([strarr[i + 1], strarr[i + 0]]);
+        }
+    }
+
+    return result;
+}
+
+function clearIndexedDb(database) {
+    console.log("db reset");
+    let trans = db.transaction(['files'], 'readwrite');
+    var clearReq = trans.objectStore('files').clear();
+
+    trans.oncomplete = function(e) {
+        readImagesFromFirestore(database);
+    }
+}
+

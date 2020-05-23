@@ -90,6 +90,7 @@ function clearFirestore() {
 }
 
 function writeToFirestore() {
+    writeImagesToFirestore("firestore");
     firestore.collection("Data").get().then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
             firestore.collection("Data").doc(doc.id).delete();
@@ -113,7 +114,8 @@ function writeToFirestore() {
                     amount: data[i][5],
                     dAmount: data[i][6],
                     costBasis: data[i][7],
-                    index: i
+                    files: data[i][8],
+                    index: i - 1
                 })
                 .then(function(docRef) {
                     console.log("Document written with ID: ", docRef.id);
@@ -139,19 +141,27 @@ function writeToFirestore() {
 }
 
 function readFromFirestore() {
+    clearIndexedDb("firestore");
     firestore.collection("Data").get().then((querySnapshot) => {
-        var data = [];
+        var data = new Array();
 
         querySnapshot.forEach((doc) => {
             data[doc.data().index] = doc.data();
+            console.log(data);
         });
 
         while(document.getElementsByClassName('bodyRow').length > 0) {
             document.getElementById("tableBody").removeChild(document.getElementsByClassName('bodyRow')[0]);
         }
 
-        for(var i = data.length - 1; i >= 0; i--) {
-            addTransaction([data[i].id, data[i].date, data[i].account, data[i].type, data[i].security, data[i].amount, data[i].dAmount, data[i].costBasis]);
+        for(let i = data.length - 1; i >= 0; i--) {
+            let staged = [data[i].id, data[i].date, data[i].account, data[i].type, data[i].security, data[i].amount, data[i].dAmount, data[i].costBasis];
+            console.log(staged);
+            if(parseFileNamesIds(data[i].files).length > 0) {
+                staged.push(parseFileNamesIds(data[i].files));
+            }
+            console.log(staged);
+            addTransaction(staged);
         }
         loadDataLists();
     });

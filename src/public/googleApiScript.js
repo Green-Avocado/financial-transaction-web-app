@@ -160,19 +160,21 @@ function getTabsOfSheet() {
  */
 function tableToArrays() {
     var rows = document.getElementsByClassName('bodyRow');
-    var data = [];
-    data.push(["Transaction Id", "Date", "Account Number", "Transaction Type", "Security", "Amount", "$ Amount", "Cost Basis"]);
+    var data = new Array();
+    data.push(["Transaction Id", "Date", "Account Number", "Transaction Type", "Security", "Amount", "$ Amount", "Cost Basis", "Files"]);
 
     for(var i = 0; i < rows.length; i++) {
         var cells = rows[i].getElementsByTagName('td');
-        var cellData = [];
+        var cellData = new Array();
 
-        for(var j = 0; j < cells.length - 2; j++) {
+        for(var j = 0; j < 8; j++) {
             cellData.push(cells[j].innerText);
         }
+        cellData.push(getFileNamesIds(cells[8]));
         data.push(cellData);
     }
 
+    console.log(data);
     return data;
 }
 
