@@ -12,14 +12,14 @@ var sheetIdNum = 0;
  * Once the user has successfully authenticated, it calls a function to list all of a user's sheets
  */
 function loadSheetData() {
-    if(auth2.isSignedIn.je)
+    if(auth2.isSignedIn.get())
     {
         getAllUserSheets();
     }
     else {
         authenticate()
             .then(function() {
-                if(auth2.isSignedIn.je) getAllUserSheets();
+                if(auth2.isSignedIn.get()) getAllUserSheets();
             });
     }
 }
@@ -30,14 +30,14 @@ function loadSheetData() {
  */
 function getNewSheetData() {
     spreadsheetId = document.getElementById('sheet').value;
-    if(auth2.isSignedIn.je)
+    if(auth2.isSignedIn.get())
     {
         getTabsOfSheet();
     }
     else {
         authenticate()
             .then(function() {
-                if(auth2.isSignedIn.je) getTabsOfSheet();
+                if(auth2.isSignedIn.get()) getTabsOfSheet();
             });
     }
 }
@@ -208,7 +208,13 @@ function arraysToTable(dataArr) {
     document.getElementById('save').setAttribute('type', 'button');
 
     while(dataArr.length > 0) {
-        addTransaction(dataArr[dataArr.length - 1]);
+        let data = dataArr[dataArr.length - 1];
+        let files = parseFileNamesIds(data[8]);
+        data.pop();
+        if(files.length > 0) {
+            data.push(files);
+        }
+        addTransaction(data);
         dataArr.pop();
     }
     loadDataLists();
@@ -274,9 +280,10 @@ return gapi.client.load("https://content.googleapis.com/discovery/v1/apis/drive/
  * The readGoogleTypes() function is called to update transaction types
  */
 function readGoogleSheetDB() {
+    clearIndexedDb("sheets");
     return gapi.client.sheets.spreadsheets.values.get({
         "spreadsheetId": spreadsheetId,
-        "range": sheetId + "!A2:H214748354"
+        "range": sheetId + "!A2:I214748354"
     })
         .then(function(response) {
             console.log("Response", response);
@@ -344,14 +351,14 @@ function readCurrentTypes() {
  * If the user fails to log in successfully, the process is not started
  */
 function writeGoogleSheetDB() {
-    if(auth2.isSignedIn.je)
+    if(auth2.isSignedIn.get())
     {
         setGoogleRows()
     }
     else {
         authenticate()
             .then(function() {
-                if(auth2.isSignedIn.je) setGoogleRows();
+                if(auth2.isSignedIn.get()) setGoogleRows();
             });
     }
 }
@@ -427,6 +434,7 @@ function clearGoogleRow() {
  *      Every item in the list within the list is a new row
  */
 function writeGoogleDB() {
+    writeImagesToFirestore("sheets");
     return gapi.client.sheets.spreadsheets.values.batchUpdate({
         "spreadsheetId": spreadsheetId,
         "resource": {
