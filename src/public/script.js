@@ -267,6 +267,17 @@ function addTransactionWithFileName(data, fileName) {
     loadDataLists();
 }
 
+
+
+/*
+ * To add a popup box asking for confirmation, wrap the contents of this function
+ * in an if-statement with the condition:
+ *
+ *      confirm("message")
+ * 
+ * This will return true if the user clicks "OK", in which case, the function will be executed.
+ */
+
 function deleteRow(button) {
     var row = button.parentElement.parentElement;
 
