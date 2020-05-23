@@ -167,7 +167,7 @@ function tableToArrays() {
         var cells = rows[i].getElementsByTagName('td');
         var cellData = [];
 
-        for(var j = 0; j < cells.length - 1; j++) {
+        for(var j = 0; j < cells.length - 2; j++) {
             cellData.push(cells[j].innerText);
         }
         data.push(cellData);
