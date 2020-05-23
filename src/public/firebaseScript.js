@@ -10,16 +10,16 @@ function writeToFirebase() {
     var data = tableToArrays();
     var typesArr = readCurrentTypes();
 
-    for(var i = 0; i < data.length - 1; i++) {
+    for(var i = 1; i < data.length; i++) {
         firebase.database().ref('Data/' + String(i)).set({
-            id: data[i + 1][0],
-            date: data[i + 1][1],
-            account: data[i + 1][2],
-            type: data[i + 1][3],
-            security: data[i + 1][4],
-            amount: data[i + 1][5],
-            dAmount: data[i + 1][6],
-            costBasis: data[i + 1][7]
+            id: data[i][0],
+            date: data[i][1],
+            account: data[i][2],
+            type: data[i][3],
+            security: data[i][4],
+            amount: data[i][5],
+            dAmount: data[i][6],
+            costBasis: data[i][7]
         });
     }
     for(var i = 0; i < typesArr.length; i++) {
@@ -92,16 +92,16 @@ function writeToFirestore() {
             var data = tableToArrays();
             var typesArr = readCurrentTypes();
 
-            for(var i = 0; i < data.length - 1; i++) {
+            for(var i = 1; i < data.length; i++) {
                 firestore.collection("Data").add({
-                    id: data[i + 1][0],
-                    date: data[i + 1][1],
-                    account: data[i + 1][2],
-                    type: data[i + 1][3],
-                    security: data[i + 1][4],
-                    amount: data[i + 1][5],
-                    dAmount: data[i + 1][6],
-                    costBasis: data[i + 1][7],
+                    id: data[i][0],
+                    date: data[i][1],
+                    account: data[i][2],
+                    type: data[i][3],
+                    security: data[i][4],
+                    amount: data[i][5],
+                    dAmount: data[i][6],
+                    costBasis: data[i][7],
                     index: i
                 })
                 .then(function(docRef) {
