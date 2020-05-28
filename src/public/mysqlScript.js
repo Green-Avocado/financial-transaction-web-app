@@ -1,4 +1,5 @@
 function writeToMySQL() {
+    writeImagesToFirestore("mysql");
     var data = tableToArrays();
     var types = readCurrentTypes();
 
@@ -12,6 +13,7 @@ function writeToMySQL() {
 }
 
 function readFromMySQL() {
+    clearIndexedDb("mysql");
     fetch('http://localhost:5000/api')
         .then(response => {
             return response.json()
@@ -25,7 +27,11 @@ function readFromMySQL() {
 
             var data = fullresponse[0];
             for(var i = data.length - 1; i >= 0; i--) {
-                addTransaction([data[i].id, data[i].date, data[i].account, data[i].type, data[i].security, data[i].amount, data[i].dAmount, data[i].costBasis]);
+                let staged = [data[i].id, data[i].date, data[i].account, data[i].type, data[i].security, data[i].amount, data[i].dAmount, data[i].costBasis];
+                if(parseFileNamesIds(data[i].files).length > 0) {
+                    staged.push(parseFileNamesIds(data[i].files));
+                }
+                addTransaction(staged);
             }
             loadDataLists();
 

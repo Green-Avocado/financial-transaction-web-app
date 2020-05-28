@@ -38,7 +38,7 @@ function writeToMySQL(jsonData) {
     con.query("TRUNCATE TABLE data;");
 
     for(var i = 1; i < data.length; i++) {
-        con.query("INSERT INTO data (id, date, account, type, security, amount, dAmount, costBasis) VALUES ('" + data[i].join("','") + "');");
+        con.query("INSERT INTO data (id, date, account, type, security, amount, dAmount, costBasis, files) VALUES ('" + data[i].join("','") + "');");
     }
 
     con.query("TRUNCATE TABLE types;");
