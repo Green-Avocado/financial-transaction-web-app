@@ -1,6 +1,3 @@
-/*
- * Removes a dollar sign if necessary, then replaces all commas with an empty string and converts to a number
- */
 function formattedStringToNumber(numberAsString) {
     var number;
 
@@ -13,10 +10,6 @@ function formattedStringToNumber(numberAsString) {
     return number;
 }
 
-/*
- * The regex operation groups the number into groups of 3 digits and places commas at the beginning of each group, except the first group
- * This operation applies separately to digits after a decimal or other special character.
- */
 function numberToFormattedString(number) {
     var numberAsString;
 
@@ -33,7 +26,6 @@ function getData() {
     var amount = document.getElementById("amount").value;
     var dAmount = document.getElementById("dAmount").value;
 
-    // set security string to all upper case
     security = security.toUpperCase();
 
     amount = formattedStringToNumber(amount);
@@ -188,10 +180,6 @@ function addTransaction(data) {
     staging[8] = fileContent;
     staging[9] = actionsContent;
 
-    /*
-     * The function assumes that a cost basis is needed, then checks whether or not type starts with an exclamation mark, if so, it corrects
-     * the variable so that cost basis is marked as unneeded, and the type is parsed to remove the exclamation mark
-     */
     var calculateCostBasis = true;
     if(data[3][0] == '!') {
         calculateCostBasis = false;
@@ -204,15 +192,6 @@ function addTransaction(data) {
         
         newCell.innerHTML = data[i];
 
-        /*
-         * UPDATE:
-         *
-         * The code below has been changed to set the classes of the first two cells to frozen column classes if necessary.
-         * This is done by checking whether or not "Hide Transaction ID" is currently active, by checking the text of the button.
-         * This ensures that newly added rows have the correct alignment and that new IDs are hidden when necessary"
-         *
-         * This is done for the first two columns, and the solution for the third column is commented out.
-         */
         if(i == 0) {
             if(idShowing)
                 newCell.classList = "idCell frozenColumn1";
@@ -236,9 +215,6 @@ function addTransaction(data) {
         }
         */
 
-        /*
-         * If the cell being added is the cost basis cell, and cost basis has been marked as unnecessary, the cell is overwritten with "N/A"
-         */
         if(i == 7 && !calculateCostBasis) {
             newCell.innerHTML = "N/A";
         }
@@ -266,17 +242,6 @@ function addTransactionWithFileName(data, fileName) {
     console.log(data);
     loadDataLists();
 }
-
-
-
-/*
- * To add a popup box asking for confirmation, wrap the contents of this function
- * in an if-statement with the condition:
- *
- *      confirm("message")
- * 
- * This will return true if the user clicks "OK", in which case, the function will be executed.
- */
 
 function deleteRow(button) {
     var row = button.parentElement.parentElement;
@@ -311,10 +276,6 @@ function editRow(button) {
     document.getElementById('date').value = rowContent[1].innerText;
     document.getElementById('account').value = rowContent[2].innerText;
 
-    /*
-     * When setting the transaction type to a type that does not exist, the value is replaced with an empty string.
-     * By checking whether or not the value is an empty string, we can determine if an exclamation mark needs to be added
-     */
     document.getElementById('type').value = rowContent[3].innerText;
     if(document.getElementById('type').value == '') document.getElementById('type').value = '!' + rowContent[3].innerText;
 
@@ -343,10 +304,6 @@ function saveChanges() {
         rowToEdit = document.getElementsByClassName('editing')[0];
         cellsToEdit = rowToEdit.getElementsByTagName('td');
 
-        /*
-         * If the first character of the transaction type is an exclamation mark,
-         * the type has the first character removed, and the cost basis is replaced with "N/A"
-         */
         if(data[2][0] == '!') {
             data[2] = data[2].substr(1);
             data[6] = "N/A";
@@ -415,15 +372,6 @@ function sortTable(column, ascending) {
     }
 }
 
-/*
- * To set the date of an HTML5 date input, the string must be in yyy-mm-dd format
- * 
- * The date object does have a method to provide the current date in the correct format, however, this is in UTC when it is preferrable to get the user local time
- *
- * A new date object is created to get the current date
- * Three Intl.DateTimeFormat objects are created to format the year, month, and day in the correct formats
- * These are then combined into one string and used to set the value of the date field
- */
 function resetDate() {
     const today = new Date();
     const year = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(today);
@@ -432,11 +380,6 @@ function resetDate() {
 
     document.getElementById('date').value = `${year}-${month}-${day}`;
 }
-
-/* 
- * This function takes an argument 'clearAccount' to specify whether or not the account number should be cleared
- * The function then sets all values to be cleared to an empty string
- */
 
 function clearInput(clearAccount) {
     if(clearAccount)
@@ -448,13 +391,6 @@ function clearInput(clearAccount) {
     document.getElementById('dAmount').value = '';
 }
 
-/*
- * This function receives all filters as plain text, except for dates, which are recieved as their HTML elements
- * The function calls each of the functions responsible for validating filter data
- *
- * Some of these functions do not perform validation, for example, the transaction id validation always returns true
- * These functions exist in case these need to be validated in the future
- */
 function validateFilters(filterId, startDate, endDate, filterAccount, filterType, filterSecurity, minAmount, maxAmount, minDAmount, maxDAmount, minCostBasis, maxCostBasis) {
     if(!validateFilterId(filterId)) return false;
     if(!validateDateRange(startDate, endDate)) return false;
@@ -538,20 +474,6 @@ function validateDAmountRange(min, max) {
     return true;
 }
 
-/*
- * UPDATE: original code lacked the
- * !(min == '' || max == '')
- * part of the last if condition
- *
- * This new check tells the function to skip the range verification if either of the strings are empty
- *
- * The new condition evaluates false if either of the inner conditions are true
- *      Translated, the condition is NOT (min is empty OR max is empty)
- *      
- *      If either is empty, this becomes NOT (true)
- *
- *      If neither is empty, this becomes NOT (false)
- */
 function validateCostBasisRange(min, max) {
     if(isNaN(Number(min))) {
         alert('Error: Min Cost Basis is NaN');
@@ -571,45 +493,6 @@ function validateCostBasisRange(min, max) {
     return true;
 }
 
-/*
- * For applyFilter():
- *
- * The function removes the effects of any previous filters by calling unfilterAll().
- *
- * The rows of the table are stored in an array, all the values of filters are stored as variables for future reference.
- *
- * Dollar signs are removed from applicable values if necessary.
- *
- * The for loop goes through every row, creates an array of its cells, and compares each value to each filter.
- *
- * If and only if the filter has data and does not match the contents of the row is the row hidden.
- *
- * Each filter performs its own check, if any of them do not match the data, the cell is hidden.
- *
- * For number values, such as account number, dollar amount, cost basis, everything is converted to a numeric type and compared as > or <.
- *
- * For dates, strings can be compared directly as long as they are in the same format.
- *
- *
- *
- * UPDATE:
- *
- * Though this has not been implemented, to support multiple filters for the same category, and to support exclusive filters:
- *      Each filter that deals with a string would be parsed to get an array of rules
- *      A function would loop through every rule, hiding rows that did not meet these requirements
- *
- *      First, a parsing function would split a filter field into an array
- *          For example: "!ABC AND !DEF" would be split as ["!ABC", "!DEF"] and each one would be handled separately.
- *              Other operators might exist, such as OR. In the case of OR, the two arguments would have to be grouped as one
- *
- *      For each item in the array, the filter would be parsed further to interpret it.
- *          The condition "!ABC"[0] == "!" could be used to determine if the first character was an exclamation mark,
- *          which would indicate that the following string is to be excluded.
- *              The function would then go through each row and only hide those matching "ABC"
- *
- *          This process would be repeated for each filter in the array
- */
-
 function stringFilter(filtertext, tableitem) {
     filters = filtertext.split(" && ");
 
@@ -618,7 +501,6 @@ function stringFilter(filtertext, tableitem) {
         var meetsCriteria = false;
 
         for(var ii = 0; ii < filterORs.length; ii++) {
-            // Note the .toUpperCase() methods to set all strings to all upper case for comparison
             if(filterORs[ii][0] == "!" && !tableitem.toUpperCase().includes(filterORs[ii].toUpperCase().substr(1))) meetsCriteria = true;
             if(filterORs[ii][0] != "!" && tableitem.toUpperCase().includes(filterORs[ii].toUpperCase())) meetsCriteria = true;
         }
@@ -702,10 +584,6 @@ function applyFilter() {
     }
 }
 
-/*
- * This function removed the content of all filter fields and unhides all rows
- */
-
 function clearFilter() {
     unfilterAll();
 
@@ -718,11 +596,6 @@ function clearFilter() {
     document.getElementById('filterNA').checked = false;
 }
 
-/*
- * Every row with a class of 'bodyRow' has the 'hidden' attribute removed.
- * This unhides all rows that may have been hidden from previous filtering
- */
-
 function unfilterAll() {
     rows = document.getElementsByClassName('bodyRow');
     
@@ -730,29 +603,6 @@ function unfilterAll() {
         rows[i].removeAttribute('hidden');
     }
 }
-
-/*
- * For toggleID():
- *
- * Toggling the visibility of the ID column is best done by giving all cells in this column the 'hidden' attribute.
- * This method allows the browser to render the table as if these elements did not exist.
- * However, the elements are still present in case we need to reference them or reveal them.
- *
- * The function determines whether or not the column is already hidden based on the button text:
- *     By default, the button text will show "Hide Transaction ID", indicating that the column is currently visible.
- *     Otherwise, we cans safely assume that the column is already hidden.
- * 
- * To hide the column, the cell in each row is given the attribute 'hidden' which is set to 'true'.
- *     This is done separately for the header, as it uses the 'th' tag, but all other rows use the 'td' tag and can be hidden with a loop.
- * 
- * When the column is not hidden, it has the 'frozenColumn1' class to indicate that it is the first frozen column, while the date column
- * has the 'frozenColumn2' class.
- *     The ID column has this class removed, while the date column has class replaced by 'frozenColumn1' so that it sticks to the left of the table.
- *
- * To reveal the column, the above actions are reversed.
- *     The 'hidden' attribute is removed from the previously hidden cells.
- *     The class are changed so that the ID column is 'frozenColumn1' and the date column is 'frozenColumn2'.
- */
 
 function toggleID() {
     var button = document.getElementById('toggleId');
@@ -793,15 +643,6 @@ function toggleID() {
     }
 }
 
-/*
- * This function is set to execute whenever the input type="file" element is updated (i.e. whenever a user selects a file)
- *
- * The function first checks that a file exists to be read, then creates a FileReader object.
- * This object is given an onload property which calls a function to get the output of the file read and set the 'typesArray' input field as this output string
- *
- * The reader then attempts to read a plaintext file specified by the user. If multiple files are chosen, it reads only the first time.
- * Once this process is complete, the function specified by the 'onload' property is executed.
- */
 function readFile(fileIn){
     if(fileIn.files && fileIn.files[0]) {
         var reader = new FileReader();
@@ -813,12 +654,6 @@ function readFile(fileIn){
     }
 }
 
-/*
- * The 'a' element can be used to save a file when clicked.
- * This function creates a hidden 'a' element and adds it to the document, with attributes to download a plaintext file when clicked
- * The content of this file is the encoded value of the 'typesArray' value so that the user specified types can be saved
- * Javascript is used to simulate a click on this element to prompt the download, then the element is removed.
- */
 function saveFile() {
   var element = document.createElement('a');
   element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(document.getElementById('typesArray').value));
@@ -832,48 +667,14 @@ function saveFile() {
   document.body.removeChild(element);
 }
 
-/*
- * All child elements of the <select> elements are removed and replaced by a single blank option
- *
- * The function creates an array using values in the input field, separated by commas
- * For each item in this array, the function adds a new option to the <select> elements, effectively adding a transaction type
- * This is done for all the types specified by the user in the input field
- *
- * UPDATE: applyTypes() now only splits the input field into an array and passes it to the setTransactionTypesList() function
- *
- *      setTransactionTypesList() does exactly what applyTypes used to do, it has been separated to accomodate use by the database
- */
 function applyTypes() {
     var typesArray = document.getElementById('typesArray').value.split(',');
     setTransactionTypesList(typesArray);
 }
 
-/*
- * The editTypes() function sets the value of the types input field to the return value of readCurrentTypes() as a comma-separated string.
- *
- * readCurrentTypes() is a function that gets the current types by reading the elements in the dropdown menu and saves these as an array.
- * It is located in the googleApiScript.js file, as it was originally created to store types in a database/spreadsheet.
- *
- * By taking this array and calling the 'join()' method, passing ',' as the argument, we can convert the array to a string where
- * items are separated by commas.
- */
-
 function editTypes() {
     document.getElementById('typesArray').value = readCurrentTypes().join(',');
 }
-
-/*
- * NOTE REGARDING ADDING TRANSACTION TYPES
- *
- * An "add" button for transaction types would be identical to the 'setTransactionTypesList()' function below,
- * except it would exclude the lines:
- *
- *      type.innerHTML = '<option value=""></option>';
- *      filterType.innerHTML = '<option value=""></option>';
- *
- * as these lines are responsible for clearing the types before setting them.
- * With these removed, the function is simply adding as usual.
- */
 
 function setTransactionTypesList(typesArray) {
     var type = document.getElementById('type');
@@ -886,20 +687,11 @@ function setTransactionTypesList(typesArray) {
         var typeAsText = typesArray[i];
         if(typesArray[i][0] == '!') typeAsText = typesArray[i].substr(1);
 
-        /*
-         * typeAsText is the transaction type with the exclamation mark removed
-         * This is used in all fields except the value attribute of the input field
-         */
         type.innerHTML += '<option value="' + typesArray[i] + '">' + typeAsText + '</option>';
         filterType.innerHTML += '<option value="' + typeAsText + '">' + typeAsText + '</option>';
     }
 }
 
-/*
- * This function checks the text of the calling button.
- *     If the text is 'Hide', the section is currently visible and must be hidden by adding a 'hidden' attribute
- *     Otherwise, the section is currently hidden and must be revealed by removing the 'hidden' attribute
- */
 function toggleSection(button) {
     var form = button.parentElement.parentElement.getElementsByTagName('form')[0];
 
@@ -941,9 +733,6 @@ function loadDataLists() {
     }
 }
 
-/*
- * The date is reset to the default when all elements have loaded
- */
 window.onload = function() {
     resetDate();
     initDb();

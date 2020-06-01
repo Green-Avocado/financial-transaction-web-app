@@ -1,20 +1,7 @@
-/*
- * This function is called before writing to the database in order to clear the old data.
- *
- * This is done using a built-in method pointing at the 'Data' reference, which contains all table data
- */
 function clearFirebase() {
     firebase.database().ref('Data').remove();
 }
 
-/*
- * The function starts by clearing old data, then creates an array of all the data stored in the table.
- *
- * The array is created using the tableToArrays() function, which is contained in the googleApiScript.js file, as this perfectly suits both databases
- *
- * The for loop cycles through every top level array and sets a database object at the reference 'Data/#' where # is the position of the data
- * Data is stored in appropriately named fields
- */
 function writeToFirebase() {
     writeImagesToFirestore("firebase");
     clearFirebase();
@@ -42,19 +29,6 @@ function writeToFirebase() {
     }
 }
 
-/*
- * This function uses the same loop at the start to clear the existing table as the Google Database script
- *
- * The function gets a snapshop of the database at the reference 'Data'.
- *
- * The 'once' method is used to specify that this should only be read once, and not checked for changes.
- *
- * The val() method of the snapshot is used to retrieve an array containing each object in the database.
- *
- * As the transactions were stored in fully formated form, the addTransaction function from the base app can be used to insert them.
- *
- * Rows are inserted in reverse order to preserve the order in which they were stored.
- */
 function readFromFirebase() {
     clearIndexedDb("firebase");
     return firebase.database().ref('/').once('value').then(function(snapshot) {
