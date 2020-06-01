@@ -1,0 +1,1049 @@
+\documentclass[letterpaper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{listings}
+\usepackage[hidelinks]{hyperref}
+
+\hypersetup{colorlinks, allcolors=blue}
+\lstset {
+    breaklines=true,
+    postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+    basicstyle=\ttfamily,
+    numbers=left,
+    numberstyle=\normalsize,
+    numbersep=10pt,
+    frame=single,
+}
+\setlength\parindent{0pt}
+
+\begin{document}
+
+\pagenumbering{gobble}
+\vspace*{\fill}
+\begin{center}
+    \Large
+    Documentation for Financial Transactions HTML Page
+
+    \large
+    Jason N.
+
+    April 26, 2020
+\end{center}
+\vspace*{\fill}
+
+\newpage
+\pagenumbering{roman}
+\tableofcontents
+
+\newpage
+\pagenumbering{arabic}
+\parskip 10pt
+
+\section{Foreword}
+
+Some of the code samples in this document were copied by hand.
+If there are any discrepencies between code in this document and in the source files, refer to the source files.
+
+This does not apply to the appendix.
+Code in the appendix was generated directly from the source files.
+
+\section{HTML}\label{HTML}
+
+\subsection{Preamble and head}
+
+This line declares that the document is an HTML5 document.
+
+\begin{lstlisting}[firstnumber=1]
+<!DOCTYPE html>
+\end{lstlisting}
+
+\lstinline{<head>} tags are used to contain meta information about the document.
+
+\begin{lstlisting}[firstnumber=2]
+<head>
+    <meta charset = "UTF-8"/>
+    <link rel="stylesheet" type="text/css" href="./style.css"/>
+    <script src="./script.js"></script>
+</head>
+\end{lstlisting}
+
+Within the \lstinline{head} element:
+
+\begin{itemize}
+    \item The first line defines the character set of the document.
+    \item The second line defines the source of an external CSS document.
+    \item The third line defines the source of an external Javascript document.
+\end{itemize}
+
+\subsection{Inputs}
+
+The input section of this page is contained within \lstinline{<article>} tags for the purpose of organisation.
+This can be used to facilitate styling this part of the page with CSS if desired.
+
+\begin{lstlisting}[firstnumber=10]
+<article id="inputFields">
+\end{lstlisting}
+
+The \lstinline{article} element has been assigned a unique id for the purpose of styling.
+Specifically, this id is used to define padding and overflow.
+This is described in further detail in section~\ref{overflow-x} of this document.
+
+All input fields and buttons are contained within \lstinline{<form>} tags.
+Althought this is not strictly necessary for the purpose of this project, it is useful for organising data and specifying the fields from which data should be submitted.
+
+\begin{lstlisting}[firstnumber=11]
+<form onsubmit="return false" autocomplete="off">
+\end{lstlisting}
+
+The attribute \lstinline{onsubmit} is used to define a Javascript function to be executed when pressed.
+The form expects that \lstinline{true} is returned when data is successfully submitted.
+If so, the default behaviour is to clear the fields and enter the data in the browser URL bar as arguments.
+To prevent this behaviour, \lstinline{onsubmit} is set to \lstinline{return false}.
+
+The attribute \lstinline{autocomplete} can be used to specify whether user input from a previous session should be used to populate input fields.
+This attribute also determines whether or not suggestions are displayed when the user enters data.
+In this case, \lstinline{autocomplete} has been set to \lstinline{off} to prevent these actions from occuring.
+This does not affect the functionality of the program.
+
+The buttons and input fields within the \lstinline{form} element are contained within \lstinline{<section>} tags for organisation.
+This is primarily done to allow elements to be positioned properly by the CSS file.
+
+\subsubsection{Common attributes}
+
+All \lstinline{input} elements in this \lstinline{form} have been assigned a \lstinline{name} attribute.
+The \lstinline{name} attribute is not strictly relevant in this case, but is often used to identify the data when submitting to a database.
+
+All \lstinline{input} elements have the \lstinline{required} attribute.
+Normally this prevents a \lstinline{form} from being submitted unless all \lstinline{required} fields contain data.
+This does not apply to our case as we have disabled the built-in submit function.
+However, it does still outline missing fields in red.
+
+\subsubsection{Labels}
+
+Each of the inputs are given a label to specify to a user the type of information which should be entered in the given field.
+This is done with the \lstinline{input} element.
+
+\begin{lstlisting}[firstnumber=12]
+<label for="date">Date:</label><br/>
+\end{lstlisting}
+
+The \lstinline{for} attribute is used to specify an element which corresponds to this label.
+This is done by setting the attribute to the id of the other element.
+Labels allow a user to select an input field by clicking the label rather than the field itself.
+Labels are also used to facilitate the use of assistive technologies.
+
+\subsubsection{Date}
+
+The date of a transaction is specified through the use of an \lstinline{input} element with a \lstinline{type} attribute of \lstinline{date}.
+This can be used to effectively restrict the input to a valid date format and provides an intuitive method for inputting data.
+
+\begin{lstlisting}[firstnumber=11]
+<section>
+    <label for="date">Date:</label><br/>
+    <input id="date" name="date" type="date" required/>
+</section>
+\end{lstlisting}
+
+This type of input field is also useful for interpreting dates in Javascript, as it provides methods which return the date in various formats to facilitate displaying and comparing dates.
+
+\subsubsection{Text}
+
+\lstinline{input} elements with a \lstinline{type} attribute of \lstinline{text} can be used to retrieve a string from a user.
+This is also the field used for numbers, as these can be easily verified and converted in Javascript.
+
+\begin{lstlisting}[firstnumber=16]
+<section>
+    <label for="account">Account Number:</label><br/>
+    <input id="account" name="account" type="text" placeholder="Account Number" required/>
+</section>
+\end{lstlisting}
+
+The advantage of taking numbers from an input field is that it allows for characters such as \$ to be included.
+In the case of this project, users are able to submit Dollar Amounts as purely numberic values, or in a currency format.
+Currently, the program only accepts dollars as a currency, however, it is possible to allow and store any number of currencies.
+These characters, of course, have to be filtered out before the number is interpretted and re-inserted before displaying the value.
+
+\subsubsection{List}
+
+Dropdown lists are created using \lstinline{<select>} tags containing \lstinline{option} elements.
+Each \lstinline{option} element represents a possible value, the first element is selected by default.
+
+\begin{lstlisting}[firstnumber=21]
+<section>
+    <label for="type">Transaction Type:</label><br/>
+    <select id="type" name="type">
+        <option value=""></option>
+        <option value="BUY">BUY</option>
+        <option value="SELL">SELL</option>
+        <option value="DIVIDEND">DIVIDEND</option>
+        <option value="INTEREST">INTEREST</option>
+        <option value="WITHDRAW">WITHDRAW</option>
+        <option value="DEPOSIT">DEPOSIT</option>
+    </select>
+</section>
+\end{lstlisting}
+
+The \lstinline{innerHTML} of an \lstinline{option} element is the text that will be displayed to the user.
+The \lstinline{value} attribute of the element is the value that will be read by Javascript.
+For this project, the \lstinline{value} and \lstinline{innerHTML} were made to be identical so that the text in the table would be the same as the text the user had seen in the list.
+
+\subsubsection{Buttons}
+
+\lstinline{button} elements are clickable elements which can execute Javascript code specified by an \lstinline{onclick} attribute.
+Text within the \lstinline{innerHTML} of the \lstinline{button} will be displayed as text within the button, which is useful for communicating the purpose of the button.
+
+\begin{lstlisting}[firstnumber=49]
+<section>
+    <button id="add" type="submit" onclick="addTransactionButton();">Add Transaction</button>
+    <button id="save" type="submit" hidden="true" onclick="saveChanges();">Save</button>
+    <button id="discard" type="button" hidden="true" onclick="discardChanges();">Discard</button>
+</section>
+\end{lstlisting}
+
+In this case, three buttons are present, each set to execute a different Javascript function when clicked.
+
+Two of the three buttons have a \lstinline{type} attribute of \lstinline{submit}.
+This causes each function to trigger the \lstinline{submit} event along with the Javascript function.
+However, for this project, this event has been disabled by the \lstinline{form} \lstinline{onsubmit="return false"} attribute.
+Thus, the only difference is that this causes missing fields to be outlined in red when the button is pressed.
+
+The last button is of \lstinline{type} \lstinline{button}.
+This element functions exactly the same, except it does not trigger the \lstinline{submit} event.
+For this project, this means that missing fields will not be highlighted red, as this is not necessary for the `Discard Changes' button.
+
+Two of the three buttons also have the \lstinline{hidden="true"} attribute.
+This causes the page to render as if these elements did not exist, as these elements are only relevant when editing a row.
+All three buttons are given unique ids so that \lstinline{hidden} attributes can be added or removed as needed.
+
+\subsection{Table}
+
+\subsubsection{thead}
+
+The header of the table is enclosed in \lstinline{<thead>} tags.
+This element includes the first row of the table, denoted by \lstinline{<tr>} tags, which contains headers for each column.
+
+Every cell in the header is denoted by \lstinline{<td>} tags.
+These cells differ from normal cells, such as those in the body of the table, in how they format their contents.
+Using this element for header cells makes them stand out slightly as well as making it easier to differentiate when styling with CSS.
+
+\begin{lstlisting}[firstnumber=61]
+<th>
+    <section>
+        Transaction ID
+    </section>
+    <section class="sort">
+        <button type="button" onclick="sortTable(0, true)">^</button>
+        <button type="button" onclick="sortTable(0, false)">V</button>
+    </section>
+</th>
+\end{lstlisting}
+
+The first 8 header cells are split into two separate \lstinline{section} elements.
+This was done to allow for the proper positioning of the header text and the sort buttons.
+For this reason, the latter \lstinline{section} element is given the class \lstinline{sort} to differentiate between the two.
+
+Each of the first 8 header cells contain two buttons for sorting.
+All sorting buttons call the same function \lstinline{sort(column, ascending)}, however, they pass different arguments to this function.
+The first argument is the column number, starting from 0, which allows the Javascript function to determine which column to use when comparing rows.
+The second argument defines whether data should be sorted in ascending or descending order.
+
+The last header cell contains nothing but text.
+This column is used to contain the delete and edit buttons created for each row.
+
+\begin{lstlisting}[firstnumber=133]
+<th>Actions</th>
+\end{lstlisting}
+
+\subsubsection{tbody}
+
+The table body is enclosed in \lstinline{<tbody>} tags.
+This element is meant to be the main container of data in a table.
+
+\begin{lstlisting}[firstnumber=136]
+<tbody id="tableBody">
+\end{lstlisting}
+
+The table body is important for this project as it is the parent element of all data which will be manipulated.
+For this reason, it has been given a unique id to reference in Javascript.
+This was not strictly necessary, as it is also possible to reference this element by its tag name, being the only \lstinline{tbody} element.
+Nevertheless, I consider this to be good practice as it is clear which element is being referred to in Javascript and allows for other tables to be added in the future if necessary without breaking the current functionality.
+
+\newpage
+
+\section{Javascript}\label{JS}
+
+The following section describes all Javascript functions used in this project.
+Functions have been grouped according to their purpose, some functions have been omitted for being too similar to other functions.
+
+Each section contains a section in which these are compared to an equivalent function from the Google Sheets project.
+
+\subsection{getData()}
+
+This function is used to retrieve and format data from the input fields.
+
+\begin{lstlisting}[firstnumber=1]
+function getData() {
+    var date = document.getElementById("date");
+    var account = document.getElementById("account").value;
+    var type = document.getElementById("type").value;
+    var security = document.getElementById("security").value;
+    var amount = document.getElementById("amount").value;
+    var dAmount = document.getElementById("dAmount").value;
+
+    amount = Number(amount);
+
+    if(dAmount[0] == '$') {
+        dAmount = dAmount.substr(1);
+    }
+    dAmount = Number(dAmount);
+
+    if(validate(date, account, type, security, amount, dAmount)) {
+        var costBasis = calculateCostBasis(amount, dAmount);
+        date = date.value;
+        dAmount = '$' + dAmount.toFixed(2);
+
+        return [ date, account, type, security, amount, dAmount, costBasis ];
+    }
+    else return false;
+}
+\end{lstlisting}
+
+The function checks whether the data is valid by calling the \lstinline{validate()} function.
+If so, data is formatted and sent to the function which called \lstinline{getData()}.
+Currently, the caller is either \lstinline{addTransactionButton()} or \lstinline{saveChanges()}.
+
+The function first stores the \lstinline{date} element and the raw values of the other input fields.
+\lstinline{date} is treated differently as the element includes useful methods for comparing the date in different formats.
+
+\begin{lstlisting}[firstnumber=2]
+var date = document.getElementById("date");
+var account = document.getElementById("account").value;
+var type = document.getElementById("type").value;
+var security = document.getElementById("security").value;
+var amount = document.getElementById("amount").value;
+var dAmount = document.getElementById("dAmount").value;
+\end{lstlisting}
+
+Next, some of the data is processed.
+\lstinline{amount} is converted from a string, as it originated from a text field, to a number.
+This is done with the built-in \lstinline{Number()} function, which takes a string as an argument and returns it as a numeric value when possible.
+If the argument cannot be converted, the function returns \lstinline{NaN} or `Not a Number'.
+We are not concerned with validating that the value can be converted at this stage, as we can simply check if the value is \lstinline{NaN} during the validation stage, therefore it is safe to convert to a number here.
+
+\begin{lstlisting}[firstnumber=9]
+amount = Number(amount);
+\end{lstlisting}
+
+A similar conversion is performed on the \lstinline{dAmount} value.
+However, before this occurs, we check whether the first character in the string is a dollar sign.
+If so, we remove the dollar sign by taking a substring of \lstinline{dAmount} which includes everything including and after the second character.
+This effectively removes the dollar sign from the string, allowing it to be converted to a numeric value.
+
+\begin{lstlisting}[firstnumber=9]
+if(dAmount[0] == '$') {
+    dAmount = dAmount.substr(1);
+}
+dAmount = Number(dAmount);
+\end{lstlisting}
+
+The function then calls \lstinline{validate} and passes all the stored variables as arguments to determine whether all the data is valid.
+If not, the function will return \lstinline{false} and exit, preventing subsequent steps from occuring.
+
+\begin{lstlisting}[firstnumber=16]
+if(validate(date, account, type, security, amount, dAmount)) {
+    var costBasis = calculateCostBasis(amount, dAmount);
+    date = date.value;
+    dAmount = '$' + dAmount.toFixed(2);
+
+    return [ date, account, type, security, amount, dAmount, costBasis ];
+}
+else return false;
+\end{lstlisting}
+
+If all data is valid, the function calculates and stores the costBasis by calling \lstinline{calculateCostBasis()} and passing the necessary values.
+The function also formats the date and dollar amount in the correct formats to be exported to the table.
+The \lstinline{toFixed()} method is used to fix the value to 2 decimal places, and a dollar sign is added to the front of the value.
+Lastly, the function returns a list including all the data to the caller.
+
+\textbf{Comparison to Google Sheets project}
+
+There is no equivalent function in the Google Sheets project.
+The \lstinline{getData()} function is required to store input values in memory.
+Google Apps Script had a built-in function to move or copy cells and did not require most values to be stored like this.
+
+\subsection{validate()}
+
+The \lstinline{validate()} function is used to verify that all fields include valid data.
+
+\begin{lstlisting}[firstnumber=26]
+function validate(date, account, type, security, amount, dAmount) {
+    if(!validateDate(date)) return false;
+    if(!validateAccount(account)) return false;
+    if(!validateType(type)) return false;
+    if(!validateSecurity(security)) return false;
+    if(!validateAmount(amount)) return false;
+    if(!validateDAmount(dAmount)) return false;
+
+    return true;
+}
+\end{lstlisting}
+
+The function calls several functions, each of which validates a different input field.
+If any of the calls returns false, this function returns false.
+If none of the calls returned false, the function returns true, allowing the caller to proceed.
+
+\textbf{Comparison to Google Sheets project}
+
+The function uses the same method as the Google Sheets project for validating data, by calling different functions which return \lstinline{true} or \lstinline{false}.
+The difference here is that data is taken as arguments and passed to the validating functions, as this data is no longer read from the sheet.
+The returns of this function have also been standardised such that \lstinline{false} always indicated an invalid value, this is done mostly for readability.
+
+\subsubsection{Check empty}
+
+In cases where the only check necessary is that the field is not empty, the function simply compares the value to an empty string.
+If the value is equal to an empty string, the function prints an alert and returns false, otherwise it returns true.
+
+\begin{lstlisting}[firstnumber=54]
+function validateAccount(account) {
+    if(account == '') {
+        alert('Error: Missing Account Number');
+        return false;
+    }
+
+    return true;
+}
+\end{lstlisting}
+
+This is the template used to check account, transaction type, and security, as these are all strings.
+Although the transaction type field is not a text box, by setting the default empty option to have a value of an empty string, this template still applies.
+
+\textbf{Comparison to Google Sheets project}
+
+The function to check for an empty field is now done by the same function that check that a field is valid.
+This was done to better organise the validation process and allow functions to be modified more easily.
+
+The Google Sheets project used the \lstinline{isBlank()} method of a cell, as no data was stored and passed to it.
+This project does pass values to the function, therefore the check can be simplified by comparing it to an empty string.
+
+\subsubsection{Check NaN}
+
+The function to check whether or not a value is a number is identical to the functions that check for only empty values, except for one key difference.
+In addition to checking if the value is empty, the function checks if the value is \lstinline{NaN}.
+This is done using the \lstinline{isNaN()} function, which takes a value as an argument and returns true of the value is \lstinline{NaN}.
+
+\begin{lstlisting}[firstnumber=87]
+if(isNaN(amount)) {
+    alert('Error: Invalid Amount');
+    return false;
+}
+\end{lstlisting}
+
+\textbf{Comparison to Google Sheets project}
+
+This check was not performed in the Google Sheets project, however, if one were to validate a number in the Google Sheets project, one would check that the value was a numeric type, similar to how the date was validated in Google Sheets.
+In this case, the number can be validated much simpler, by checking whether or not the conversion was successful.
+
+\subsubsection{Check date}
+
+Currently, a valid date is a date that is not in the future.
+In order to check this, the function gets the current date by creating a new \lstinline{Date} object and storing it as a variable.
+The function also stores the value of the \lstinline{date} element in a number format which can be easily compared.
+This is done by storing the \lstinline{valueAsNumber} property of the element.
+
+\begin{lstlisting}[firstnumber=37]
+function validateDate(date) {
+    realDate = new Date();
+    inputDate = date.valueAsNumber;
+
+    if(!date.checkValidity()) {
+        alert('Error: Invalid date');
+        return false;
+    }
+
+    if(realDate.valueOf() < inputDate) {
+        alert('Error: Date is in the future');
+        return false;
+    }
+
+    return true;
+}
+\end{lstlisting}
+
+The first check performed is whether or not the user had inputted a date that exists.
+If the date field was left empty or incomplete, or the date is non-existant (e.g. November 31) the \lstinline{date.checkValidity()} function will return \lstinline{false}.
+Therefore, we can reuse the statement that checks whether or not a field contains a valid number.
+
+Next, the function must check that the date is not in the future.
+This is done by simply comparing the dates in number format, with a greater value indicating a later date.
+
+\textbf{Comparison to Google Sheets project}
+
+In Google Sheets, a date was validated by checking that it was of the \lstinline{[object Date]} type.
+In this project, we can be confident that the object is of the correct type as it was created by a specific type of input, therefore, it is not necessary to validate the type.
+
+To check that the date was not in the future, the Google Sheets project directly compared two date objects.
+This was not done for the current project, as we have two different types of data, an element and a \lstinline{Date} object.
+In order to compare these, both are converted to the same numeric format.
+
+\subsection{generateId()}
+
+A unique id generated with the length specified by \lstinline{idLength} and with characters specified by \lstinline{characters}.
+
+\begin{lstlisting}[firstnumber=109]
+function generateId() {
+    var id = '';
+    var idLength = 6;
+
+    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    var charactersLength = characters.length;
+
+    var unique = false;
+
+    while(!unique) {
+        for(var i = 0; i < idLength; i++) {
+            id += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+
+        unique = true;
+        for(var i = 0; i < document.getElementsByClassName('idCell').length; i++) {
+            if(document.getElementsByClassName('idCell')[i].innerText == id) {
+                unique = false;
+                break;
+            }
+        }
+    }
+    return id;
+}
+\end{lstlisting}
+
+The \lstinline{unique} variable is used to store whether the generated id is unique.
+A \lstinline{while} loop continuously generates and checks ids until a unique one is found.
+
+\begin{lstlisting}[firstnumber=119]
+for(var i = 0; i < idLength; i++) {
+    id += characters.charAt(Math.floor(Math.random() * charactersLength));
+}
+\end{lstlisting}
+
+For every character in the id, a random character is chosen from the character set.
+A number between 0 and the number of possible characters is generated by \lstinline{Math.random() * charactersLength} as \lstinline{Math.random()} generates a number $ 0 \leq n < 1 $.
+This number is converted to an integer by rounding down using the \lstinline{Math.floor()} function.
+The result of this integer is used as the index from which to take a character using the \lstinline{charAt()} method.
+
+\begin{lstlisting}[firstnumber=123]
+unique = true;
+for(var i = 0; i < document.getElementsByClassName('idCell').length; i++) {
+    if(document.getElementsByClassName('idCell')[i].innerText == id) {
+        unique = false;
+        break;
+    }
+}
+\end{lstlisting}
+
+Every generated id is initially assumed to be unique.
+The function loops through every element with a class of \lstinline{'idCell'}, comparing the \lstinline{innerText} of this cell to the generated id.
+If the values match, the id is not unique and another id must be generated.
+If no matching id has been found, the id is considered unique and the loop exits, passing the id to the caller.
+
+\textbf{Comparison to Google Sheets project}
+
+The process for generating an id is exactly the same as in the Google Sheets project.
+The id is compared to the \lstinline{innerText} of cells exactly as the id was compared to other cells in the first column of the Google Sheets.
+The two processes are essentially identical, except the process is much faster outside of Google Sheets.
+
+\subsection{calculateCostBasis()}
+
+The function receives two numberic values as arguments, calculates the quotient of the two, and formats the result as a dollar value.
+
+\begin{lstlisting}[firstnumber=134]
+function calculateCostBasis(amount, dAmount) {
+    costBasis = '$' + (dAmount / amount).toFixed(2);
+    return costBasis;
+}
+\end{lstlisting}
+
+The \lstinline{toFixed()} method is used to fix the value to 2 decimal places, and a dollar sign is added to the front of the value.
+
+\textbf{Comparison to Google Sheets project}
+
+This function is essentially the same as that of the Google Sheets project, except the data is passed to this function, rather than being read from the sheet.
+Another minor difference is in how data is formatted, as Google Apps Script formatted data by setting a number format, while that format does not exist in pure Javascript and must be set manually.
+
+\subsection{addTransaction()}
+
+The process of adding a transaction is initiated when the \lstinline{addTransactionButton()} function is called.
+This function calls the \lstinline{getData()} function and stores the result.
+If the result is not \lstinline{false}, the function generates a unique id for the transaction and adds this to the front of the \lstinline{data} array using the \lstinline{unshift()} method.
+The function then passes the \lstinline{data} array to the \lstinline{addTransaction()} function, which creates and populates the row.
+
+\begin{lstlisting}[firstnumber=156]
+function addTransactionButton() {
+    var data = getData();
+    if(data) {
+        var id = generateId();
+        data.unshift(id);
+
+        addTransaction(data);
+    }
+}
+\end{lstlisting}
+
+The \lstinline{addTransaction} function gets all necessary data as an array argument.
+It stores the body of the table in a variable by referencing the element using \lstinline{document.getElementById('tableBody')}.
+A new row is created using the \lstinline{insertRow()} method of the table body and stored as a variable so that contents can be added.
+The row is assigned a class of \lstinline{bodyRow} for reference by other functions or styling.
+
+\begin{lstlisting}[firstnumber=139]
+function addTransaction(data) {
+    var tableBody = document.getElementById('tableBody');
+    var newRow = tableBody.insertRow(0);
+    newRow.classList += "bodyRow";
+
+    var actionsContent = "<button type='button' onclick='editRow(this)'>Edit</button> <button type='button' onclick='deleteRow(this)'>Delete</button>";
+    data.push(actionsContent);
+
+    for(var i = 0; i < data.length; i++) {
+        var newCell = newRow.insertCell(i);
+        newCell.innerHTML = data[i];
+        if(i == 0) {
+            newCell.classList += "idCell";
+        }
+    }
+}
+\end{lstlisting}
+
+The function creates string containing HTML code for a delete and an edit button and pushes this to the end of the \lstinline{data} array.
+The \lstinline{onclick} functions pass \lstinline{this} as an argument, which specifies the element that called the function.
+This is done so that the row to edit or delete can be selected.
+
+\begin{lstlisting}[firstnumber=144]
+var actionsContent = "<button type='button' onclick='editRow(this)'>Edit</button> <button type='button' onclick='deleteRow(this)'>Delete</button>";
+data.push(actionsContent);
+\end{lstlisting}
+
+For each item in the array, the function calls the \lstinline{insertCell()} method of the row to create a new cell.
+The contents of this cell are defined by the \lstinline{innerHTML} property, which is set to the corresponding element of the array.
+For the first element, the cell is also given a special class to identify it as the cell containing the transaction id.
+
+\begin{lstlisting}[firstnumber=148]
+var newCell = newRow.insertCell(i);
+newCell.innerHTML = data[i];
+if(i == 0) {
+    newCell.classList += "idCell";
+}
+\end{lstlisting}
+
+\textbf{Comparison to Google Sheets project}
+
+The Google Sheets project copied data from the input range to the output range, whereas this function stores the values in memory then writes the new cells.
+As the table is within a self-contained element, the more complicated process of moving all contents to a separate area is not required.
+Therefore, the process of adding a row is significantly simpler in HTML and JS.
+
+\subsection{deleteRow()}
+
+The function takes an element as an argument, this element is supposed to be the button which called the function.
+The function gets the parent of the parent of the delete button and removes this element.
+The first parent of the delete button is the cell, the second parent is the row.
+By selecting the second parent, we are selecting the row containing the button.
+
+The function uses the \lstinline{removeChild()} method of the table to remove the specified row element.
+
+\begin{lstlisting}[firstnumber=166]
+function deleteRow(button) {
+    var row = button.parentElement.parentElement;
+    document.getElementById("tableBody").removeChild(row);
+
+    if(document.getElementsByClassName('editing').length == 0) {
+        document.getElementById('add').removeAttribute('hidden');
+        document.getElementById('save').setAttribute('hidden', true);
+        document.getElementById('discard').setAttribute('hidden', true);
+    }
+}
+\end{lstlisting}
+
+It is possible that the delete button is used on the row being edited.
+If this is the case, the save and discard buttons would remain visible, although there would be no row being edited.
+To resolve this, the function checks if there are any rows with the class \lstinline{'editing'}.
+If so, the function hides the save and discard buttons, and unhides the add button.
+This is performed whenever the function finds no row being edited, however, it has no effect when the row being edited was not deleted.
+
+\textbf{Comparison to Google Sheets project}
+
+Deleting is far simpler as it is not necessary to transfer the rows to a separate sheet.
+HTML and JS also allows for a new button to be easily created for every row.
+
+The Google Sheets project did not hide and show buttons depending on whether or not a function was being editted, however, this is done in HTML as the process is much simpler.
+If one were to do this in Google Sheets, the buttons would have to be indexed before hand so they could be referenced in code.
+
+\subsection{editRow()}
+
+This element is responsible for highlighting the row being editted and moving the values in the row to the input fields.
+
+\begin{lstlisting}[firstnumber=177]
+function editRow(button) {
+    if(document.getElementsByClassName('editing').length > 0)
+        document.getElementsByClassName('editing')[0].classList = "bodyRow";
+
+    var row = button.parentElement.parentElement;
+    var rowContent = row.getElementsByTagName('td');
+    row.classList = "bodyRow editing";
+
+    document.getElementById('date').value = rowContent[1].innerText;
+    document.getElementById('account').value = rowContent[2].innerText;
+    document.getElementById('type').value = rowContent[3].innerText;
+    document.getElementById('security').value = rowContent[4].innerText;
+    document.getElementById('amount').value = rowContent[5].innerText;
+    document.getElementById('dAmount').value = rowContent[6].innerText;
+
+    document.getElementById('add').setAttribute('hidden', true);
+    document.getElementById('save').removeAttribute('hidden');
+    document.getElementById('discard').removeAttribute('hidden');
+}
+\end{lstlisting}
+
+First, the function checks whether or not there is a cell already highlighted for editing.
+This is done by geting a list of all functions with the \lstinline{'editing'} class.
+If so, it resets the class to \lstinline{'bodyRow'}.
+This is done to ensure that at most, one row is being edited at a time.
+
+\begin{lstlisting}[firstnumber=178]
+if(document.getElementsByClassName('editing').length > 0)
+    document.getElementsByClassName('editing')[0].classList = "bodyRow";
+\end{lstlisting}
+
+The function uses the same method as the \lstinline{deleteRow()} function to get the parent row of the button.
+The function finds the second parent of the calling button and stores this as a variable for reference.
+The cells in this row are stored in an array by getting all children of the row with the \lstinline{td} tag.
+The row is changed to have the classes \lstinline{bodyRow} and \lstinline{editing}.
+
+Each input field is then identified using their id and given a value of the \lstinline{innerText} of the row.
+
+\begin{lstlisting}[firstnumber=181]
+var row = button.parentElement.parentElement;
+var rowContent = row.getElementsByTagName('td');
+row.classList = "bodyRow editing";
+
+document.getElementById('date').value = rowContent[1].innerText;
+document.getElementById('account').value = rowContent[2].innerText;
+document.getElementById('type').value = rowContent[3].innerText;
+document.getElementById('security').value = rowContent[4].innerText;
+document.getElementById('amount').value = rowContent[5].innerText;
+document.getElementById('dAmount').value = rowContent[6].innerText;
+\end{lstlisting}
+
+Lastly, the add button is hidden by assigning it a \lstinline{hidden} attribute.
+The save and discard buttons are revealed by removing the \lstinline{hidden} attributes.
+
+\begin{lstlisting}[firstnumber=192]
+document.getElementById('add').setAttribute('hidden', true);
+document.getElementById('save').removeAttribute('hidden');
+document.getElementById('discard').removeAttribute('hidden');
+\end{lstlisting}
+
+\textbf{Comparison to Google Sheets project}
+
+The process is essentially the same, except that the class is used to mark a row as being editted and for formatting, whereas the Google Sheets project marked this by placing a 1 in the I column.
+
+The process of hiding and revealing buttons is unique to this project, as this is made much simpler by the fact that elements can be referred to using a unique id.
+
+\subsection{saveChanges()}
+
+The function calls \lstinline{getData()} to retrieve data from the input fields and stores this as a variable.
+If \lstinline{getData()} does not return false, the function gets the row being editted by getting the first item with a class of \lstinline{'editing'}.
+
+The function stores the cells of this row as a an array by getting all child elements with \lstinline{'td'} tags.
+Every element in the \lstinline{data} array is written to a cell in the row, starting from the second cell so that the id is not replaced.
+The function then sets the class to \lstinline{bodyRow}, removing the \lstinline{editing} class.
+
+\begin{lstlisting}[firstnumber=197]
+function saveChanges() {
+    data = getData();
+    if(data) {
+        rowToEdit = document.getElementsByClassName('editing')[0];
+        cellsToEdit = rowToEdit.getElementsByTagName('td');
+
+        for(var i = 0; i < data.length; i++) {
+            cellsToEdit[i + 1].innerHTML = data[i];
+        }
+        rowToEdit.classList = "bodyRow";
+    }
+
+    document.getElementById('add').removeAttribute('hidden');
+    document.getElementById('save').setAttribute('hidden', true);
+    document.getElementById('discard').setAttribute('hidden', true);
+}
+\end{lstlisting}
+
+Lastly, the function reveals the `add transaction' button and hides the `save' and `discard' buttons.
+
+\textbf{Comparison to Google Sheets project}
+
+The function differs in how data is transfered.
+Instead of using a built-in \lstinline{copyTo()} method, each cell is individually given data.
+
+This project hides and reveals buttons based on whether or not a row is being edited, as HTML and Javascript makes this process much simpler.
+This step was not taken in the Google Sheets project.
+
+\subsection{discardChanges()}
+
+This function is responsible for unmarking the editing row and changing the state of buttons.
+
+Firstly, the element with a class of \lstinline{'editing'} is reset to only have the \lstinline{'bodyRow'} class.
+
+Then the `add transaction' button is revealed, and the `save' and `discard' buttons are hidden.
+
+\begin{lstlisting}[firstnumber=214]
+function discardChanges() {
+    document.getElementsByClassName('editing')[0].classList = "bodyRow";
+
+    document.getElementById('add').removeAttribute('hidden');
+    document.getElementById('save').setAttribute('hidden', true);
+    document.getElementById('discard').setAttribute('hidden', true);
+}
+\end{lstlisting}
+
+\textbf{Comparison to Google Sheets project}
+
+The Google Sheets project cleared formatting and removed the edit indicator by clearing the entire I column and reseting formatting for all rows.
+With Javascript, the process is much simpler as it is easy to select the specific row to reset by referencing its class.
+
+The Google Sheets project also cleared all input fields when changes were discarded.
+This can be done by setting all input fields to an empty string, but I felt that this was unnecessary and that entering similar data would be easier without this feature.
+
+\subsection{sortTable()}
+
+This function is responsible for sorting each column.
+The function takes two arguments: the column number, and a true or false value to determine whether the data should be sorted in ascending or descending order.
+
+This function utilises a simple sorting algorithm known as `bubble sort' or `sinking sort'.
+The function steps through every element in the function, comparing it to an adjacent element, and swapping when necessary.
+This is done until a loop occurs in which no swaps were made.
+Although the algorithm is considered inefficient compared to other available algorithms, it is far easier to implement and is more than sufficient for this project.
+
+\begin{lstlisting}[firstnumber=222]
+function sortTable(column, ascending) {
+    var rows = document.getElementsByClassName('bodyRow');
+
+    var sorting = true;
+    while(sorting) {
+        sorting = false;
+        for(var i = 0; i < (rows.length - 1); i++) {
+            rowA = rows[i].getElementsByTagName('td')[column];
+            rowB = rows[i + 1].getElementsByTagName('td')[column];
+
+            var swap = false;
+
+            if(ascending && rowA.innerHTML.toLowerCase() > rowB.innerHTML.toLowerCase()) swap = true;
+            else if(!ascending && rowA.innerHTML.toLowerCase() < rowB.innerHTML.toLowerCase()) swap = true;
+
+            if(swap) {
+                sorting = true;
+                document.getElementById('tableBody').insertBefore(rows[i + 1], rows[i]);
+            }
+        }
+    }
+}
+\end{lstlisting}
+
+First, all the rows are stored in a list of elements for reference.
+
+This is done by taking a list of all elements with the \lstinline{'bodyRow'} class.
+It would also be possible to do this without the class, as all body rows are contained within \lstinline{<tbody>} tags.
+One could get a list of all rows that are children of the \lstinline{tbody} element with
+\lstinline{document.getElementsByTagName('tbody')[0].getElementsByTagName('tr');}.
+
+However, I believe that the approach above makes the function less readable, and therefore, I have gone with the approach using a separate class.
+
+\begin{lstlisting}[firstnumber=223]
+var rows = document.getElementsByClassName('bodyRow');
+\end{lstlisting}
+
+Next, the main loop of the function begins.
+A variable \lstinline{sorting} is given a value of \lstinline{true} so that the function is allowed to start.
+With every loop, \lstinline{sorting} is set to \lstinline{false}.
+The value changes during the loop if any rows have been swapped, otherwise, the rows are considered to be in the correct order and the function terminates as the \lstinline{while} loop ends.
+
+Every loop, the function steps through every row excluding the last row.
+It stores the cell of the current row and the row below in the specified column.
+
+\begin{lstlisting}[firstnumber=225]
+var sorting = true;
+while(sorting) {
+    sorting = false;
+    for(var i = 0; i < (rows.length - 1); i++) {
+        rowA = rows[i].getElementsByTagName('td')[column];
+        rowB = rows[i + 1].getElementsByTagName('td')[column];
+\end{lstlisting}
+
+A variable \lstinline{swap} is initially set to false.
+All text is converted to lowercase for comparison using the \lstinline{toLowerCase()} method.
+The values in the cells defined by \lstinline{rowA} and \lstinline{rowB} are compared using a \lstinline{>} or \lstinline{<} operator depending on whether \lstinline{ascending} is \lstinline{true} or \lstinline{false}.
+If the values are determined to be in the wrong order, \lstinline{swap} is set to \lstinline{true}.
+
+If the rows are required to be swapped, the \lstinline{sorting} variable is set to true so that the \lstinline{while} loop does not terminate.
+The \lstinline{insertBefore()} method can be used to change the order of the children of an element.
+This method needs to be called by the parent element, hence why the \lstinline{tableBody} element is chosen.
+
+The method takes two elements of arguments, and places the first element above the second element.
+\lstinline{rows[i]} is always above \lstinline{rows[i + 1]}, therefore to swap them, we list \lstinline{rows[i + 1]} as the first argument.
+
+\begin{lstlisting}[firstnumber=232]
+swap = false;
+
+if(ascending && rowA.innerHTML.toLowerCase() > rowB.innerHTML.toLowerCase()) swap = true;
+else if(!ascending && rowA.innerHTML.toLowerCase() < rowB.innerHTML.toLowerCase()) swap = true;
+
+if(swap) {
+    sorting = true;
+    document.getElementById('tableBody').insertBefore(rows[i + 1], rows[i]);
+}
+\end{lstlisting}
+
+\textbf{Comparison to Google Sheets project}
+
+In Google Sheets, when buttons are assigned to a function, the arguments are not defined.
+For this reason, it was necessary to have a different button for ascending and descending orders.
+In this project, we can define both the column and whether it should sort in ascending or descending by passing different arguments.
+Therefore, only one function is required to sort any column.
+
+This function is somewhat more complex than the Google Sheets equivalent.
+For the Google Sheets project, there existed a built-in function to sort a column, whereas this had to be written from scratch for HTML and Javascript.
+
+\newpage
+
+\section{CSS}\label{CSS}
+
+\subsection{Vertical Scrolling Table}
+
+The table id refers to the \lstinline{article} that contains the table, rather than the table itself.
+This article was given a max height of 80 visual heights, or approximately 80\% of the screen height.
+\lstinline{overflow: auto;} specifies that, if necessary, a scroll bar should be present, this is true for both horizontal and vertical scrolling.
+
+\begin{lstlisting}[firstnumber=29]
+#table {
+    max-height: 80vh;
+    overflow: auto;
+}
+\end{lstlisting}
+
+The last three properties below are important for keeping the header in place while scrolling.
+
+\begin{lstlisting}[firstnumber=39]
+th {
+    min-width: 200px;
+    width: 10%;
+    position: sticky;
+    background: white;
+    top: 0;
+}
+\end{lstlisting}
+
+\begin{itemize}
+    \item \lstinline{position: sticky;} is used to keep the object in place when scrolling.
+    \item \lstinline{background: white;} is used to give the element a non-transparent background, so that data cannot be seen through the header.
+    \item \lstinline{top: 0;} is used to specify that the element should remain at the top of its parent element with no offset.
+\end{itemize}
+
+\subsection{Horizontal Scrolling on Overflow}\label{overflow-x}
+
+The inputFields id is used to identify the \lstinline{article} element that contains the \lstinline{form}.
+The important property here is the \lstinline{overflow-x: auto;} line, which specifies that, if the child element is wider than this element, a horizontal scroll bar should be present.
+
+The \lstinline{form} element, which is a child of the \lstinline{article} is given a minimum width to ensure that the scroll bar is created rather than reducing the width of the element.
+
+\begin{lstlisting}[firstnumber=5]
+#inputFields {
+    padding: 10px 0;
+    overflow-x: auto;
+}
+
+form {
+    min-width: 1900px;
+}
+\end{lstlisting}
+
+\subsection{Miscellaneous}
+
+\subsubsection{Sort buttons}
+
+The header cells contain two \lstinline{sections}, one of which has a special class.
+Both sections are given a \lstinline{margin} and \lstinline{padding} of 0 to minimise wasted space.
+Both sections are also set to \lstinline{display: inline-block} to specify that they should be arranged horizontally.
+
+Both sections are given a \lstinline{width} of 80\% of the parent element.
+However, this is overruled for the element with a class of \lstinline{sort}, which is assigned a \lstinline{width} of 10\% to ensure that both elements fit horizontally in the parent.
+
+To further reduce wasted space, the \lstinline{border} and \lstinline{padding} of the buttons are set to 0.
+The button's \lstinline{display} property is set to \lstinline{block} as otherwise, it would inherit the \lstinline{inline-block} property from its parent and attempt to arrange horizontally.
+Lastly, the buttons are set to take up the entire width of the parent element.
+
+\begin{lstlisting}[firstnumber=47]
+th > section {
+    width: 80%;
+    display: inline-block;
+    padding: 0;
+    margin: 0;
+}
+
+.sort {
+    width: 10%;
+}
+
+.sort > button {
+    padding: 0;
+    border: 0;
+    display: block;
+    width: 100%;
+}
+\end{lstlisting}
+
+\subsubsection{Editing highlight}
+
+The current row selected for highlighting is specified using a class.
+As such, it is possible to give this row unique styling.
+For example, currently the row is given a yellow background.
+
+\begin{lstlisting}[firstnumber=65]
+.editing {
+    background-color: yellow;
+}
+\end{lstlisting}
+
+\subsubsection{Table borders}
+
+Table borders do not render properly with a scrolling body and fixed header.
+To resolve this, borders are rendered using the \lstinline{box-shadow} property.
+
+Two box shadows are defined, one extends outwards from the right and bottom by one pixel in each direction.
+The other is given the \lstinline{inset} property, so that it extends inwards from the left and top.
+This creates a full border with a width of 1 pixel in each direction.
+As these borders are offset from the element, adjacent elements will overlap borders, preventing borders from combining into extra thick borders.
+
+\begin{lstlisting}[firstnumber=69]
+#table,
+table,
+td,
+th {
+    box-shadow: 1px 1px black, inset 1px 1px black;
+}
+\end{lstlisting}
+
+\newpage
+
+\appendix
+\section{HTML Source Code}
+\lstinputlisting{../src/main.html}
+
+\newpage
+
+\section{Javascript Source Code}
+\lstinputlisting{../src/script.js}
+
+\newpage
+
+\section{CSS Source Code}
+\lstinputlisting{../src/style.css}
+
+\end{document}
+

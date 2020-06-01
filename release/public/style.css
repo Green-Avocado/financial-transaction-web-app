@@ -1,0 +1,195 @@
+body {
+    font-size: 14px;
+}
+
+input,
+select {
+    min-width: 100px;
+    width: 80%;
+}
+
+button {
+    width: 40%;
+}
+
+span {
+    border: solid;
+    border-width: 1px;
+}
+
+#fileUpload {
+    display: none;
+}
+
+#removeFile {
+    width: 16px;
+    padding: 0;
+    border: 0;
+}
+
+.sectionHead {
+}
+
+    .toggleSection {
+        width: 100px;
+    }
+
+    .sectionHead > * {
+        display: inline-block;
+    }
+
+#table {
+    max-height: 50vh;
+    overflow: auto;
+}
+
+#inputFields,
+#filter {
+    padding: 10px 0;
+    overflow-x: auto;
+}
+
+#inputFields > form,
+#filter > form {
+    min-width: 1800px;
+}
+
+    #inputFields > form > section {
+        width: 14%;
+        display: inline-block;
+    }
+
+    #filter > form > section {
+        width: 10%;
+        display: inline-block;
+    }
+
+        #filter > form > section > button {
+            width: 100%;
+        }
+
+#filterNA {
+    display: inline-block;
+    width: 50%;
+    min-width: 16px;
+}
+
+#options > form > section {
+    display: inline-block;
+    width: 300px;
+    margin: 15px;
+}
+
+    #toggleId,
+    #fileInput {
+        width: 80%;
+    }
+
+    #transactionTypesConfig {
+        width: 500px !important;
+    }
+
+    #transactionTypesConfig > button {
+        display: inline-block;
+        width: 30%;
+        padding: 0;
+    }
+
+    #typesArray {
+        width: 40%;
+    }
+
+    #options > form > #googleSheetButtons {
+        width: 200px;
+    }
+
+    #logoutSection#logoutSection {
+        width: 100px;
+    }
+
+    #googleSheetButtons > button,
+    #logoutSection > button {
+        width: 100%;
+        padding: 0;
+        margin: 0;
+    }
+
+table {
+    width: 100%;
+    margin: auto;
+    border-collapse: collapse;
+}
+    th {
+        min-width: 200px;
+        width: 10%;
+        position: sticky;
+        top: 0;
+    }
+
+    th > section {
+        width: 80%;
+        display: inline-block;
+        padding: 0;
+        margin: 0;
+    }
+
+    th,
+    td {
+        z-index: 0;
+        background: white;
+    }
+
+    .frozenColumn1,
+    .frozenColumn2,
+    .frozenColumn3 {
+        position: sticky;
+        padding: 0;
+        min-width: 200px;
+    }
+
+    td.frozenColumn1,
+    td.frozenColumn2,
+    td.frozenColumn3 {
+        z-index: 1;
+    }
+
+    th.frozenColumn1,
+    th.frozenColumn2,
+    th.frozenColumn3 {
+        z-index: 2;
+    }
+
+    .frozenColumn1 {
+        left: 0;
+    }
+
+    .frozenColumn2 {
+        left: 200px;
+    }
+
+    .frozenColumn3 {
+        left: 400px;
+    }
+
+    .sort {
+        width: 10%;
+    }
+
+    .sort > button {
+        padding: 0;
+        border: 0;
+        display: block;
+        width: 100%;
+    }
+
+    .editing > td {
+        background: yellow;
+    }
+
+    #table,
+    table,
+    td,
+    th {
+        box-shadow: 1px 1px black, inset 1px 1px black;
+    }
+
