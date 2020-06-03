@@ -101,9 +101,38 @@ This element is also used by accessibility tools to identify the field.
 \end{lstlisting}
 
 \subsubsection{Date}
+
+\begin{lstlisting}[firstnumber=13]
+<input id="date" name="date" type="date" placeholder="yyyy-mm-dd"/>
+\end{lstlisting}
+
 \subsubsection{Text}
+
+\begin{lstlisting}[firstnumber=28]
+<input id="account" name="account" list="accountsList" type="text" placeholder="Account Number"/>
+\end{lstlisting}
+
 \subsubsection{List}
+
+\begin{lstlisting}[firstnumber=34]
+<label for="type">Transaction Type:</label><br/>
+<select id="type" name="type">
+    <option value=""></option>
+    <option value="BUY">BUY</option>
+    <option value="SELL">SELL</option>
+    <option value="!DIVIDEND">DIVIDEND</option>
+    <option value="!INTEREST">INTEREST</option>
+    <option value="!WITHDRAW">WITHDRAW</option>
+    <option value="!DEPOSIT">DEPOSIT</option>
+</select>
+\end{lstlisting}
+
 \subsubsection{Buttons}
+
+\begin{lstlisting}[firstnumber=70]
+<button id="add" type="submit" onclick="addTransactionButton();">Add Transaction</button>
+\end{lstlisting}
+
 \subsection{Table}
 \subsubsection{thead}
 \subsubsection{tbody}
