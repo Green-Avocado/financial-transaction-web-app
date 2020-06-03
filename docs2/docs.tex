@@ -44,20 +44,28 @@
 
 \subsection{Preamble and head}
 
+\subsubsection{Preamble}
+
 Declares the document as HTML5.
 \begin{lstlisting}[firstnumber=1]
 <!DOCTYPE html>
 \end{lstlisting}
+
+\subsubsection{meta charset}
 
 Specifies that characters in the file are encoded in UTF-8.
 \begin{lstlisting}[firstnumber=4]
 <meta charset = "UTF-8"/>
 \end{lstlisting}
 
+\subsubsection{link rel="stylesheet"}
+
 Imports the CSS file.
 \begin{lstlisting}[firstnumber=5]
 <link rel="stylesheet" type="text/css" href="./style.css"/>
 \end{lstlisting}
+
+\subsubsection{Scripts}
 
 Imports the main Javascript file, responsible for the table and UI.
 \begin{lstlisting}[firstnumber=7]
@@ -85,6 +93,13 @@ Disables autocomplete which remembers past user input by default. \lstinline{ret
 \end{lstlisting}
 
 \subsubsection{Labels}
+
+Identifies the purpose of the field to the user, allows the user to select the field by clicking the label.
+This element is also used by accessibility tools to identify the field.
+\begin{lstlisting}[firstnumber=22]
+<label for="date">Date:</label><br/>
+\end{lstlisting}
+
 \subsubsection{Date}
 \subsubsection{Text}
 \subsubsection{List}
