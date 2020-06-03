@@ -87,7 +87,7 @@ Imports other Javascript files, responsible for database management.
 
 \subsection{Inputs}
 
-Disables autocomplete which remembers past user input by default. \lstinline{return false} specifies that no POST request should be made to the server.
+Disables autocomplete which remembers past user input by default. \lstinline{return false} specifies that no \lstinline{POST} request should be made to the server.
 \begin{lstlisting}[firstnumber=20]
 <form onsubmit="return false" autocomplete="off">
 \end{lstlisting}
@@ -102,18 +102,23 @@ This element is also used by accessibility tools to identify the field.
 
 \subsubsection{Date}
 
+The \lstinline{date} input type is supported by most modern browsers and provides an intuitive UI for selecting dates.
+It also includes methods for converting or verifying the \lstinline{Date} object.
 \begin{lstlisting}[firstnumber=13]
 <input id="date" name="date" type="date" placeholder="yyyy-mm-dd"/>
 \end{lstlisting}
 
 \subsubsection{Text}
 
+The \lstinline{text} input type allows the user to input a string. For numbers, this string has to be parsed in Javascript.
 \begin{lstlisting}[firstnumber=28]
 <input id="account" name="account" list="accountsList" type="text" placeholder="Account Number"/>
 \end{lstlisting}
 
 \subsubsection{List}
 
+Lists are created using the \lstinline{select} element, containing \lstinline{option} elements.
+Each option has a \lstinline{value} which is used in Javascript, and \lstinline{innerText} which is seen by the user.
 \begin{lstlisting}[firstnumber=34]
 <label for="type">Transaction Type:</label><br/>
 <select id="type" name="type">
@@ -129,6 +134,9 @@ This element is also used by accessibility tools to identify the field.
 
 \subsubsection{Buttons}
 
+Buttons with the \lstinline{submit} type can be used to check that all required sections are complete and highlight them in red.
+These buttons can also be used to send a \lstinline{POST} request to a server if desired.
+The \lstinline{onclick} attribute specified the function and parameters that should be executed when pressed.
 \begin{lstlisting}[firstnumber=70]
 <button id="add" type="submit" onclick="addTransactionButton();">Add Transaction</button>
 \end{lstlisting}
