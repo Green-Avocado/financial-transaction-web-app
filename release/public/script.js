@@ -731,6 +731,62 @@ function loadDataLists() {
     }
 }
 
+function readCurrentTypes() {
+    var types = document.getElementById('type').getElementsByTagName('option');
+    var currentTypes = [];
+
+    for(var i = 1; i < types.length; i++) {
+        currentTypes.push(types[i].value);
+    }
+
+    return currentTypes;
+}
+
+function tableToArrays() {
+    var rows = document.getElementsByClassName('bodyRow');
+    var data = new Array();
+    data.push(["Transaction Id", "Date", "Account Number", "Transaction Type", "Security", "Amount", "$ Amount", "Cost Basis", "Files"]);
+
+    for(var i = 0; i < rows.length; i++) {
+        var cells = rows[i].getElementsByTagName('td');
+        var cellData = new Array();
+
+        for(var j = 0; j < 8; j++) {
+            cellData.push(cells[j].innerText);
+        }
+        cellData.push(getFileNamesIds(cells[8]));
+        data.push(cellData);
+    }
+
+    console.log(data);
+    return data;
+}
+
+function arraysToTable(dataArr) {
+    while(document.getElementsByClassName('bodyRow').length > 0) {
+        document.getElementById("tableBody").removeChild(document.getElementsByClassName('bodyRow')[0]);
+    }
+
+    document.getElementById('add').removeAttribute('hidden');
+    document.getElementById('save').setAttribute('hidden', true);
+    document.getElementById('discard').setAttribute('hidden', true);
+
+    document.getElementById('add').setAttribute('type', 'submit');
+    document.getElementById('save').setAttribute('type', 'button');
+
+    while(dataArr.length > 0) {
+        let data = dataArr[dataArr.length - 1];
+        let files = parseFileNamesIds(data[8]);
+        data.pop();
+        if(files.length > 0) {
+            data.push(files);
+        }
+        addTransaction(data);
+        dataArr.pop();
+    }
+    loadDataLists();
+}
+
 window.onload = function() {
     resetDate();
     initDb();

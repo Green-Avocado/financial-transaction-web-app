@@ -939,6 +939,104 @@ function loadDataLists() {
     }
 }
 
+
+
+/*
+ * This function cycles through all option elements in the transaction types list
+ *
+ * The values of these options are stored as an array of strings
+ *
+ * This array is returned to the caller function so that the database can be updated
+ */
+function readCurrentTypes() {
+    var types = document.getElementById('type').getElementsByTagName('option');
+    var currentTypes = [];
+
+    for(var i = 1; i < types.length; i++) {
+        currentTypes.push(types[i].value);
+    }
+
+    return currentTypes;
+}
+
+
+
+/*
+ * This function goes through each of the body rows of the table and stores the text in the cells as an array of arrays
+ *
+ * This is done using a for loop nested in another for loop
+ *      The inner loop gets each cell in a row
+ *      The values of these cells are stored by pushing them into an array, which adds them to the end of the array
+ *
+ *      The outer loop is used to repeat the above process for each row in the table
+ *      At the end of each iteration, the cells array is pushed into a data array, adding it to the end
+ *
+ *      The result is an array of arrays which contains all data in the table
+ */
+function tableToArrays() {
+    var rows = document.getElementsByClassName('bodyRow');
+    var data = new Array();
+    data.push(["Transaction Id", "Date", "Account Number", "Transaction Type", "Security", "Amount", "$ Amount", "Cost Basis", "Files"]);
+
+    for(var i = 0; i < rows.length; i++) {
+        var cells = rows[i].getElementsByTagName('td');
+        var cellData = new Array();
+
+        for(var j = 0; j < 8; j++) {
+            cellData.push(cells[j].innerText);
+        }
+        cellData.push(getFileNamesIds(cells[8]));
+        data.push(cellData);
+    }
+
+    console.log(data);
+    return data;
+}
+
+/*
+ * This function takes an array of arrays and writes the data into the html page
+ *
+ * First, all rows are removed from the existing table in a while loop.
+ *      The while loop removes the first element with a 'bodyRow' class until there are no more bodyRow elements
+ *
+ * Secondly, the buttons are set to the 'add transaction' state, in case a row was being editted
+ *
+ * Lastly, the function repopulates the table in a while loop
+ *      The loop sends an array of data to the addTransaction() function.
+ *          Fortunately, this function already takes an array of strings, so no modification to the data was required
+ *
+ *      The last array in the list is always taken, as the addTransaction function always adds to the top,
+ *      the elements are added in reverse order to preserve the table order
+ *
+ *      After being added, the last array in the list is removed
+ */
+function arraysToTable(dataArr) {
+    while(document.getElementsByClassName('bodyRow').length > 0) {
+        document.getElementById("tableBody").removeChild(document.getElementsByClassName('bodyRow')[0]);
+    }
+
+    document.getElementById('add').removeAttribute('hidden');
+    document.getElementById('save').setAttribute('hidden', true);
+    document.getElementById('discard').setAttribute('hidden', true);
+
+    document.getElementById('add').setAttribute('type', 'submit');
+    document.getElementById('save').setAttribute('type', 'button');
+
+    while(dataArr.length > 0) {
+        let data = dataArr[dataArr.length - 1];
+        let files = parseFileNamesIds(data[8]);
+        data.pop();
+        if(files.length > 0) {
+            data.push(files);
+        }
+        addTransaction(data);
+        dataArr.pop();
+    }
+    loadDataLists();
+}
+
+
+
 /*
  * The date is reset to the default when all elements have loaded
  */
