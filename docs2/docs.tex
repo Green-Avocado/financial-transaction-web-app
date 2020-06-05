@@ -40,6 +40,14 @@
 \pagenumbering{arabic}
 \parskip 10pt
 
+\section{Setup}
+
+\subsection{Google API}
+\subsection{Firebase}
+\subsection{MySQL}
+
+\newpage
+
 \section{HTML}\label{HTML}
 
 \subsection{Preamble and head}
@@ -177,8 +185,78 @@ The options section uses buttons, text inputs, a file input, and drop down menus
 The special handling of these elements is done in Javascript.
 
 \subsection{Table}
-\subsubsection{thead}
+
+\subsection{frozenColumns}
+
+Cells in columns that are meant to be always visible are marked with a \lstinline{frozenColumnx} class, where \lstinline{x} is the column number.
+CSS is used to keep the column in place when scrolling.
+\begin{lstlisting}[firstnumber=233]
+<th class="frozenColumn1">
+    <section>
+        Transaction ID
+    </section>
+\end{lstlisting}
+
+\subsection{sort buttons}
+
+Sorting is done using buttons with an \lstinline{onclick} attribute that calls a function \lstinline{sortTable()}.
+The parameters passed are the column index and a boolean value indicating whether the column should be sorted in ascending or descending order.
+\begin{lstlisting}[firstnumber=237]
+<section class="sort">
+    <button type="button" onclick="sortTable(0, true)">^</button>
+    <button type="button" onclick="sortTable(0, false)">v</button>
+</section>
+\end{lstlisting}
+
 \subsubsection{tbody}
+
+\begin{lstlisting}[firstnumber=317]
+<tbody id="tableBody">
+</tbody>
+\end{lstlisting}
+
+\subsection{Firebase scripts}
+
+These scripts are taken directly from the firebase documentation.
+They are required for firebase and its components to function.
+The \lstinline{firebase-app.js} script is the main script and is required for all firebase features.
+The next three scripts are required for collecting analytics data, the realtime database, and firestore, respectively.
+
+The configuration contains API keys and project information required to identify the app.
+The key is not secret, though it is unique to the project.
+As it is easily obtained by users of the app, it is strongly recommended to whitelist your domain in the project settings.
+
+Unlike the other scripts, the firebase script is declared at the bottom, as it requires that the SDKs have loaded first.
+\begin{lstlisting}[firstnumber=323]
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-app.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-analytics.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.14.3/firebase-firestore.js"></script>
+
+<script>
+// Your web app's Firebase configuration
+var firebaseConfig = {
+    apiKey: "AIzaSyAmZLFZHDAB9evhvNunxOe5GxXRd_OizmU",
+    authDomain: "financial-transactions-6f065.firebaseapp.com",
+    databaseURL: "https://financial-transactions-6f065.firebaseio.com",
+    projectId: "financial-transactions-6f065",
+    storageBucket: "financial-transactions-6f065.appspot.com",
+    messagingSenderId: "82206982479",
+    appId: "1:82206982479:web:8937bbd1bd4fb6022b053a",
+    measurementId: "G-0564DT8RNQ"
+};
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+firebase.analytics();
+
+var database = firebase.database();
+var firestore = firebase.firestore();
+</script>
+
+<script src="./firebaseScript.js"></script>
+\end{lstlisting}
 
 \newpage
 
