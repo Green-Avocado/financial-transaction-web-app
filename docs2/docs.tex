@@ -313,6 +313,10 @@ var firestore = firebase.firestore();
 
 \section{googleApiScript.js}
 
+\textbf{IMPORTANT: googleApiScript.js is required for all databases to function, including firebase realtime database, firestore, Google sheets, and MySQL.
+This is due to the fact that it contains the \lstinline{tableToArrays()}, \lstinline{arraysToTable()}, and \lstinline{readCurrentTypes()} functions, which are used by other database scripts.
+If you wish to use another database but have the Google sheets database removed, move these functions a different script or add a new script and include it in the HTML file.}
+
 \subsection{Global Variables}
 \subsection{loadSheetData()}
 \subsection{getNewSheetData()}
