@@ -510,8 +510,6 @@ function validateAmountRange(min, max) {
     }
 
     if(Number(min) > Number(max) && min != '' && max != '') {
-        if(min != '') alert(min + '2');
-        if(max != '') alert(max + '1');
         alert('Error: Invalid Amount Range');
         return false;
     }
