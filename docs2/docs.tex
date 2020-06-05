@@ -132,6 +132,15 @@ Each option has a \lstinline{value} which is used in Javascript, and \lstinline{
 </select>
 \end{lstlisting}
 
+\subsubsection{File}
+
+Files are uploaded using the \lstinline{file} input type.
+The \lstinline{multiple} attribute allows the user to upload multiple files, which are interpreted as an array of files in Javascript.
+\begin{lstlisting}[firstnumber=64]
+    <label id="fileUploadLabel" for="fileUpload">Upload file</label>
+    <input id="fileUpload" name="fileUpload" type="file" onchange="fileUploadChanged();" multiple/>
+\end{lstlisting}
+
 \subsubsection{Buttons}
 
 Buttons with the \lstinline{submit} type can be used to check that all required sections are complete and highlight them in red.
@@ -140,6 +149,29 @@ The \lstinline{onclick} attribute specified the function and parameters that sho
 \begin{lstlisting}[firstnumber=70]
 <button id="add" type="submit" onclick="addTransactionButton();">Add Transaction</button>
 \end{lstlisting}
+
+\subsection{Filters}
+
+Filter HTML elements are handled exactly the same as their counterparts in the input section.
+Some fields have two elements to handle a lower and upper bound, but these are handled solely in Javascript.
+
+\subsubsection{Tooltip}
+
+The \lstinline{span} element is a generic container.
+The \lstinline{title} attribute will display its value as a tool tip when the element is hovered.
+\begin{lstlisting}[firstnumber=118]
+<span title="Enter search terms here. Separate search terms with && or || for AND and OR statements, respectively. Exclusive filters are marked by a leading !. Use || to filter by multiple securities (e.g. SPY || TLT) and && to exclude multiple securities (e.g. !SPY && !TLT).">?</span><br/>
+\end{lstlisting}
+
+\subsubsection{Checkbox}
+
+The input type \lstinline{checkbox} provides a toggleable input field which can be evaluated as \lstinline{true} or \lstinline{false} with Javascript.
+\begin{lstlisting}[firstnumber=153]
+<label for="filterNa">Filter N/A:</label>
+<input id="filterNA" name="filterNA" type="checkbox"/>
+\end{lstlisting}
+
+\subsection{Options}
 
 \subsection{Table}
 \subsubsection{thead}
