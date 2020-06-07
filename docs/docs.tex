@@ -56,6 +56,20 @@ Many materials are referenced in this guide which contain far more detail, I wou
 
 This is required for interacting with the Google Sheets database.
 
+Go to https://console.developers.google.com/ and create a new project if you haven't already done that.
+
+From the library panel, enable the Google Sheets API and the Google Drive API.
+
+From the credentials panel, create an API key.
+
+From the credentials panel, create an OAuth Client ID for a web application.
+Give it a name, which will appear when users are prompted to give the app permissions.
+Add the URIs that are expected to use the app.
+When testing this locally, it can be useful to add http://localhost:5000 or similar.
+These can always be changed at any moment from the developer console.
+
+In the public/googleApiScript.js file of this repository, remember to change the client id and both instances of the api key to the appropriate values for your project.
+
 \subsection{Firebase}
 
 Firebase is used to host the web application and two of the databases, as well as storing images for all other databases to reference.
@@ -85,11 +99,19 @@ MariaDB was used to create and test this project, which is a fork of MySQL.
 If you decide to host the database yourself, you'll need to start the program, log in, and create a database.
 In this repository, it is named `mydb', however, this can be changed if desired.
 
-If you wish to use this repository, the database can be imported using the dump.txt file.
+Remember to change the ip address, database name, and credentials in the index.js file of the firebase cloud functions folder.
+
+If you wish to use this repository, the database can be imported using the dump.txt file:
 
 \lstinline{mysql -u username -p database_name < dump.txt}
 
 Otherwise, once the database is created, enter the database using `use database name;' to enter the database.
+
+To create tables, you can use the following query:
+
+\lstinline{CREATE TABLE `name` ( `colname1` datatype, `colname2` datatype, `colname3` datatype... )}
+
+Here is a useful website containing various MySQL commands: https://www.mysqltutorial.org/mysql-cheat-sheet.aspx/
 
 \newpage
 
