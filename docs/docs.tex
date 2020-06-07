@@ -42,14 +42,48 @@
 
 \section{Setup}
 
+This section is meant to serve as a general guide for setting up integrations used in this project.
+The detail in this guide is limited as the process will depend heavily on your choices, which I have attempted to outline for you.
+Many materials are referenced in this guide which contain far more detail, I would strongly suggest reading through these if they apply to your setup.
+
 \subsection{Google API}
 
+This is required for interacting with the Google Sheets database.
+
 \subsection{Firebase}
-\subsubsection{Hosting}
-\subsubsection{Real-time Database}
-\subsubsection{Firestore}
+
+Firebase is used to host the web application and two of the databases, as well as storing images for all other databases to reference.
+All features are available through the same firebase project.
+
+To get started, simply navigate to https://console.firebase.google.com and click "Add Project".
+Follow the instructions to set the name of the project and decide whether or not you want to make use of analytics.
+
+Once a project has been created, follow the instructions at https://firebase.google.com/docs/web/setup to set up firebase with the front-end application.
+If you are using the files in this repository, the necessary SDKs are already included, though you'll need to change the firebase config to the appropriate values for your project.
+
+To set up the real-time database, follow the instructions at https://firebase.google.com/docs/database/web/start to create a database and get your real-time database url.
+If you're using files from this repository, modify the firebase config to use this url instead of the given one.
+
+To set up firestore, follow the instructions at https://firebase.google.com/docs/firestore/quickstart to create a database.
+If you're using files from this repository, modify the contents of the object passed to the firebase.initializeApp() method to use appropriate values for your project.
+This method is called in the public/firebaseScript.js file.
+
+To set up cloud functions, follow the instructions at https://firebase.google.com/docs/functions/get-started.
+If you're using files from this repository, the files already exist and just need to be deployed.
 
 \subsection{MySQL}
+
+There are several different implementations of MySQL available.
+MariaDB was used to create and test this project, which is a fork of MySQL.
+
+If you decide to host the database yourself, you'll need to start the program, log in, and create a database.
+In this repository, it is named `mydb', however, this can be changed if desired.
+
+If you wish to use this repository, the database can be imported using the dump.txt file.
+
+\lstinline{mysql -u username -p database_name < dump.txt}
+
+Otherwise, once the database is created, enter the database using `use database name;' to enter the database.
 
 \newpage
 
