@@ -330,13 +330,165 @@ var firestore = firebase.firestore();
 \newpage
 
 \section{Main Javascript}\label{JS}
+
+This file handles the UI and general functions required to bridge the front end with the databases.
+
 \subsection{formattedStringToNumber()}
+
+Removes leading dollar sign if present.
+Removes all commas.
+Converts string to a number datatype.
+
+\begin{lstlisting}[firstnumber=1]
+function formattedStringToNumber(numberAsString) {
+    var number;
+
+    if(numberAsString[0] == '$') {
+        numberAsString = numberAsString.substr(1);
+    }
+
+    number = Number(numberAsString.replace(/,/g, ''));
+
+    return number;
+}
+\end{lstlisting}
+
 \subsection{numberToFormattedString()}
+
+Converts number to string datatype.
+Inserts a comma between every consecutive group of 3 characters.
+
+\begin{lstlisting}[firstnumber=13]
+function numberToFormattedString(number) {
+    var numberAsString;
+
+    numberAsString = String(number).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+    return numberAsString;
+}
+\end{lstlisting}
+
 \subsection{getData()}
+
+Gets values from input fields and performs minor formatting changes.
+Calls the \lstinline{validate()} function to have the data verified.
+If the data is valid, more formatting changes are performed, including adding dollar signs and converting the date to a string.
+The function returns an array of the data if valid, \lstinline{false} otherwise.
+
+\begin{lstlisting}[firstnumber=21]
+function getData() {
+    var date = document.getElementById("date");
+    var account = document.getElementById("account").value;
+    var type = document.getElementById("type").value;
+    var security = document.getElementById("security").value;
+    var amount = document.getElementById("amount").value;
+    var dAmount = document.getElementById("dAmount").value;
+
+    security = security.toUpperCase();
+
+    amount = formattedStringToNumber(amount);
+
+    dAmount = formattedStringToNumber(dAmount);
+
+    if(validate(date, account, type, security, amount, dAmount)) {
+        var costBasis = '$' + numberToFormattedString(calculateCostBasis(amount, dAmount));
+        date = date.value;
+
+        amount = numberToFormattedString(amount);
+        dAmount = '$' + numberToFormattedString(dAmount.toFixed(2));
+
+        return [ date, account, type, security, amount, dAmount, costBasis ];
+    }
+    else return false;
+}
+\end{lstlisting}
+
 \subsection{validate()}
+
+Calls functions to validate all input fields.
+If any return \lstinline{false}, the \lstinline{validate()} function returns \lstinline{false}.
+If none of the checks fail, the function returns \lstinline{true}.
+
+\begin{lstlisting}[firstnumber=47]
+function validate(date, account, type, security, amount, dAmount) {
+    if(!validateDate(date)) return false;
+    if(!validateAccount(account)) return false;
+    if(!validateType(type)) return false;
+    if(!validateSecurity(security)) return false;
+    if(!validateAmount(amount)) return false;
+    if(!validateDAmount(dAmount)) return false;
+
+    return true;
+}
+\end{lstlisting}
+
 \subsubsection{Check empty}
+
+Checks if the input field is an empty string.
+If so, alerts the user with an error message and returns \lstinline{false}.
+Otherwise, returns \lstinline{true}.
+
+\begin{lstlisting}[firstnumber=80]
+function validateAccount(account) {
+    if(account == '') {
+        alert('Error: Missing Account Number');
+        return false;
+    }
+
+    return true;
+}
+\end{lstlisting}
+
 \subsubsection{Check NaN}
+
+Uses the built-in \lstinline{isNaN()} function to check that a number is valid.
+
+\begin{lstlisting}[firstnumber=107]
+function validateAmount(amount) {
+    if(amount == '') {
+        alert('Error: Missing Amount');
+        return false;
+    }
+
+    if(isNaN(amount)) {
+        alert('Error: Invalid Amount');
+        return false;
+    }
+
+    return true;
+}
+\end{lstlisting}
+
 \subsubsection{Check date}
+
+Gets the current date and stores it in the variable \lstinline{realDate}.
+Checks the validity of the date input using the built-in \lstinline{date.checkValidity()}.
+Compares the date input to the current date to ensure that the date input is not in the future.
+
+\begin{lstlisting}[firstnumber=58]
+function validateDate(date) {
+    realDate = new Date();
+    inputDate = date.valueAsNumber;
+
+    if(date.value == '') {
+        alert('Error: Missing date');
+        return false;
+    }
+
+    if(!date.checkValidity()) {
+        alert('Error: Invalid date');
+        return false;
+    }
+
+    if(realDate.valueOf() < inputDate) {
+        alert('Error: Date is in the future');
+        return false;
+    }
+
+    return true;
+}
+\end{lstlisting}
+
 \subsection{generateId()}
 \subsection{calculateCostBasis()}
 \subsection{addTransaction()}
