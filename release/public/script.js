@@ -237,7 +237,7 @@ function addTransactionButton() {
     }
 }
 
-function addTransactionWithFileName(data, fileName) {
+function addTransactionWithFileName(data) {
     addTransaction(data);
     console.log(data);
     loadDataLists();
