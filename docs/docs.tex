@@ -1102,6 +1102,14 @@ function unfilterAll() {
 
 \subsection{toggleID()}
 
+Gets the current state of the ID column depending on the text of the button.
+
+If the column needs to be hidden, the \lstinline{hidden} attribute is added to each ID cell.
+Frozen column classes are shifted to remove the offset that would be created by the absence of these cells.
+
+If the column needs to be revealed, the \lstinline{hidden} attribute is removed from each ID cell.
+Frozen columns are shifted back to create room for the ID column.
+
 \begin{lstlisting}[firstnumber=605]
 function toggleID() {
     var button = document.getElementById('toggleId');
@@ -1145,6 +1153,8 @@ function toggleID() {
 
 \subsection{readFile()}
 
+Gets the contents of a file and sets the value of the \lstinline{typesArray} element to these contents.
+
 \begin{lstlisting}[firstnumber=644]
 function readFile(fileIn){
     if(fileIn.files && fileIn.files[0]) {
@@ -1159,6 +1169,9 @@ function readFile(fileIn){
 \end{lstlisting}
 
 \subsection{saveFile()}
+
+The value of the \lstinline{typesArray} element is encoded for utf-8 and written to a file.
+The user is prompted to download and save this file.
 
 \begin{lstlisting}[firstnumber=655]
 function saveFile() {
@@ -1177,6 +1190,9 @@ function saveFile() {
 
 \subsection{applyTypes()}
 
+The value of the \lstinline{typesArray} element is split by commas and saved as an array.
+This array is passed as an argument to the \lstinline{setTransactionTypesList()} function.
+
 \begin{lstlisting}[firstnumber=668]
 function applyTypes() {
     var typesArray = document.getElementById('typesArray').value.split(',');
@@ -1186,6 +1202,8 @@ function applyTypes() {
 
 \subsection{editTypes()}
 
+The current types, which are read by \lstinline{readCurrentTypes()} are formatted as a comma-separated string and used to fill the \lstinline{typesArray} element.
+
 \begin{lstlisting}[firstnumber=673]
 function editTypes() {
     document.getElementById('typesArray').value = readCurrentTypes().join(',');
@@ -1193,6 +1211,11 @@ function editTypes() {
 \end{lstlisting}
 
 \subsection{setTransactionTypes()}
+
+The existing lists of transaction types, which are found in the input and filter sections, are cleared.
+Empty values are added to both to serve as default values.
+New lists are created from the array passed to this function as an argument.
+If the type is preceeded by an exclamation mark, this is kept in the \lstinline{value} attribute, but is not displayed to the user.
 
 \begin{lstlisting}[firstnumber=677]
 function setTransactionTypesList(typesArray) {
@@ -1214,6 +1237,9 @@ function setTransactionTypesList(typesArray) {
 
 \subsection{toggleSection()}
 
+The section that the button belongs to is hidden or revealed, depending on the text of the button.
+The text is updated to reflect the status of the section and the action that can be taken, whether hiding or revealing the section.
+
 \begin{lstlisting}[firstnumber=693]
 function toggleSection(button) {
     var form = button.parentElement.parentElement.getElementsByTagName('form')[0];
@@ -1230,6 +1256,9 @@ function toggleSection(button) {
 \end{lstlisting}
 
 \subsection{loadDataLists()}
+
+Arrays are constructed from unique strings found in the accounts and securities columns of the table.
+These are used to create option elements for autofill suggestions in these fields.
 
 \begin{lstlisting}[firstnumber=706]
 function loadDataLists() {
@@ -1263,6 +1292,8 @@ function loadDataLists() {
 
 \subsection{readCurrentTypes()}
 
+A list of current types saved as an array, created from the \lstinline{value} attributes of the options in the input dropdown menu.
+
 \begin{lstlisting}[firstnumber=734]
 function readCurrentTypes() {
     var types = document.getElementById('type').getElementsByTagName('option');
@@ -1277,6 +1308,8 @@ function readCurrentTypes() {
 \end{lstlisting}
 
 \subsection{tableToArrays()}
+
+The contents of each body row are saved in a two-dimensional array exactly as displayed, except for the file column, which is saved as a list of file names and IDs.
 
 \begin{lstlisting}[firstnumber=745]
 function tableToArrays() {
@@ -1301,6 +1334,15 @@ function tableToArrays() {
 \end{lstlisting}
 
 \subsection{arraysToTable()}
+
+All current rows are removed from the table.
+Buttons in the input field are set to the correct state for adding, as any row being edited would have been removed in the previous step.
+
+For each row stored in the array, the function passes the data to the \lstinline{addTransactionButton}, starting with the last row saved.
+This order is necessary as rows are added to the top of the table, so they must be read from the bottom to preserve order.
+
+The row that was just added is popped from the array, allowing the function to proceed to the next row.
+This loop continues as long as there are rows remaining in the array.
 
 \begin{lstlisting}[firstnumber=765]
 function arraysToTable(dataArr) {
@@ -1330,6 +1372,8 @@ function arraysToTable(dataArr) {
 \end{lstlisting}
 
 \subsection{window.onload = function()}
+
+Once the page is loaded, the date is set to the current date and the local database is initialised.
 
 \begin{lstlisting}[firstnumber=790]
 window.onload = function() {
