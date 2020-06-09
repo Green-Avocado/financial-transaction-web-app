@@ -1304,32 +1304,187 @@ window.onload = function() {
 
 \subsection{clearFirebase()}
 
-\begin{lstlisting}[firstnumber=0]
+\begin{lstlisting}[firstnumber=1]
+function clearFirebase() {
+    firebase.database().ref('Data').remove();
+}
 \end{lstlisting}
 
 \subsection{writeToFirebase()}
 
-\begin{lstlisting}[firstnumber=0]
+\begin{lstlisting}[firstnumber=5]
+function writeToFirebase() {
+    writeImagesToFirestore("firebase");
+    clearFirebase();
+
+    var data = tableToArrays();
+    var typesArr = readCurrentTypes();
+
+    for(var i = 1; i < data.length; i++) {
+        firebase.database().ref('Data/' + String(i - 1)).set({
+            id: data[i][0],
+            date: data[i][1],
+            account: data[i][2],
+            type: data[i][3],
+            security: data[i][4],
+            amount: data[i][5],
+            dAmount: data[i][6],
+            costBasis: data[i][7],
+            files: data[i][8]
+        });
+    }
+    for(var i = 0; i < typesArr.length; i++) {
+        firebase.database().ref('Types/' + String(i)).set({
+            value: typesArr[i]
+        });
+    }
+}
 \end{lstlisting}
 
 \subsection{readFromFirebase()}
 
-\begin{lstlisting}[firstnumber=0]
+\begin{lstlisting}[firstnumber=32]
+function readFromFirebase() {
+    clearIndexedDb("firebase");
+    return firebase.database().ref('/').once('value').then(function(snapshot) {
+
+        while(document.getElementsByClassName('bodyRow').length > 0) {
+            document.getElementById("tableBody").removeChild(document.getElementsByClassName('bodyRow')[0]);
+        }
+
+        data = snapshot.val().Data;
+        console.log(data);
+        for(var i = data.length - 1; i >= 0; i--) {
+            let staged = [data[i].id, data[i].date, data[i].account, data[i].type, data[i].security, data[i].amount, data[i].dAmount, data[i].costBasis];
+            if(parseFileNamesIds(data[i].files).length > 0) {
+                staged.push(parseFileNamesIds(data[i].files));
+            }
+            console.log(staged);
+            addTransaction(staged);
+        }
+
+        types = snapshot.val().Types;
+        var typesArr = [];
+        for(var i = 0; i < types.length; i++) {
+            typesArr.push(types[i].value);
+        }
+        setTransactionTypesList(typesArr);
+        loadDataLists();
+    });
+}
 \end{lstlisting}
 
 \subsection{clearFirestore()}
 
-\begin{lstlisting}[firstnumber=0]
+\begin{lstlisting}[firstnumber=61]
+function clearFirestore() {
+    firestore.collection("Data").get().then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+            firestore.collection("Data").doc(doc.id).delete();
+        });
+    }).then(function() {
+        firestore.collection("Types").get().then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                firestore.collection("Types").doc(doc.id).delete();
+            });
+        })
+    }).then(function() { return 0 });
+}
 \end{lstlisting}
 
 \subsection{writeToFirestore()}
 
-\begin{lstlisting}[firstnumber=0]
+\begin{lstlisting}[firstnumber=75]
+function writeToFirestore() {
+    writeImagesToFirestore("firestore");
+    firestore.collection("Data").get().then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+            firestore.collection("Data").doc(doc.id).delete();
+        });
+    }).then(function() {
+        firestore.collection("Types").get().then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                firestore.collection("Types").doc(doc.id).delete();
+            });
+        }).then(function() {
+            var data = tableToArrays();
+            var typesArr = readCurrentTypes();
+
+            for(var i = 1; i < data.length; i++) {
+                firestore.collection("Data").add({
+                    id: data[i][0],
+                    date: data[i][1],
+                    account: data[i][2],
+                    type: data[i][3],
+                    security: data[i][4],
+                    amount: data[i][5],
+                    dAmount: data[i][6],
+                    costBasis: data[i][7],
+                    files: data[i][8],
+                    index: i - 1
+                })
+                .then(function(docRef) {
+                    console.log("Document written with ID: ", docRef.id);
+                })
+                .catch(function(error) {
+                    console.error("Error adding document: ", error);
+                });
+            }
+            for(var i = 0; i < typesArr.length; i++) {
+                firestore.collection("Types").add({
+                    value: typesArr[i],
+                    index: i
+                })
+                .then(function(docRef) {
+                    console.log("Document written with ID: ", docRef.id);
+                })
+                .catch(function(error) {
+                    console.error("Error adding document: ", error);
+                });
+            }
+        })
+    });
+}
 \end{lstlisting}
 
 \subsection{readFromFirestore()}
 
-\begin{lstlisting}[firstnumber=0]
+\begin{lstlisting}[firstnumber=126]
+function readFromFirestore() {
+    clearIndexedDb("firestore");
+    firestore.collection("Data").get().then((querySnapshot) => {
+        var data = new Array();
+
+        querySnapshot.forEach((doc) => {
+            data[doc.data().index] = doc.data();
+            console.log(data);
+        });
+
+        while(document.getElementsByClassName('bodyRow').length > 0) {
+            document.getElementById("tableBody").removeChild(document.getElementsByClassName('bodyRow')[0]);
+        }
+
+        for(let i = data.length - 1; i >= 0; i--) {
+            let staged = [data[i].id, data[i].date, data[i].account, data[i].type, data[i].security, data[i].amount, data[i].dAmount, data[i].costBasis];
+            if(parseFileNamesIds(data[i].files).length > 0) {
+                staged.push(parseFileNamesIds(data[i].files));
+            }
+            console.log(staged);
+            addTransaction(staged);
+        }
+        loadDataLists();
+    });
+
+    firestore.collection("Types").get().then((querySnapshot) => {
+        var typesArr = [];
+
+        querySnapshot.forEach((doc) => {
+            typesArr[doc.data().index] = doc.data().value;
+        });
+
+        setTransactionTypesList(typesArr);
+    });
+}
 \end{lstlisting}
 
 \newpage
@@ -1338,92 +1493,298 @@ window.onload = function() {
 
 \subsection{Global Variables}
 
-\begin{lstlisting}[firstnumber=0]
+\begin{lstlisting}[firstnumber=1]
+var auth2;
+
+var spreadsheetId = "1R0HpaAIUw-JHX8SrzvkEPCG1qgI-siJ9oucY6g5e4Co";
+var sheetId = "Sheet1";
+var sheetIdNum = 0;
 \end{lstlisting}
 
 \subsection{loadSheetData()}
 
-\begin{lstlisting}[firstnumber=0]
+\begin{lstlisting}[firstnumber=7]
+function loadSheetData() {
+    if(auth2.isSignedIn.get())
+    {
+        getAllUserSheets();
+    }
+    else {
+        authenticate()
+            .then(function() {
+                if(auth2.isSignedIn.get()) getAllUserSheets();
+            });
+    }
+}
 \end{lstlisting}
 
 \subsection{getNewSheetData()}
 
-\begin{lstlisting}[firstnumber=0]
+\begin{lstlisting}[firstnumber=20]
+function getNewSheetData() {
+    spreadsheetId = document.getElementById('sheet').value;
+    if(auth2.isSignedIn.get())
+    {
+        getTabsOfSheet();
+    }
+    else {
+        authenticate()
+            .then(function() {
+                if(auth2.isSignedIn.get()) getTabsOfSheet();
+            });
+    }
+}
 \end{lstlisting}
 
 \subsection{populateSheetSelector()}
 
-\begin{lstlisting}[firstnumber=0]
+\begin{lstlisting}[firstnumber=34]
+function populateSheetSelector(arrayOfSheets) {
+    document.getElementById('sheet').innerHTML = '<option value="1R0HpaAIUw-JHX8SrzvkEPCG1qgI-siJ9oucY6g5e4Co">default</option>';
+
+    for(var i = 0; i < arrayOfSheets.length; i++) {
+        document.getElementById('sheet').innerHTML += '<option value="' + arrayOfSheets[i].id + '">' + arrayOfSheets[i].name + '</option>';
+    }
+}
 \end{lstlisting}
 
 \subsection{getNewTabData()}
 
-\begin{lstlisting}[firstnumber=0]
+\begin{lstlisting}[firstnumber=42]
+function getNewTabData() {
+    data = document.getElementById('tab').value.split(/,(.+)/);
+    sheetIdNum = data[0];
+    sheetId = data[1];
+}
 \end{lstlisting}
 
 \subsection{populateTabSelector()}
 
-\begin{lstlisting}[firstnumber=0]
+\begin{lstlisting}[firstnumber=48]
+function populateTabSelector(arrayOfTabs) {
+    document.getElementById('tab').innerHTML = '';
+
+    for(var i = 0; i < arrayOfTabs.length; i++) {
+        document.getElementById('tab').innerHTML += '<option value="' + arrayOfTabs[i].properties.sheetId + ',' + arrayOfTabs[i].properties.title + '">' + arrayOfTabs[i].properties.title + '</option>';
+    }
+}
 \end{lstlisting}
 
 \subsection{getAllUserSheets()}
 
-\begin{lstlisting}[firstnumber=0]
+\begin{lstlisting}[firstnumber=56]
+function getAllUserSheets() {
+    return gapi.client.drive.files.list({
+        "pageSize": 1000,
+        "orderBy": "name",
+        "q": "mimeType = 'application/vnd.google-apps.spreadsheet'",
+    })
+        .then(function(response) {
+            populateSheetSelector(JSON.parse(response.body).files);
+            getNewSheetData();
+            console.log("Response", response);
+        },
+        function(err) { console.error("Execute error", err); });
+}
 \end{lstlisting}
 
 \subsection{getTabsOfSheet()}
 
-\begin{lstlisting}[firstnumber=0]
+\begin{lstlisting}[firstnumber=70]
+function getTabsOfSheet() {
+    return gapi.client.sheets.spreadsheets.get({
+      "spreadsheetId": spreadsheetId,
+      "includeGridData": false
+    })
+        .then(function(response) {
+            populateTabSelector(JSON.parse(response.body).sheets);
+            getNewTabData();
+            console.log("Response", response);
+        },
+        function(err) { console.error("Execute error", err); });
+}
 \end{lstlisting}
 
 \subsection{authenticate()}
 
-\begin{lstlisting}[firstnumber=0]
+\begin{lstlisting}[firstnumber=83]
+function authenticate() {
+return gapi.auth2.getAuthInstance()
+    .signIn({scope: "https://www.googleapis.com/auth/drive"})
+    .then(function() { console.log("Sign-in successful"); },
+        function(err) { console.error("Error signing in", err); });
+}
 \end{lstlisting}
 
 \subsection{loadClientSheets()}
 
-\begin{lstlisting}[firstnumber=0]
+\begin{lstlisting}[firstnumber=90]
+function loadClientSheets() {
+gapi.client.setApiKey("AIzaSyDC6JNuMW78Q-gWsp0PFEaTsICYjHWymAo");
+return gapi.client.load("https://content.googleapis.com/discovery/v1/apis/sheets/v4/rest")
+    .then(function() { console.log("GAPI client loaded for API"); loadSheetData(); },
+        function(err) { console.error("Error loading GAPI client for API", err); });
+}
 \end{lstlisting}
 
 \subsection{loadClient()}
 
-\begin{lstlisting}[firstnumber=0]
+\begin{lstlisting}[firstnumber=97]
+function loadClient() {
+gapi.client.setApiKey("AIzaSyDC6JNuMW78Q-gWsp0PFEaTsICYjHWymAo");
+return gapi.client.load("https://content.googleapis.com/discovery/v1/apis/drive/v3/rest")
+    .then(function() { console.log("GAPI client loaded for API"); loadClientSheets(); },
+        function(err) { console.error("Error loading GAPI client for API", err); });
+}
 \end{lstlisting}
 
 \subsection{readGoogleSheetDB()}
 
-\begin{lstlisting}[firstnumber=0]
+\begin{lstlisting}[firstnumber=104]
+function readGoogleSheetDB() {
+    clearIndexedDb("sheets");
+    return gapi.client.sheets.spreadsheets.values.get({
+        "spreadsheetId": spreadsheetId,
+        "range": sheetId + "!A2:I214748354"
+    })
+        .then(function(response) {
+            console.log("Response", response);
+
+            dataArr = [];
+            if(JSON.parse(response.body).values != undefined) {
+                dataArr = JSON.parse(response.body).values;
+            }
+            arraysToTable(dataArr);
+
+            readGoogleTypes();
+        },
+        function(err) { console.error("Execute error", err); });
+}
 \end{lstlisting}
 
 \subsection{readGoogleTypes()}
 
-\begin{lstlisting}[firstnumber=0]
+\begin{lstlisting}[firstnumber=124]
+function readGoogleTypes() {
+    return gapi.client.sheets.spreadsheets.values.get({
+        "spreadsheetId": spreadsheetId,
+        "range": sheetId + "!J1:J214748354",
+        "majorDimension": "COLUMNS"
+
+    })
+        .then(function(response) {
+            console.log("Response", response);
+            var typesArr = JSON.parse(response.body).values[0];
+            setTransactionTypesList(typesArr);
+        },
+        function(err) { console.error("Execute error", err); });
+}
 \end{lstlisting}
 
 \subsection{writeGoogleSheetDB()}
 
-\begin{lstlisting}[firstnumber=0]
+\begin{lstlisting}[firstnumber=139]
+function writeGoogleSheetDB() {
+    if(auth2.isSignedIn.get())
+    {
+        setGoogleRows()
+    }
+    else {
+        authenticate()
+            .then(function() {
+                if(auth2.isSignedIn.get()) setGoogleRows();
+            });
+    }
+}
 \end{lstlisting}
 
 \subsection{setGoogleRows()}
 
-\begin{lstlisting}[firstnumber=0]
+\begin{lstlisting}[firstnumber=152]
+function setGoogleRows() {
+    return gapi.client.sheets.spreadsheets.batchUpdate({
+        "spreadsheetId": spreadsheetId,
+        "resource": {
+        "requests": [
+            {
+            "updateSheetProperties": {
+                "properties": {
+                    "gridProperties": {
+                        "columnCount": 10,
+                        "rowCount": 1
+                },
+                    "sheetId": sheetIdNum
+                },
+                "fields": "gridProperties"
+            }
+            }
+        ]
+        }
+    })
+        .then(function(response) {
+            console.log("Response", response);
+
+            clearGoogleRow();
+        },
+        function(err) { console.error("Execute error", err); });
+}
 \end{lstlisting}
 
 \subsection{clearGoogleRow()}
 
-\begin{lstlisting}[firstnumber=0]
+\begin{lstlisting}[firstnumber=180]
+function clearGoogleRow() {
+    return gapi.client.sheets.spreadsheets.values.clear({
+    "spreadsheetId": spreadsheetId,
+    "range": sheetId + "!A1:J1",
+    "resource": {}
+    })
+        .then(function(response) {
+            console.log("Response", response);
+
+            writeGoogleDB();
+        },
+        function(err) { console.error("Execute error", err); });
+}
 \end{lstlisting}
 
 \subsection{writeGoogleDB()}
 
-\begin{lstlisting}[firstnumber=0]
+\begin{lstlisting}[firstnumber=194]
+function writeGoogleDB() {
+    writeImagesToFirestore("sheets");
+    return gapi.client.sheets.spreadsheets.values.batchUpdate({
+        "spreadsheetId": spreadsheetId,
+        "resource": {
+            "data": [
+            {
+                "range": sheetId + "!A1",
+                "values": tableToArrays(),
+                "majorDimension": "ROWS"
+            },
+            {
+                "range": sheetId + "!J1",
+                "values": [readCurrentTypes()],
+                "majorDimension": "COLUMNS"
+            }
+            ],
+            "valueInputOption": "RAW"
+        }
+        })
+        .then(function(response) {
+            console.log("Response", response);
+        },
+        function(err) { console.error("Execute error", err); });
+}
 \end{lstlisting}
 
 \subsection{gapi.load()}
 
-\begin{lstlisting}[firstnumber=0]
+\begin{lstlisting}[firstnumber=220]
+gapi.load("client:auth2", function() {
+    auth2 = gapi.auth2.init({client_id: "217251662395-9pu2qa1hubgrblav1nhvnfaascd6povv.apps.googleusercontent.com"});
+    loadClient();
+});
 \end{lstlisting}
 
 \newpage
@@ -1432,27 +1793,114 @@ window.onload = function() {
 
 \subsection{writeImagesToFirestore()}
 
-\begin{lstlisting}[firstnumber=0]
+\begin{lstlisting}[firstnumber=1]
+function writeImagesToFirestore(database) {
+    firestore.collection("Images:" + database).get().then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+            firestore.collection("Images:" + database).doc(doc.id).delete();
+        });
+    }).then(function() {
+        var trans = db.transaction(['files'], 'readonly');
+        var dlReq = trans.objectStore('files').getAll();
+
+        dlReq.onerror = function(e) {
+            console.log('error reading data');
+            console.error(e);
+        };
+
+        dlReq.onsuccess = function(e) {
+            console.log(dlReq.result);
+
+            for(let i = 0; i < dlReq.result.length; i++) {
+                firestore.collection("Images:" + database).add({
+                    id: dlReq.result[i].id,
+                    type: dlReq.result[i].type,
+                    name: dlReq.result[i].name,
+                    data: dlReq.result[i].data,
+                })
+                .then(function(docRef) {
+                    console.log("Image written with ID: ", docRef.id);
+                })
+                .catch(function(error) {
+                    console.log("Error adding image: ", error);
+                });
+            }
+        };
+    });
+}
 \end{lstlisting}
 
 \subsection{readImagesFromFirestore()}
 
-\begin{lstlisting}[firstnumber=0]
+\begin{lstlisting}[firstnumber=36]
+function readImagesFromFirestore(database) {
+    firestore.collection("Images:" + database).get().then((querySnapshot) => {
+        let trans = db.transaction(['files'], 'readwrite');
+
+        trans.oncomplete = function(e) {
+            console.log('data stored');
+        }
+
+        querySnapshot.forEach((doc) => {
+            console.log("Writing ", doc.data().name);
+
+            let ob = {
+                id: doc.data().id,
+                type: doc.data().type,
+                name: doc.data().name,
+                data: doc.data().data
+            };
+
+            let addReq = trans.objectStore('files').put(ob);
+        });
+    });
+}
 \end{lstlisting}
 
 \subsection{getFileNamesIds()}
 
-\begin{lstlisting}[firstnumber=0]
+\begin{lstlisting}[firstnumber=59]
+function getFileNamesIds(cell) {
+    var links = cell.getElementsByTagName('a');
+    var result = '';
+
+    for(let i = 0; i < links.length; i++) {
+        result += links[i].innerText + '/' + links[i].getAttribute('onclick').split('`')[1] + '/';
+    }
+
+    return result;
+}
 \end{lstlisting}
 
 \subsection{parseFileNamesIds()}
 
-\begin{lstlisting}[firstnumber=0]
+\begin{lstlisting}[firstnumber=70]
+function parseFileNamesIds(string) {
+    var result = new Array();
+
+    if(string != '') {
+        let strarr = string.split('/');
+        for(let i = 0; i < strarr.length - 1; i += 2) {
+            result.push([strarr[i + 1], strarr[i + 0]]);
+        }
+    }
+
+    return result;
+}
 \end{lstlisting}
 
 \subsection{clearIndexedDb()}
 
-\begin{lstlisting}[firstnumber=0]
+\begin{lstlisting}[firstnumber=83]
+function clearIndexedDb(database) {
+    console.log("db reset");
+    let trans = db.transaction(['files'], 'readwrite');
+    var clearReq = trans.objectStore('files').clear();
+
+    trans.oncomplete = function(e) {
+        readImagesFromFirestore(database);
+    }
+}
 \end{lstlisting}
 
 \newpage
@@ -1461,57 +1909,230 @@ window.onload = function() {
 
 \subsection{Global Variables}
 
-\begin{lstlisting}[firstnumber=0]
+\begin{lstlisting}[firstnumber=1]
+let db;
+let dbVersion = 1;
+let dbReady = false;
+
+var fileEditted = false;
 \end{lstlisting}
 
 \subsection{initDb()}
 
-\begin{lstlisting}[firstnumber=0]
+\begin{lstlisting}[firstnumber=7]
+function initDb() {
+    let reset = indexedDB.deleteDatabase('FileStorage');
+    reset.onsuccess = function(a) {
+        let request = indexedDB.open('FileStorage', dbVersion);
+
+        request.onerror = function(e) {
+            console.error('Unable to open database.');
+        }
+
+        request.onsuccess = function(e) {
+            db = e.target.result;
+            console.log('db opened');
+        }
+
+        request.onupgradeneeded = function(e) {
+            let db = e.target.result;
+            db.createObjectStore('files', {keyPath:'id', autoIncrement: false});
+            dbReady = true;
+        }
+    }
+}
 \end{lstlisting}
 
 \subsection{fileUploadChanged()}
 
-\begin{lstlisting}[firstnumber=0]
+\begin{lstlisting}[firstnumber=29]
+function fileUploadChanged() {
+    fileIn = document.getElementById('fileUpload');
+    if(fileIn.files && fileIn.files[0]) {
+        document.getElementById('fileUploadLabel').innerHTML = String(fileIn.files.length) + " file(s)";
+    }
+    fileEditted = true;
+    console.log("updated file upload");
+}
 \end{lstlisting}
 
 \subsection{uploadFile()}
 
-\begin{lstlisting}[firstnumber=0]
+\begin{lstlisting}[firstnumber=38]
+function uploadFile(data, cb, fileList, index) {
+    fileId = fileIdGenerator();
+    fileIn = document.getElementById('fileUpload');
+    if(fileIn.files && fileIn.files[index]) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            console.log(e.target.result);
+
+            let bits = btoa(e.target.result);
+            let ob = {
+                id: fileId,
+                type: fileIn.files[index].type,
+                name: fileIn.files[index].name,
+                data: bits
+            };
+
+            let trans = db.transaction(['files'], 'readwrite');
+            let addReq = trans.objectStore('files').put(ob);
+
+            addReq.onerror = function(e) {
+                console.log('error storing data');
+                console.error(e);
+            }
+
+            trans.oncomplete = function(e) {
+                console.log('data stored');
+                fileList.push([fileId, fileIn.files[index].name]);
+                index++;
+                uploadFile(data, cb, fileList, index);
+            }
+        };
+        reader.readAsBinaryString(fileIn.files[index])
+    }
+    else {
+        removeFileUpload();
+        data.push(fileList);
+        cb(data);
+    }
+}
 \end{lstlisting}
 
 \subsection{addFile()}
 
-\begin{lstlisting}[firstnumber=0]
+\begin{lstlisting}[firstnumber=78]
+function addFile(fileIn, index) {
+    fileId = fileIdGenerator();
+    if(fileIn.files && fileIn.files[index]) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            console.log(e.target.result);
+
+            let bits = btoa(e.target.result);
+            let ob = {
+                id: fileId,
+                type: fileIn.files[index].type,
+                name: fileIn.files[index].name,
+                data: bits
+            };
+
+            let trans = db.transaction(['files'], 'readwrite');
+            let addReq = trans.objectStore('files').put(ob);
+
+            addReq.onerror = function(e) {
+                console.log('error storing data');
+                console.error(e);
+            }
+
+            trans.oncomplete = function(e) {
+                console.log('data stored');
+                let table = fileIn.parentElement.getElementsByTagName('tbody')[0];
+                let newRowContent = "<tr><td><a onclick='downloadFile(`" + fileId + "`);' href='javascript:void(0);'>" + fileIn.files[index].name + "</a></td>";
+                newRowContent += "<td><button type='button' onclick='removeFileFromTable(`" + fileId + "`, this);'>-</button></td></tr>";
+                table.innerHTML += newRowContent;
+                index++;
+                addFile(fileIn, index);
+            }
+        };
+        reader.readAsBinaryString(fileIn.files[index])
+    }
+    else {
+        fileIn.value = null;
+    }
+}
 \end{lstlisting}
 
 \subsection{updateExistingFileName()}
 
-\begin{lstlisting}[firstnumber=0]
+\begin{lstlisting}[firstnumber=118]
+function updateExistingFileName(data) {
+    for(let i = 0; i < data[0].getElementsByTagName('tr').length; i++) {
+        let fileId = data[0].getElementsByTagName('tr')[i].getElementsByTagName('a')[0].getAttribute('onclick').split('`')[1];
+        deleteFileFromIndexedDB(fileId);
+    }
+
+    var fileContent = '<table><tbody>';
+    if(data.length > 1) {
+        for(let i = 0; i < data[1].length; i++) {
+            fileContent += "<tr><td><a onclick='downloadFile(`" + data[1][i][0] + "`);' href='javascript:void(0);'>" + data[1][i][1] + "</a></td>";
+            fileContent += "<td><button type='button' onclick='removeFileFromTable(`" + data[1][i][0] + "`, this);'>-</button></td></tr>";
+        }
+    }
+    fileContent += '</tbody></table><input type="file" onchange="addFile(this, 0);" multiple/>';
+    data[0].innerHTML = fileContent;
+}
 \end{lstlisting}
 
 \subsection{removeFileFromTable()}
 
-\begin{lstlisting}[firstnumber=0]
+\begin{lstlisting}[firstnumber=135]
+function removeFileFromTable(fileId, cell) {
+    var row = cell.parentElement.parentElement;
+
+    if(confirm("Delete " + row.getElementsByTagName('a')[0].innerText + "?")) {
+        row.parentElement.removeChild(row);
+        deleteFileFromIndexedDB(fileId);
+    }
+}
 \end{lstlisting}
 
 \subsection{deleteFileFromIndexedDB()}
 
-\begin{lstlisting}[firstnumber=0]
+\begin{lstlisting}[firstnumber=144]
+function deleteFileFromIndexedDB(fileId) {
+    let trans = db.transaction(['files'], 'readwrite');
+    let addReq = trans.objectStore('files').delete(fileId);
+}
 \end{lstlisting}
 
 \subsection{removeFileUpload()}
 
-\begin{lstlisting}[firstnumber=0]
+\begin{lstlisting}[firstnumber=149]
+function removeFileUpload() {
+    document.getElementById('fileUpload').value = null;
+    document.getElementById('fileUploadLabel').innerHTML = "Upload file";
+    fileEditted = true;
+}
 \end{lstlisting}
 
 \subsection{downloadFile()}
 
-\begin{lstlisting}[firstnumber=0]
+\begin{lstlisting}[firstnumber=155]
+function downloadFile(fileId) {
+    console.log('downloading');
+    var trans = db.transaction(['files'], 'readonly');
+    var dlReq = trans.objectStore('files').get(fileId);
+
+    dlReq.onerror = function(e) {
+        console.log('error reading data');
+        console.error(e);
+    };
+
+    dlReq.onsuccess = function(e) {
+        console.log('data read');
+        console.log(dlReq.result);
+        var element = document.createElement('a');
+        element.setAttribute('href', 'data:' + dlReq.result.type + ';base64,' + dlReq.result.data);
+        element.setAttribute('download', dlReq.result.name);
+
+        element.style.display = 'none';
+        document.body.appendChild(element);
+
+        element.click();
+
+        document.body.removeChild(element);
+    };
+}
 \end{lstlisting}
 
 \subsection{window.onbeforeunload = function()}
 
-\begin{lstlisting}[firstnumber=0]
+\begin{lstlisting}[firstnumber=1]
+window.onbeforeunload = function(){
+    indexedDB.deleteDatabase('FileStorage');
+}
 \end{lstlisting}
 
 \newpage
@@ -1519,7 +2140,58 @@ window.onload = function() {
 \section{mysqlScript.js}
 
 \subsection{writeToMySQL()}
+
+\begin{lstlisting}[firstnumber=1]
+function writeToMySQL() {
+    writeImagesToFirestore("mysql");
+    var data = tableToArrays();
+    var types = readCurrentTypes();
+
+    fetch('http://localhost:5000/api', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify([data, types]),
+    });
+}
+\eng{lstlisting}
+
 \subsection{readFromMySQL()}
+
+\begin{lstlisting}[firstnumber=15]
+function readFromMySQL() {
+    clearIndexedDb("mysql");
+    fetch('http://localhost:5000/api')
+        .then(response => {
+            return response.json()
+        })
+        .then(fullresponse => {
+            console.log(fullresponse);
+
+            while(document.getElementsByClassName('bodyRow').length > 0) {
+                document.getElementById("tableBody").removeChild(document.getElementsByClassName('bodyRow')[0]);
+            }
+
+            var data = fullresponse[0];
+            for(var i = data.length - 1; i >= 0; i--) {
+                let staged = [data[i].id, data[i].date, data[i].account, data[i].type, data[i].security, data[i].amount, data[i].dAmount, data[i].costBasis];
+                if(parseFileNamesIds(data[i].files).length > 0) {
+                    staged.push(parseFileNamesIds(data[i].files));
+                }
+                addTransaction(staged);
+            }
+            loadDataLists();
+
+            var types = fullresponse[1];
+            var typesArr = [];
+            for(var i = 0; i < types.length; i++) {
+                typesArr.push(types[i].typename);
+            }
+            setTransactionTypesList(typesArr);
+        })
+}
+\end{lstlisting}
 
 \newpage
 
