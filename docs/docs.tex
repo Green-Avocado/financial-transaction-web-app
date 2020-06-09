@@ -490,97 +490,564 @@ function validateDate(date) {
 \end{lstlisting}
 
 \subsection{generateId()}
+
+Generates an ID of length \lstinline{idLength} by selecting a random character from the character set using a loop.
+Checks this ID against all other IDs in the table, if none match, the function returns the ID.
+If any match, the ID is not unique and the function attempts to generate another until it reaches a unique ID.
+
+\begin{lstlisting}[firstnumber=135]
+function generateId() {
+    var id = '';
+    var idLength = 6;
+
+    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    var charactersLength = characters.length;
+
+    var unique = false;
+
+    while(!unique) {
+        for(var i = 0; i < idLength; i++) {
+            id += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+
+        unique = true;
+        for(var i = 0; i < document.getElementsByClassName('idCell').length; i++) {
+            if(document.getElementsByClassName('idCell')[i].innerText == id) {
+                unique = false;
+                break;
+            }
+        }
+    }
+    return id;
+}
+\end{lstlisting}
+
 \subsection{calculateCostBasis()}
+
+Divides the dollar amount by the amound and sets precision to 2 decimal places.
+
+\begin{lstlisting}[firstnumber=160]
+function calculateCostBasis(amount, dAmount) {
+    costBasis = (dAmount / amount).toFixed(2);
+    return costBasis;
+}
+\end{lstlisting}
+
 \subsection{addTransaction()}
+
+Takes an array as the argument, meant to contain all data necessary to create a row.
+Constructs remaining cells in the row, such as the actions column, and formats the files column.
+Adds the new row to the table and adds cells, modifying classes where necessary.
+
+\begin{lstlisting}[firstnumber=165]
+function addTransaction(data) {
+    var staging = data;
+    var tableBody = document.getElementById('tableBody');
+    var newRow = tableBody.insertRow(0);
+    newRow.classList += "bodyRow";
+
+    var actionsContent = "<button type='button' onclick='editRow(this)'>Edit</button><button type='button' onclick='deleteRow(this)'>Delete</button>";
+    var fileContent = '<table><tbody>';
+    if(data.length > 8) {
+        for(let i = 0; i < data[8].length; i++) {
+            fileContent += "<tr><td><a onclick='downloadFile(`" + data[8][i][0] + "`);' href='javascript:void(0);'>" + data[8][i][1] + "</a></td>";
+            fileContent += "<td><button type='button' onclick='removeFileFromTable(`" + data[8][i][0] + "`, this);'>-</button></td></tr>";
+        }
+    }
+    fileContent += '</tbody></table><input type="file" onchange="addFile(this, 0);" multiple/>';
+    staging[8] = fileContent;
+    staging[9] = actionsContent;
+
+    var calculateCostBasis = true;
+    if(data[3][0] == '!') {
+        calculateCostBasis = false;
+        data[3] = data[3].substr(1);
+    }
+
+    for(var i = 0; i < 10; i++) {
+        var newCell = newRow.insertCell(i);
+        var idShowing = (document.getElementById('toggleId').innerText == "Hide Transaction ID");
+
+        newCell.innerHTML = data[i];
+
+        if(i == 0) {
+            if(idShowing)
+                newCell.classList = "idCell frozenColumn1";
+            else {
+                newCell.classList = "idCell";
+                newCell.setAttribute("hidden", true);
+            }
+        }
+        else if(i == 1) {
+            if(idShowing)
+                newCell.classList = "frozenColumn2";
+            else
+                newCell.classList = "frozenColumn1";
+        }
+        /*
+        else if(i == 2) {
+            if(idShowing)
+                newCell.classList = "frozenColumn3";
+            else
+                newCell.classList = "frozenColumn2";
+        }
+        */
+
+        if(i == 7 && !calculateCostBasis) {
+            newCell.innerHTML = "N/A";
+        }
+    }
+}
+\end{lstlisting}
+
 \subsection{fileIdGenerator()}
+
+Creates and arbitrary, random file ID, large enough that it is extremely unlikely to generate two identical IDs.
+This is done as it is less feasible to check existing databases for matching IDs.
+
+\begin{lstlisting}[firstnumber=224]
+function fileIdGenerator() {
+    return Math.floor(Math.random() * 1000000000000000000000000000000000000000000).toString(36);
+}
+\end{lstlisting}
+
 \subsection{addTransactionButton()}
+
+Gets data by calling the \lstinline{getData()} function.
+Adds the transaction ID to the \lstinline{data} array.
+Creates a new empty array for storing file data, calls the \lstinline{uploadFile()} function to continue the process.
+
+\begin{lstlisting}[firstnumber=228]
+function addTransactionButton() {
+    var data = getData();
+    if(data) {
+        var id = generateId();
+        data.unshift(id);
+
+        fileList = new Array()
+        uploadFile(data, addTransactionWithFileName, fileList, 0);
+        clearInput(false);
+    }
+}
+\end{lstlisting}
+
 \subsection{addTransactionWithFileName()}
+
+Takes the row data as an argument and calls \lstinline{addTransaction()} to finalise the process.
+Logs the data in the Javascript console.
+Calls the \lstinline{loadDataLists()} function to update the list of securities and accounts lists.
+
+\begin{lstlisting}[firstnumber=240]
+function addTransactionWithFileName(data) {
+    addTransaction(data);
+    console.log(data);
+    loadDataLists();
+}
+\end{lstlisting}
+
 \subsection{deleteRow()}
+
+Gets the row of the delete button.
+Removes files from the local database which were referenced from this row (using the unique file ID).
+Removes the row.
+Resets the buttons in the input section if necessary (i.e. if the deleted row was being edited, the editing actions must be hidden and the add transaction button must be restored).
+
+\begin{lstlisting}[firstnumber=246]
+function deleteRow(button) {
+    var row = button.parentElement.parentElement;
+
+    var fileRows = row.getElementsByTagName('td')[8].getElementsByTagName('table')[0].getElementsByTagName('tr');
+    for(let i = 0; i < fileRows.length; i++) {
+        let fileId = fileRows[i].getElementsByTagName('a')[0].getAttribute('onclick').split('`')[1];
+        deleteFileFromIndexedDB(fileId);
+    }
+
+    document.getElementById("tableBody").removeChild(row);
+
+    if(document.getElementsByClassName('editing').length == 0) {
+        document.getElementById('add').removeAttribute('hidden');
+        document.getElementById('save').setAttribute('hidden', true);
+        document.getElementById('discard').setAttribute('hidden', true);
+
+        document.getElementById('add').setAttribute('type','submit');
+        document.getElementById('save').setAttribute('type','button');
+    }
+    loadDataLists();
+}
+\end{lstlisting}
+
 \subsection{editRow()}
+
+\begin{lstlisting}[firstnumber=268]
+function editRow(button) {
+    if(document.getElementsByClassName('editing').length > 0)
+        document.getElementsByClassName('editing')[0].classList = "bodyRow";
+
+    var row = button.parentElement.parentElement;
+    var rowContent = row.getElementsByTagName('td');
+    row.classList = "bodyRow editing";
+
+    document.getElementById('date').value = rowContent[1].innerText;
+    document.getElementById('account').value = rowContent[2].innerText;
+
+    document.getElementById('type').value = rowContent[3].innerText;
+    if(document.getElementById('type').value == '') document.getElementById('type').value = '!' + rowContent[3].innerText;
+
+    document.getElementById('security').value = rowContent[4].innerText;
+    document.getElementById('amount').value = rowContent[5].innerText;
+    document.getElementById('dAmount').value = rowContent[6].innerText;
+
+    document.getElementById('add').setAttribute('hidden', true);
+    document.getElementById('save').removeAttribute('hidden');
+    document.getElementById('discard').removeAttribute('hidden');
+
+    document.getElementById('add').setAttribute('type','button');
+    document.getElementById('save').setAttribute('type','submit');
+
+    removeFileUpload();
+    uploadLabel = document.getElementById('fileUploadLabel');
+    if(rowContent[8].getElementsByTagName('tr').length > 0) {
+        uploadLabel.innerHTML = String(rowContent[8].getElementsByTagName('tr').length) + " file(s)";
+    }
+    fileEditted = false;
+}
+\end{lstlisting}
+
 \subsection{saveChanges()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{discardChanges()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{sortTable()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{resetDate()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{validateFilters()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsubsection{always true}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsubsection{date range}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsubsection{amount range}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsubsection{generic ranges}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{stringFilter()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{applyFilter()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{clearFilter()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{unfilterAll()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{toggleID()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{readFile()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{saveFile()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{applyTypes()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{editTypes()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{toggleSection()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{loadDataLists()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{readCurrentTypes()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{tableToArrays()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{arraysToTable()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{window.onload = function()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
 
 \newpage
 
 \section{firebaseScript.js}
 
 \subsection{clearFirebase()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{writeToFirebase()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{readFromFirebase()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{clearFirestore()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{writeToFirestore()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{readFromFirestore()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
 
 \newpage
 
 \section{googleApiScript.js}
 
 \subsection{Global Variables}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{loadSheetData()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{getNewSheetData()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{populateSheetSelector()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{getNewTabData()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{populateTabSelector()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{getAllUserSheets()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{getTabsOfSheet()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{authenticate()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{loadClientSheets()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{loadClient()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{readGoogleSheetDB()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{readGoogleTypes()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{writeGoogleSheetDB()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{setGoogleRows()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{clearGoogleRow()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{writeGoogleDB()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{gapi.load()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
 
 \newpage
 
 \section{imageFirestore.js}
 
 \subsection{writeImagesToFirestore()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{readImagesFromFirestore()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{getFileNamesIds()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{parseFileNamesIds()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{clearIndexedDb()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
 
 \newpage
 
 \section{localStorageScript.js}
 
 \subsection{Global Variables}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{initDb()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{fileUploadChanged()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{uploadFile()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{addFile()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{updateExistingFileName()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{removeFileFromTable()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{deleteFileFromIndexedDB()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{removeFileUpload()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{downloadFile()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
+
 \subsection{window.onbeforeunload = function()}
+
+\begin{lstlisting}[firstnumber=]
+\end{lstlisting}
 
 \newpage
 
