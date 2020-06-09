@@ -1386,17 +1386,24 @@ window.onload = function() {
 
 \section{firebaseScript.js}
 
+Removes data stored under the \lstinline{Data} reference and the \lstinline{Types} reference.
+
 \subsection{clearFirebase()}
 
 \begin{lstlisting}[firstnumber=1]
 function clearFirebase() {
     firebase.database().ref('Data').remove();
+    firebase.database().ref('Types').remove();
 }
 \end{lstlisting}
 
 \subsection{writeToFirebase()}
 
-\begin{lstlisting}[firstnumber=5]
+Clears the existing data using \lstinline{clearFirebase()}.
+Creates an array from the table and an array containing types.
+Contents of each array are written to the respective sections of the database.
+
+\begin{lstlisting}[firstnumber=6]
 function writeToFirebase() {
     writeImagesToFirestore("firebase");
     clearFirebase();
@@ -1427,7 +1434,15 @@ function writeToFirebase() {
 
 \subsection{readFromFirebase()}
 
-\begin{lstlisting}[firstnumber=32]
+Takes a snapshot of the database at the time it is being read.
+
+Passes the contents of each row to the \lstinline{addTransaction()} function.
+
+Creates an array of transaction types from the database, passes this array as an argument to \lstinline{setTransactionTypesList()}.
+
+Account and securities autofill suggestions are updated using \lstinline{loadDataLists()}.
+
+\begin{lstlisting}[firstnumber=33]
 function readFromFirebase() {
     clearIndexedDb("firebase");
     return firebase.database().ref('/').once('value').then(function(snapshot) {
@@ -1460,7 +1475,13 @@ function readFromFirebase() {
 
 \subsection{clearFirestore()}
 
-\begin{lstlisting}[firstnumber=61]
+The function reads the current Firestore database to get existing document IDs for data and types.
+Each ID is removed from the database to allow new data to be written.
+
+Note: This function is never called.
+Instead, it has been used as a template for the \lstinline{writeToFirestore()}.
+
+\begin{lstlisting}[firstnumber=62]
 function clearFirestore() {
     firestore.collection("Data").get().then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
@@ -1478,7 +1499,14 @@ function clearFirestore() {
 
 \subsection{writeToFirestore()}
 
-\begin{lstlisting}[firstnumber=75]
+Uses the template from the \lstinline{clearFirestore()} function to erase the current database.
+
+When finished, creates documents for each row, containing all the necessary fields to recreate the row.
+This document contains an index to preserve the order of the original table.
+
+Creates a document for each type, containing the value of the type and an index to store the order in which it should be read.
+
+\begin{lstlisting}[firstnumber=76]
 function writeToFirestore() {
     writeImagesToFirestore("firestore");
     firestore.collection("Data").get().then((querySnapshot) => {
@@ -1533,7 +1561,15 @@ function writeToFirestore() {
 
 \subsection{readFromFirestore()}
 
-\begin{lstlisting}[firstnumber=126]
+Creates an array of rows, arranged in the original order using the stored \lstinline{index} property.
+Creates an array of types using the same method.
+
+Each row is written to the table using the \lstinline{addTransaction()} function, reading from the last item in the array to preserve the original order.
+Account and security autofill suggestions are updated by calling \lstinline{loadDataLists()}.
+
+The types array is passed to \lstinline{setTransactionTypes()} to update the transaction types.
+
+\begin{lstlisting}[firstnumber=127]
 function readFromFirestore() {
     clearIndexedDb("firestore");
     firestore.collection("Data").get().then((querySnapshot) => {
