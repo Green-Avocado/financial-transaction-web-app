@@ -678,6 +678,20 @@ function deleteRow(button) {
 
 \subsection{editRow()}
 
+The function checks if there is already a row with the \lstinline{editing} class.
+If so, it removes this class from the old row.
+
+The function then sets the current row to have the \lstinline{editing} class.
+All the input fields are set to use values from the row.
+
+In the case of type, the function first tries to apply the display value of the type.
+If this fails, the function tries to add an exclamation mark to the front to account for the indication of types without cost basis.
+
+The add transaction button is hidden and set to a regular button so that the enter key no longer activates it.
+The save and discard buttons are unhidden, and save is set to the submit type button.
+
+The file upload is cleared and the content of the file upload label is set depending on the number of files from the row.
+
 \begin{lstlisting}[firstnumber=268]
 function editRow(button) {
     if(document.getElementsByClassName('editing').length > 0)
@@ -715,122 +729,573 @@ function editRow(button) {
 
 \subsection{saveChanges()}
 
-\begin{lstlisting}[firstnumber=]
+The function attempts to get data from the input section by calling \lstinline{getData()}, which also validates this data.
+
+The row to modify is determined by checking for the \lstinline{editing} class.
+An array is created from the cells in this row.
+
+If the first character of the type is and exclamation mark, this character is removed before being inserted into the row, and the cost basis is set to N/A.
+
+Each element in the data array is moved into the appropriate cell in the row.
+
+The add transaction button is restored, and the other buttons are hidden.
+
+If the file upload was changed (i.e. a file was uploaded or the element was cleared), the \lstinline{uploadFile()} function is called to get the new files if they exist.
+If no changes were made, the file input is cleared.
+
+The date in the input is reset and all other fields are cleared.
+Lastly, the function loads existing accounts and securities for the autofill feature.
+
+\begin{lstlisting}[firstnumber=301]
+function saveChanges() {
+    data = getData();
+    if(data) {
+        rowToEdit = document.getElementsByClassName('editing')[0];
+        cellsToEdit = rowToEdit.getElementsByTagName('td');
+
+        if(data[2][0] == '!') {
+            data[2] = data[2].substr(1);
+            data[6] = "N/A";
+        }
+
+        for(var i = 0; i < data.length; i++) {
+            cellsToEdit[i + 1].innerHTML = data[i];
+        }
+        rowToEdit.classList = "bodyRow";
+
+        document.getElementById('add').removeAttribute('hidden');
+        document.getElementById('save').setAttribute('hidden', true);
+        document.getElementById('discard').setAttribute('hidden', true);
+
+        document.getElementById('add').setAttribute('type','submit');
+        document.getElementById('save').setAttribute('type','button');
+
+        if(fileEditted) {
+            uploadFile([cellsToEdit[8]], updateExistingFileName, new Array(), 0);
+        }
+        else {
+            removeFileUpload();
+        }
+
+        resetDate();
+        clearInput(true);
+        loadDataLists();
+    }
+}
 \end{lstlisting}
 
 \subsection{discardChanges()}
 
-\begin{lstlisting}[firstnumber=]
+The \lstinline{editing} class is removed from the row currently being edited.
+
+The add transaction button is restored, and the other buttons are hidden.
+
+The date is reset, input fields are cleared, and any files in the file upload are removed.
+
+\begin{lstlisting}[firstnumber=337]
+function discardChanges() {
+    document.getElementsByClassName('editing')[0].classList = "bodyRow";
+
+    document.getElementById('add').removeAttribute('hidden');
+    document.getElementById('save').setAttribute('hidden', true);
+    document.getElementById('discard').setAttribute('hidden', true);
+
+    document.getElementById('add').setAttribute('type','submit');
+    document.getElementById('save').setAttribute('type','button');
+
+    resetDate();
+    clearInput(true);
+    removeFileUpload();
+}
 \end{lstlisting}
 
 \subsection{sortTable()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=352]
+function sortTable(column, ascending) {
+    var rows = document.getElementsByClassName('bodyRow');
+
+    var sorting = true;
+    while(sorting) {
+        sorting = false;
+        for(var i = 0; i < (rows.length - 1); i++) {
+            rowA = rows[i].getElementsByTagName('td')[column];
+            rowB = rows[i + 1].getElementsByTagName('td')[column];
+
+            var swap = false;
+
+            if(ascending && rowA.innerHTML.toLowerCase() > rowB.innerHTML.toLowerCase()) swap = true;
+            else if(!ascending && rowA.innerHTML.toLowerCase() < rowB.innerHTML.toLowerCase()) swap = true;
+
+            if(swap) {
+                sorting = true;
+                document.getElementById('tableBody').insertBefore(rows[i + 1], rows[i]);
+            }
+        }
+    }
+}
 \end{lstlisting}
 
 \subsection{resetDate()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=375]
+function resetDate() {
+    const today = new Date();
+    const year = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(today);
+    const month = new Intl.DateTimeFormat('en', { month: '2-digit' }).format(today);
+    const day = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(today);
+
+    document.getElementById('date').value = `${year}-${month}-${day}`;
+}
 \end{lstlisting}
 
 \subsection{validateFilters()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=384]
+function clearInput(clearAccount) {
+    if(clearAccount)
+        document.getElementById('account').value = '';
+
+    document.getElementById('type').value = '';
+    document.getElementById('security').value = '';
+    document.getElementById('amount').value = '';
+    document.getElementById('dAmount').value = '';
+}
 \end{lstlisting}
 
 \subsubsection{always true}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=394]
+function validateFilters(filterId, startDate, endDate, filterAccount, filterType, filterSecurity, minAmount, maxAmount, minDAmount, maxDAmount, minCostBasis, maxCostBasis) {
+    if(!validateFilterId(filterId)) return false;
+    if(!validateDateRange(startDate, endDate)) return false;
+    if(!validateFilterAccount(filterAccount)) return false;
+    if(!validateFilterSecurity(filterSecurity)) return false;
+    if(!validateAmountRange(minAmount, maxAmount)) return false;
+    if(!validateDAmountRange(minDAmount, maxDAmount)) return false;
+    if(!validateCostBasisRange(minCostBasis, maxCostBasis)) return false;
+
+    return true;
+}
 \end{lstlisting}
 
 \subsubsection{date range}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=410]
+function validateDateRange(start, end) {
+    if(!start.checkValidity()) {
+        alert('Error: Invalid Start Date');
+        return false;
+    }
+
+    if(!end.checkValidity()) {
+        alert('Error: Invalid End Date');
+        return false;
+    }
+
+    if(start.valueAsNumber > end.valueAsNumber) {
+        alert('Error: Invalid Date Range');
+        return false;
+    }
+
+    return true;
+}
 \end{lstlisting}
 
 \subsubsection{amount range}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=437]
+function validateAmountRange(min, max) {
+    if(isNaN(Number(min))) {
+        alert('Error: Min Amount is NaN');
+        return false;
+    }
+
+    if(isNaN(Number(max))) {
+        alert('Error: Max Amount is NaN');
+        return false;
+    }
+
+    if(Number(min) > Number(max) && min != '' && max != '') {
+        alert('Error: Invalid Amount Range');
+        return false;
+    }
+
+    return true;
+}
 \end{lstlisting}
 
 \subsubsection{generic ranges}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=406]
+function validateFilterId(id) {
+    return true;
+}
 \end{lstlisting}
 
 \subsection{stringFilter()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=494]
+function stringFilter(filtertext, tableitem) {
+    filters = filtertext.split(" && ");
+
+    for(var i = 0; i < filters.length; i++) {
+        filterORs = filters[i].split(" || ");
+        var meetsCriteria = false;
+
+        for(var ii = 0; ii < filterORs.length; ii++) {
+            if(filterORs[ii][0] == "!" && !tableitem.toUpperCase().includes(filterORs[ii].toUpperCase().substr(1))) meetsCriteria = true;
+            if(filterORs[ii][0] != "!" && tableitem.toUpperCase().includes(filterORs[ii].toUpperCase())) meetsCriteria = true;
+        }
+
+        if(!meetsCriteria) return false;
+    }
+
+    return true;
+}
 \end{lstlisting}
 
 \subsection{applyFilter()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=512]
+function applyFilter() {
+    unfilterAll();
+
+    rows = document.getElementsByClassName('bodyRow');
+
+    filterId = document.getElementById('filterId').value;
+    startDate = document.getElementById('startDate');
+    endDate = document.getElementById('endDate');
+    filterAccount = document.getElementById('filterAccount').value;
+    filterType = document.getElementById('filterType').value;
+    filterSecurity = document.getElementById('filterSecurity').value;
+    lowAmount = document.getElementById('lowAmount').value;
+    highAmount = document.getElementById('highAmount').value;
+    lowDAmount = document.getElementById('lowDAmount').value;
+    highDAmount = document.getElementById('highDAmount').value;
+    lowCostBasis = document.getElementById('lowCostBasis').value;
+    highCostBasis = document.getElementById('highCostBasis').value;
+
+    if(lowDAmount[0] == '$') lowDAmount = lowDAmount.substr(1);
+    if(highDAmount[0] == '$') highAmount = highDAmount.substr(1);
+    if(lowCostBasis[0] == '$') lowCostBasis = lowCostBasis.substr(1);
+    if(highCostBasis[0] == '$') highCostBasis = highCostBasis.substr(1);
+
+    if(validateFilters(filterId, startDate, endDate, filterAccount, filterType, filterSecurity, lowAmount, highAmount, lowDAmount, highDAmount, lowCostBasis, highCostBasis)) {
+        for(var i = 0; i < rows.length; i++) {
+            cells = rows[i].getElementsByTagName('td');
+            var hide = false;
+
+            if(filterId != '' && !stringFilter(filterId,cells[0].innerText))
+                hide = true;
+
+            if(startDate.value != '' && startDate.value > cells[1].innerText)
+                hide = true;
+
+            if(endDate.value != '' && endDate.value < cells[1].innerText)
+                hide = true;
+
+            if(filterAccount != '' && !stringFilter(filterAccount, cells[2].innerText))
+                hide = true;
+
+            if(filterType != '' && filterType != cells[3].innerText)
+                hide = true;
+
+            if(filterSecurity != '' && !stringFilter(filterSecurity, cells[4].innerText))
+                hide = true;
+
+            if(lowAmount != '' && Number(lowAmount) > formattedStringToNumber(cells[5].innerText))
+                hide = true;
+
+            if(highAmount != '' && Number(highAmount) < formattedStringToNumber(cells[5].innerText))
+                hide = true;
+
+            if(lowDAmount != '' && Number(lowDAmount) > formattedStringToNumber(cells[6].innerText.substr(1)))
+                hide = true;
+
+            if(highDAmount != '' && Number(highDAmount) < formattedStringToNumber(cells[6].innerText.substr(1)))
+                hide = true;
+
+            if(lowCostBasis != '' && Number(lowCostBasis) > formattedStringToNumber(cells[7].innerText.substr(1)))
+                hide = true;
+
+            if(highCostBasis != '' && Number(highCostBasis) < formattedStringToNumber(cells[7].innerText.substr(1)))
+                hide = true;
+
+            if(filterNA.checked && cells[7].innerText == "N/A")
+                hide = true;
+
+            if(hide)
+                rows[i].setAttribute('hidden', true);
+        }
+    }
+}
 \end{lstlisting}
 
 \subsection{clearFilter()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=585]
+function clearFilter() {
+    unfilterAll();
+
+    var fields = document.getElementsByClassName('filterField');
+
+    for(var i = 0; i < fields.length; i++) {
+        fields[i].value = '';
+    }
+
+    document.getElementById('filterNA').checked = false;
+}
 \end{lstlisting}
 
 \subsection{unfilterAll()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=597]
+function unfilterAll() {
+    rows = document.getElementsByClassName('bodyRow');
+
+    for(var i = 0; i < rows.length; i++) {
+        rows[i].removeAttribute('hidden');
+    }
+}
 \end{lstlisting}
 
 \subsection{toggleID()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=605]
+function toggleID() {
+    var button = document.getElementById('toggleId');
+    var rows = document.getElementsByTagName('tr');
+    var cells = rows[0].getElementsByTagName('th');
+
+    if(button.innerText == "Hide Transaction ID") {
+        button.innerText = "Show Transaction ID";
+
+        cells[0].setAttribute('hidden', true);
+        cells[0].classList = "";
+        cells[1].classList = "frozenColumn1";
+        //cells[2].classList = "frozenColumn2";
+        for(var i = 1; i < rows.length; i++) {
+            cells = rows[i].getElementsByTagName('td');
+
+            cells[0].setAttribute('hidden', true);
+            cells[0].classList = "idCell";
+            cells[1].classList = "frozenColumn1";
+            //cells[2].classList = "frozenColumn2";
+        }
+    }
+    else {
+        button.innerText = "Hide Transaction ID";
+
+        cells[0].removeAttribute('hidden');
+        cells[0].classList = "frozenColumn1";
+        cells[1].classList = "frozenColumn2";
+        //cells[2].classList = "frozenColumn3";
+        for(var i = 1; i < rows.length; i++) {
+            cells = rows[i].getElementsByTagName('td');
+
+            cells[0].removeAttribute('hidden');
+            cells[0].classList = "idCell frozenColumn1";
+            cells[1].classList = "frozenColumn2";
+            //cells[2].classList = "frozenColumn3";
+        }
+    }
+}
 \end{lstlisting}
 
 \subsection{readFile()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=644]
+function readFile(fileIn){
+    if(fileIn.files && fileIn.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            var output = e.target.result;
+            document.getElementById('typesArray').value = output;
+        };
+        reader.readAsText(fileIn.files[0]);
+    }
+}
 \end{lstlisting}
 
 \subsection{saveFile()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=655]
+function saveFile() {
+  var element = document.createElement('a');
+  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(document.getElementById('typesArray').value));
+  element.setAttribute('download', 'transaction-types.csv');
+
+  element.style.display = 'none';
+  document.body.appendChild(element);
+
+  element.click();
+
+  document.body.removeChild(element);
+}
 \end{lstlisting}
 
 \subsection{applyTypes()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=668]
+function applyTypes() {
+    var typesArray = document.getElementById('typesArray').value.split(',');
+    setTransactionTypesList(typesArray);
+}
 \end{lstlisting}
 
 \subsection{editTypes()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=673]
+function editTypes() {
+    document.getElementById('typesArray').value = readCurrentTypes().join(',');
+}
+\end{lstlisting}
+
+\subsection{setTransactionTypes()}
+
+\begin{lstlisting}[firstnumber=677]
+function setTransactionTypesList(typesArray) {
+    var type = document.getElementById('type');
+    var filterType = document.getElementById('filterType');
+
+    type.innerHTML = '<option value=""></option>';
+    filterType.innerHTML = '<option value=""></option>';
+
+    for(var i = 0; i < typesArray.length; i++) {
+        var typeAsText = typesArray[i];
+        if(typesArray[i][0] == '!') typeAsText = typesArray[i].substr(1);
+
+        type.innerHTML += '<option value="' + typesArray[i] + '">' + typeAsText + '</option>';
+        filterType.innerHTML += '<option value="' + typeAsText + '">' + typeAsText + '</option>';
+    }
+}
 \end{lstlisting}
 
 \subsection{toggleSection()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=693]
+function toggleSection(button) {
+    var form = button.parentElement.parentElement.getElementsByTagName('form')[0];
+
+    if(button.innerText == "Hide") {
+        form.setAttribute("hidden",true);
+        button.innerText = "Show";
+    }
+    else {
+        form.removeAttribute("hidden");
+        button.innerText = "Hide";
+    }
+}
 \end{lstlisting}
 
 \subsection{loadDataLists()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=706]
+function loadDataLists() {
+    var accountsList = document.getElementById("accountsList");
+    var securitiesList = document.getElementById("securitiesList");
+    var rows = document.getElementsByClassName("bodyRow");
+
+    var accounts = [];
+    var securities = [];
+
+    for(var i = 0; i < rows.length; i++) {
+        var tableAccount = rows[i].getElementsByTagName("td")[2].innerText;
+        var tableSecurity = rows[i].getElementsByTagName("td")[4].innerText;
+
+        if(!accounts.includes(tableAccount)) accounts.push(tableAccount);
+        if(!securities.includes(tableSecurity)) securities.push(tableSecurity);
+    }
+
+    accountsList.innerHTML = '';
+    securitiesList.innerHTML = '';
+
+    for(var i = 0; i < accounts.length; i++) {
+        accountsList.innerHTML += '<option value="' + accounts[i] + '"/>';
+    }
+
+    for(var i = 0; i < securities.length; i++) {
+        securitiesList.innerHTML += '<option value="' + securities[i] + '"/>';
+    }
+}
 \end{lstlisting}
 
 \subsection{readCurrentTypes()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=734]
+function readCurrentTypes() {
+    var types = document.getElementById('type').getElementsByTagName('option');
+    var currentTypes = [];
+
+    for(var i = 1; i < types.length; i++) {
+        currentTypes.push(types[i].value);
+    }
+
+    return currentTypes;
+}
 \end{lstlisting}
 
 \subsection{tableToArrays()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=745]
+function tableToArrays() {
+    var rows = document.getElementsByClassName('bodyRow');
+    var data = new Array();
+    data.push(["Transaction Id", "Date", "Account Number", "Transaction Type", "Security", "Amount", "$ Amount", "Cost Basis", "Files"]);
+
+    for(var i = 0; i < rows.length; i++) {
+        var cells = rows[i].getElementsByTagName('td');
+        var cellData = new Array();
+
+        for(var j = 0; j < 8; j++) {
+            cellData.push(cells[j].innerText);
+        }
+        cellData.push(getFileNamesIds(cells[8]));
+        data.push(cellData);
+    }
+
+    console.log(data);
+    return data;
+}
 \end{lstlisting}
 
 \subsection{arraysToTable()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=765]
+function arraysToTable(dataArr) {
+    while(document.getElementsByClassName('bodyRow').length > 0) {
+        document.getElementById("tableBody").removeChild(document.getElementsByClassName('bodyRow')[0]);
+    }
+
+    document.getElementById('add').removeAttribute('hidden');
+    document.getElementById('save').setAttribute('hidden', true);
+    document.getElementById('discard').setAttribute('hidden', true);
+
+    document.getElementById('add').setAttribute('type', 'submit');
+    document.getElementById('save').setAttribute('type', 'button');
+
+    while(dataArr.length > 0) {
+        let data = dataArr[dataArr.length - 1];
+        let files = parseFileNamesIds(data[8]);
+        data.pop();
+        if(files.length > 0) {
+            data.push(files);
+        }
+        addTransaction(data);
+        dataArr.pop();
+    }
+    loadDataLists();
+}
 \end{lstlisting}
 
 \subsection{window.onload = function()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=790]
+window.onload = function() {
+    resetDate();
+    initDb();
+}
 \end{lstlisting}
 
 \newpage
@@ -839,32 +1304,32 @@ function editRow(button) {
 
 \subsection{clearFirebase()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=0]
 \end{lstlisting}
 
 \subsection{writeToFirebase()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=0]
 \end{lstlisting}
 
 \subsection{readFromFirebase()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=0]
 \end{lstlisting}
 
 \subsection{clearFirestore()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=0]
 \end{lstlisting}
 
 \subsection{writeToFirestore()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=0]
 \end{lstlisting}
 
 \subsection{readFromFirestore()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=0]
 \end{lstlisting}
 
 \newpage
@@ -873,92 +1338,92 @@ function editRow(button) {
 
 \subsection{Global Variables}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=0]
 \end{lstlisting}
 
 \subsection{loadSheetData()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=0]
 \end{lstlisting}
 
 \subsection{getNewSheetData()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=0]
 \end{lstlisting}
 
 \subsection{populateSheetSelector()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=0]
 \end{lstlisting}
 
 \subsection{getNewTabData()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=0]
 \end{lstlisting}
 
 \subsection{populateTabSelector()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=0]
 \end{lstlisting}
 
 \subsection{getAllUserSheets()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=0]
 \end{lstlisting}
 
 \subsection{getTabsOfSheet()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=0]
 \end{lstlisting}
 
 \subsection{authenticate()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=0]
 \end{lstlisting}
 
 \subsection{loadClientSheets()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=0]
 \end{lstlisting}
 
 \subsection{loadClient()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=0]
 \end{lstlisting}
 
 \subsection{readGoogleSheetDB()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=0]
 \end{lstlisting}
 
 \subsection{readGoogleTypes()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=0]
 \end{lstlisting}
 
 \subsection{writeGoogleSheetDB()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=0]
 \end{lstlisting}
 
 \subsection{setGoogleRows()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=0]
 \end{lstlisting}
 
 \subsection{clearGoogleRow()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=0]
 \end{lstlisting}
 
 \subsection{writeGoogleDB()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=0]
 \end{lstlisting}
 
 \subsection{gapi.load()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=0]
 \end{lstlisting}
 
 \newpage
@@ -967,27 +1432,27 @@ function editRow(button) {
 
 \subsection{writeImagesToFirestore()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=0]
 \end{lstlisting}
 
 \subsection{readImagesFromFirestore()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=0]
 \end{lstlisting}
 
 \subsection{getFileNamesIds()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=0]
 \end{lstlisting}
 
 \subsection{parseFileNamesIds()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=0]
 \end{lstlisting}
 
 \subsection{clearIndexedDb()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=0]
 \end{lstlisting}
 
 \newpage
@@ -996,57 +1461,57 @@ function editRow(button) {
 
 \subsection{Global Variables}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=0]
 \end{lstlisting}
 
 \subsection{initDb()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=0]
 \end{lstlisting}
 
 \subsection{fileUploadChanged()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=0]
 \end{lstlisting}
 
 \subsection{uploadFile()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=0]
 \end{lstlisting}
 
 \subsection{addFile()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=0]
 \end{lstlisting}
 
 \subsection{updateExistingFileName()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=0]
 \end{lstlisting}
 
 \subsection{removeFileFromTable()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=0]
 \end{lstlisting}
 
 \subsection{deleteFileFromIndexedDB()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=0]
 \end{lstlisting}
 
 \subsection{removeFileUpload()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=0]
 \end{lstlisting}
 
 \subsection{downloadFile()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=0]
 \end{lstlisting}
 
 \subsection{window.onbeforeunload = function()}
 
-\begin{lstlisting}[firstnumber=]
+\begin{lstlisting}[firstnumber=0]
 \end{lstlisting}
 
 \newpage
