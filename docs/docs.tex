@@ -811,6 +811,9 @@ function discardChanges() {
 
 \subsection{sortTable()}
 
+The function uses bubble sort to organise rows based on the column number specified by the first argument.
+The condition evaluated is determined by whether the second argument is set to \lstinline{true} or \lstinline{false}.
+
 \begin{lstlisting}[firstnumber=352]
 function sortTable(column, ascending) {
     var rows = document.getElementsByClassName('bodyRow');
@@ -838,6 +841,12 @@ function sortTable(column, ascending) {
 
 \subsection{resetDate()}
 
+A new \lstinline{Date} object is created to get the user's current date.
+The year, month, and day of this object is organised to use the desired format.
+
+Currently, this format is required to sort the table by date.
+Changes to the format would require a special function for sorting dates to parse numbers and weight them correctly.
+
 \begin{lstlisting}[firstnumber=375]
 function resetDate() {
     const today = new Date();
@@ -851,19 +860,8 @@ function resetDate() {
 
 \subsection{validateFilters()}
 
-\begin{lstlisting}[firstnumber=384]
-function clearInput(clearAccount) {
-    if(clearAccount)
-        document.getElementById('account').value = '';
-
-    document.getElementById('type').value = '';
-    document.getElementById('security').value = '';
-    document.getElementById('amount').value = '';
-    document.getElementById('dAmount').value = '';
-}
-\end{lstlisting}
-
-\subsubsection{always true}
+The function takes the filter input fields as arguments and sends each to a function created to validate the specific field.
+The function returns \lstinline{false} if any checks fail, and \lstinline{true} otherwise.
 
 \begin{lstlisting}[firstnumber=394]
 function validateFilters(filterId, startDate, endDate, filterAccount, filterType, filterSecurity, minAmount, maxAmount, minDAmount, maxDAmount, minCostBasis, maxCostBasis) {
@@ -879,7 +877,38 @@ function validateFilters(filterId, startDate, endDate, filterAccount, filterType
 }
 \end{lstlisting}
 
+\subsection{clearInput()}
+
+The type, security, amount, and dollar amount input fields are cleared.
+If necessary, the account field is also cleared, depending on the value of the argument.
+
+\begin{lstlisting}[firstnumber=384]
+function clearInput(clearAccount) {
+    if(clearAccount)
+        document.getElementById('account').value = '';
+
+    document.getElementById('type').value = '';
+    document.getElementById('security').value = '';
+    document.getElementById('amount').value = '';
+    document.getElementById('dAmount').value = '';
+}
+\end{lstlisting}
+
+\subsubsection{always true}
+
+Some filters require no validation.
+These are set to always return \lstinline{true}.
+
+\begin{lstlisting}[firstnumber=406]
+function validateFilterId(id) {
+    return true;
+}
+\end{lstlisting}
+
 \subsubsection{date range}
+
+The function checks that both dates in the range are valid dates.
+The function then checks that the start date is not greater than the end date.
 
 \begin{lstlisting}[firstnumber=410]
 function validateDateRange(start, end) {
@@ -904,6 +933,9 @@ function validateDateRange(start, end) {
 
 \subsubsection{amount range}
 
+The function checks that both amounts are valid numbers.
+The function then checks that the minimum is not greater than the maximum amount.
+
 \begin{lstlisting}[firstnumber=437]
 function validateAmountRange(min, max) {
     if(isNaN(Number(min))) {
@@ -925,15 +957,13 @@ function validateAmountRange(min, max) {
 }
 \end{lstlisting}
 
-\subsubsection{generic ranges}
-
-\begin{lstlisting}[firstnumber=406]
-function validateFilterId(id) {
-    return true;
-}
-\end{lstlisting}
-
 \subsection{stringFilter()}
+
+For filters with more complex queries, top level queries are separated by AND operations.
+These are subdivided by OR operations.
+
+Within an AND block, any one OR must be true for the block to be true.
+All AND blocks must be true for the query to succeed for the item checked.
 
 \begin{lstlisting}[firstnumber=494]
 function stringFilter(filtertext, tableitem) {
@@ -956,6 +986,10 @@ function stringFilter(filtertext, tableitem) {
 \end{lstlisting}
 
 \subsection{applyFilter()}
+
+If the filter is valid, all previous filters are removed, and each column is filtered as necessary.
+If any condition fails, the row is hidden.
+Otherwise, the row remains visible.
 
 \begin{lstlisting}[firstnumber=512]
 function applyFilter() {
@@ -1034,6 +1068,10 @@ function applyFilter() {
 
 \subsection{clearFilter()}
 
+All previous filters are removed by calling \lstinline{unfilterAll()}.
+All filter fields are set to empty strings to clear them.
+The checkbox is set to false to uncheck it.
+
 \begin{lstlisting}[firstnumber=585]
 function clearFilter() {
     unfilterAll();
@@ -1049,6 +1087,8 @@ function clearFilter() {
 \end{lstlisting}
 
 \subsection{unfilterAll()}
+
+All previous filters are removed by unhiding all body rows.
 
 \begin{lstlisting}[firstnumber=597]
 function unfilterAll() {
