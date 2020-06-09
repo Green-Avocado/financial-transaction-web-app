@@ -858,6 +858,23 @@ function resetDate() {
 }
 \end{lstlisting}
 
+\subsection{clearInput()}
+
+The type, security, amount, and dollar amount input fields are cleared.
+If necessary, the account field is also cleared, depending on the value of the argument.
+
+\begin{lstlisting}[firstnumber=384]
+function clearInput(clearAccount) {
+    if(clearAccount)
+        document.getElementById('account').value = '';
+
+    document.getElementById('type').value = '';
+    document.getElementById('security').value = '';
+    document.getElementById('amount').value = '';
+    document.getElementById('dAmount').value = '';
+}
+\end{lstlisting}
+
 \subsection{validateFilters()}
 
 The function takes the filter input fields as arguments and sends each to a function created to validate the specific field.
@@ -874,23 +891,6 @@ function validateFilters(filterId, startDate, endDate, filterAccount, filterType
     if(!validateCostBasisRange(minCostBasis, maxCostBasis)) return false;
 
     return true;
-}
-\end{lstlisting}
-
-\subsection{clearInput()}
-
-The type, security, amount, and dollar amount input fields are cleared.
-If necessary, the account field is also cleared, depending on the value of the argument.
-
-\begin{lstlisting}[firstnumber=384]
-function clearInput(clearAccount) {
-    if(clearAccount)
-        document.getElementById('account').value = '';
-
-    document.getElementById('type').value = '';
-    document.getElementById('security').value = '';
-    document.getElementById('amount').value = '';
-    document.getElementById('dAmount').value = '';
 }
 \end{lstlisting}
 
