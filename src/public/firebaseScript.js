@@ -5,6 +5,7 @@
  */
 function clearFirebase() {
     firebase.database().ref('Data').remove();
+    firebase.database().ref('Types').remove();
 }
 
 /*
