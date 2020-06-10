@@ -1613,6 +1613,11 @@ function readFromFirestore() {
 
 \subsection{Global Variables}
 
+\lstinline{auth2} is the authentication object created to verify that a user is logged in, and to allow modifications to the sheet on behalf of the user.
+
+\lstinline{sheetId} and \lstinline{shettIdNum} are the IDs for the currently selected sheet, as a numeric value and as a string.
+Both of these are used to identify the sheet to read from or modify, depending on the situation.
+
 \begin{lstlisting}[firstnumber=1]
 var auth2;
 
@@ -1622,6 +1627,13 @@ var sheetIdNum = 0;
 \end{lstlisting}
 
 \subsection{loadSheetData()}
+
+The function checks if the user is logged in through OAuth.
+
+If so, \lstinline{getAllUserSheets()} is called to load the user's Google Sheets.
+
+If not, the function asks them to log in.
+If successful, it calls \lstinline{getAllUserSheets()}.
 
 \begin{lstlisting}[firstnumber=7]
 function loadSheetData() {
@@ -1639,6 +1651,10 @@ function loadSheetData() {
 \end{lstlisting}
 
 \subsection{getNewSheetData()}
+
+This function verifies that the user is logged in before getting the tabs from the selected sheet.
+
+If necessary, the function asks the user to log in before reading these tabs.
 
 \begin{lstlisting}[firstnumber=20]
 function getNewSheetData() {
@@ -1658,6 +1674,10 @@ function getNewSheetData() {
 
 \subsection{populateSheetSelector()}
 
+Updates the list of sheets to select from.
+The first value is always the default sheet.
+Subsequent values are read from an array passed to this function as an argument.
+
 \begin{lstlisting}[firstnumber=34]
 function populateSheetSelector(arrayOfSheets) {
     document.getElementById('sheet').innerHTML = '<option value="1R0HpaAIUw-JHX8SrzvkEPCG1qgI-siJ9oucY6g5e4Co">default</option>';
@@ -1670,6 +1690,8 @@ function populateSheetSelector(arrayOfSheets) {
 
 \subsection{getNewTabData()}
 
+Gets the string and numeric IDs of the currently selected tab and stores them as global variables.
+
 \begin{lstlisting}[firstnumber=42]
 function getNewTabData() {
     data = document.getElementById('tab').value.split(/,(.+)/);
@@ -1679,6 +1701,9 @@ function getNewTabData() {
 \end{lstlisting}
 
 \subsection{populateTabSelector()}
+
+Takes an array of tabs as an argument.
+Creates a new option for each element in the array, allowing the user to select any tab from the sheet.
 
 \begin{lstlisting}[firstnumber=48]
 function populateTabSelector(arrayOfTabs) {
@@ -1691,6 +1716,8 @@ function populateTabSelector(arrayOfTabs) {
 \end{lstlisting}
 
 \subsection{getAllUserSheets()}
+
+Gets the name and ID of 1000 of the user's sheets, sorted by name.
 
 \begin{lstlisting}[firstnumber=56]
 function getAllUserSheets() {
@@ -1710,6 +1737,9 @@ function getAllUserSheets() {
 
 \subsection{getTabsOfSheet()}
 
+Gets JSON data for all tabs of the selected sheet.
+Populates the dropdown menu for tabs and gets necessary data for the tab, including the numeric and string IDs.
+
 \begin{lstlisting}[firstnumber=70]
 function getTabsOfSheet() {
     return gapi.client.sheets.spreadsheets.get({
@@ -1727,6 +1757,8 @@ function getTabsOfSheet() {
 
 \subsection{authenticate()}
 
+Attempts to sign the user in through Google using OAuth.
+
 \begin{lstlisting}[firstnumber=83]
 function authenticate() {
 return gapi.auth2.getAuthInstance()
@@ -1737,6 +1769,8 @@ return gapi.auth2.getAuthInstance()
 \end{lstlisting}
 
 \subsection{loadClientSheets()}
+
+Loads the sheets API.
 
 \begin{lstlisting}[firstnumber=90]
 function loadClientSheets() {
@@ -1749,6 +1783,8 @@ return gapi.client.load("https://content.googleapis.com/discovery/v1/apis/sheets
 
 \subsection{loadClient()}
 
+Loads the drive API.
+
 \begin{lstlisting}[firstnumber=97]
 function loadClient() {
 gapi.client.setApiKey("AIzaSyDC6JNuMW78Q-gWsp0PFEaTsICYjHWymAo");
@@ -1759,6 +1795,10 @@ return gapi.client.load("https://content.googleapis.com/discovery/v1/apis/drive/
 \end{lstlisting}
 
 \subsection{readGoogleSheetDB()}
+
+Reads the table section of the sheet and stores values as a two-dimensional array.
+Passes this array as an argument to \lstinline{arraysToTable()} to write the arrays to the website.
+Calls \lstinline{readGoogleTypes()} to get transaction types from the sheet.
 
 \begin{lstlisting}[firstnumber=104]
 function readGoogleSheetDB() {
@@ -1784,6 +1824,9 @@ function readGoogleSheetDB() {
 
 \subsection{readGoogleTypes()}
 
+The column of transaction types is read as an array, using columns as the major dimension.
+The result is passed to \lstinline{setTransactionTypesList}.
+
 \begin{lstlisting}[firstnumber=124]
 function readGoogleTypes() {
     return gapi.client.sheets.spreadsheets.values.get({
@@ -1803,6 +1846,9 @@ function readGoogleTypes() {
 
 \subsection{writeGoogleSheetDB()}
 
+If the user is authenticated, the function begins the process of saving to the database by calling \lstinline{setGoogleRows()}.
+Otherwise, the function attempts to authenticate the user, and starts this process if successful.
+
 \begin{lstlisting}[firstnumber=139]
 function writeGoogleSheetDB() {
     if(auth2.isSignedIn.get())
@@ -1819,6 +1865,8 @@ function writeGoogleSheetDB() {
 \end{lstlisting}
 
 \subsection{setGoogleRows()}
+
+The rows and columns of the spreadsheet are reduced to the minimum amount, removing most residual data and preventing the sheet from growing over time.
 
 \begin{lstlisting}[firstnumber=152]
 function setGoogleRows() {
@@ -1852,6 +1900,8 @@ function setGoogleRows() {
 
 \subsection{clearGoogleRow()}
 
+The remaining row is cleared to remove data from previous use.
+
 \begin{lstlisting}[firstnumber=180]
 function clearGoogleRow() {
     return gapi.client.sheets.spreadsheets.values.clear({
@@ -1869,6 +1919,10 @@ function clearGoogleRow() {
 \end{lstlisting}
 
 \subsection{writeGoogleDB()}
+
+\lstinline{tableToArrays()} is used to create a two-dimensional array from the table, which is easily mapped to the spreadsheet.
+The array of transaction types is written similarly, using columns as the major dimension to write them vertically.
+The spreadsheet will automatically expand as necessary during this process.
 
 \begin{lstlisting}[firstnumber=194]
 function writeGoogleDB() {
@@ -1899,6 +1953,9 @@ function writeGoogleDB() {
 \end{lstlisting}
 
 \subsection{gapi.load()}
+
+Starts the OAuth plugin using the client ID from the Google Developer Console for this project.
+Calls \lstinline{loadClient()} to begin loading API clients.
 
 \begin{lstlisting}[firstnumber=220]
 gapi.load("client:auth2", function() {
