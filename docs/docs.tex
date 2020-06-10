@@ -1970,6 +1970,11 @@ gapi.load("client:auth2", function() {
 
 \subsection{writeImagesToFirestore()}
 
+Reads the database to get all document IDs of images for the dataset, then deletes those files.
+
+Loads data from the local database.
+Creates a new document on the Firestore database for each file, saved with the file ID, type, name, and base64 encoded data.
+
 \begin{lstlisting}[firstnumber=1]
 function writeImagesToFirestore(database) {
     firestore.collection("Images:" + database).get().then((querySnapshot) => {
@@ -2009,6 +2014,9 @@ function writeImagesToFirestore(database) {
 
 \subsection{readImagesFromFirestore()}
 
+Reads files from Firestore for a specific database.
+Saves these files in the local database.
+
 \begin{lstlisting}[firstnumber=36]
 function readImagesFromFirestore(database) {
     firestore.collection("Images:" + database).get().then((querySnapshot) => {
@@ -2036,6 +2044,8 @@ function readImagesFromFirestore(database) {
 
 \subsection{getFileNamesIds()}
 
+Creates a slash-delimited string from the file names and IDs.
+
 \begin{lstlisting}[firstnumber=59]
 function getFileNamesIds(cell) {
     var links = cell.getElementsByTagName('a');
@@ -2050,6 +2060,9 @@ function getFileNamesIds(cell) {
 \end{lstlisting}
 
 \subsection{parseFileNamesIds()}
+
+Takes a string and splits it by \lstinline{'/'} characters.
+Groups characters in pairs and saves this information in a two-dimensional array.
 
 \begin{lstlisting}[firstnumber=70]
 function parseFileNamesIds(string) {
@@ -2067,6 +2080,8 @@ function parseFileNamesIds(string) {
 \end{lstlisting}
 
 \subsection{clearIndexedDb()}
+
+Removes all data from the local database and calls the function to read from Firestore.
 
 \begin{lstlisting}[firstnumber=83]
 function clearIndexedDb(database) {
