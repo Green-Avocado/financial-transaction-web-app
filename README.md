@@ -1,4 +1,4 @@
-# Financial Transaction Webpage
+# Financial Transaction Web App
 
 ## Disclaimer
 
