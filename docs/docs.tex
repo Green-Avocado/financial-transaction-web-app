@@ -2418,6 +2418,10 @@ window.onbeforeunload = function(){
 
 \subsection{writeToMySQL()}
 
+This function is responsible for initiating the request to update the MySQL database.
+It makes a \lstinline{POST} request to the API endpoint.
+It sends the table as an array and the transaction types as an array, formatted as JSON data.
+
 \begin{lstlisting}[firstnumber=1]
 function writeToMySQL() {
     writeImagesToFirestore("mysql");
@@ -2435,6 +2439,17 @@ function writeToMySQL() {
 \end{lstlisting}
 
 \subsection{readFromMySQL()}
+
+This function reads data from the MySQL database and updates the HTML table.
+
+A \lstinline{GET} request is made to the API endpoint, which expects to receive JSON data.
+The data is parsed into an array, containing the table data and the transaction types.
+
+The current HTML table is cleared by removing all body rows.
+
+The table data is use to recreate the table from the MySQL database by sending each row to the \lstinline{addTransaction()} function.
+
+The transaction types are updated by sending the array to \lstinline{setTransactionTypesList()}.
 
 \begin{lstlisting}[firstnumber=15]
 function readFromMySQL() {
