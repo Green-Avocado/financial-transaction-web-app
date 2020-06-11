@@ -2491,6 +2491,15 @@ function readFromMySQL() {
 
 \subsection{Dependencies}
 
+\lstinline{firebase-functions} is required to create Cloud Functions and set up triggers.
+
+\lstinline{express} is used to route requests to appropriate endpoints.
+
+\lstinline{mysql} is used to interact with the MySQL database.
+
+\lstinline{cors} is used to enable cross-origin resource sharing, allowing other origins to access the API endpoints, which is particularly useful when testing.
+By using this as our first middleware, we enable CORS on app requests to \lstinline{api}.
+
 \begin{lstlisting}[firstnumber=1]
 const functions = require('firebase-functions');
 const express = require('express');
@@ -2501,6 +2510,8 @@ api.use(cors({ origin: true }));
 \end{lstlisting}
 
 \subsection{mysql.createConnection()}
+
+The \lstinline{con} variable stores the MySQL connection, which is created using the host, credentials, and database name for the database in question.
 
 \begin{lstlisting}[firstnumber=8]
 var con = mysql.createConnection({
@@ -2513,6 +2524,9 @@ var con = mysql.createConnection({
 
 \subsection{con.connect()}
 
+Attempts to use the credentials stored in \lstinline{con} to connect to the database.
+Creates a log message if successful, throws an error otherwise.
+
 \begin{lstlisting}[firstnumber=15]
 con.connect(function(err) {
     if (err) throw err;
@@ -2521,6 +2535,8 @@ con.connect(function(err) {
 \end{lstlisting}
 
 \subsection{readDataFromMySQL()}
+
+Reads the entire \lstinline{data} table from the MySQL database and sends the result to the callback function.
 
 \begin{lstlisting}[firstnumber=20]
 function readDataFromMySQL(cb) {
@@ -2533,6 +2549,8 @@ function readDataFromMySQL(cb) {
 
 \subsection{readTypesFromMySQL()}
 
+Reads all types stored in the \lstinline{types} table from the MySQL database and sends the result to the callback function.
+
 \begin{lstlisting}[firstnumber=27]
 function readTypesFromMySQL(cb) {
     con.query("SELECT * FROM types;", function (err, types, fields) {
@@ -2543,6 +2561,14 @@ function readTypesFromMySQL(cb) {
 \end{lstlisting}
 
 \subsection{writeToMySQL()}
+
+Clears the existing \lstinline{data} table using \lstinline{TRUNCATE TABLE data}.
+
+Inserts a new row for each row in the HTML table, containing all the necessary information.
+
+Clears the existing \lstinline{types} table using \lstinline{TRUNCATE TABLE types}.
+
+Inserts each type in the web app as a new row.
 
 \begin{lstlisting}[firstnumber=34]
 function writeToMySQL(jsonData) {
@@ -2565,6 +2591,11 @@ function writeToMySQL(jsonData) {
 
 \subsection{api.post()}
 
+Handles \lstinline{POST} requests, which are used to update the database.
+
+Passes the body of the request to the \lstinline{writeToMySQL()} function.
+Sends the body back with a success code.
+
 \begin{lstlisting}[firstnumber=51]
 api.post('/api', (req, res) => {
     console.log(req.body);
@@ -2574,6 +2605,10 @@ api.post('/api', (req, res) => {
 \end{lstlisting}
 
 \subsection{api.get()}
+
+Handles \lstinline{GET} requests, which are used to retrieve data from the database.
+
+Calls the \lstinline{readDataFromMySQL()} and \lstinline{readTypesFromMySQL()} functions, sends the return values back in an array, along with a success error code.
 
 \begin{lstlisting}[firstnumber=57]
 api.get('/api', (req, res) => {
@@ -2589,6 +2624,8 @@ api.get('/api', (req, res) => {
 
 \subsection{exports.api}
 
+Requests which are routed by firebase to the endpoint are handled by the \lstinline{api} object.
+
 \begin{lstlisting}[firstnumber=67]
 exports.api = functions.https.onRequest(api);
 \end{lstlisting}
@@ -2598,11 +2635,119 @@ exports.api = functions.https.onRequest(api);
 \section{CSS}\label{CSS}
 
 \subsection{Vertical Scrolling Table}
+
+The table id refers to the \lstinline{article} that contains the table, rather than the table itself.
+This article was given a max height of 80 visual heights, or approximately 80\% of the screen height.
+\lstinline{overflow: auto;} specifies that, if necessary, a scroll bar should be present, this is true for both horizontal and vertical scrolling.
+
+\begin{lstlisting}[firstnumber=29]
+#table {
+    max-height: 80vh;
+    overflow: auto;
+}
+\end{lstlisting}
+
+The last three properties below are important for keeping the header in place while scrolling.
+
+\begin{lstlisting}[firstnumber=39]
+th {
+    min-width: 200px;
+    width: 10%;
+    position: sticky;
+    background: white;
+    top: 0;
+}
+\end{lstlisting}
+
+\begin{itemize}
+    \item \lstinline{position: sticky;} is used to keep the object in place when scrolling.
+    \item \lstinline{background: white;} is used to give the element a non-transparent background, so that data cannot be seen through the header.
+    \item \lstinline{top: 0;} is used to specify that the element should remain at the top of its parent element with no offset.
+\end{itemize}
+
 \subsection{Horizontal Scrolling on Overflow}\label{overflow-x}
+
+The inputFields id is used to identify the \lstinline{article} element that contains the \lstinline{form}.
+The important property here is the \lstinline{overflow-x: auto;} line, which specifies that, if the child element is wider than this element, a horizontal scroll bar should be present.
+
+The \lstinline{form} element, which is a child of the \lstinline{article} is given a minimum width to ensure that the scroll bar is created rather than reducing the width of the element.
+
+\begin{lstlisting}[firstnumber=5]
+#inputFields {
+    padding: 10px 0;
+    overflow-x: auto;
+}
+
+form {
+    min-width: 1900px;
+}
+\end{lstlisting}
+
 \subsection{Miscellaneous}
+
 \subsubsection{Sort buttons}
+
+The header cells contain two \lstinline{sections}, one of which has a special class.
+Both sections are given a \lstinline{margin} and \lstinline{padding} of 0 to minimise wasted space.
+Both sections are also set to \lstinline{display: inline-block} to specify that they should be arranged horizontally.
+
+Both sections are given a \lstinline{width} of 80\% of the parent element.
+However, this is overruled for the element with a class of \lstinline{sort}, which is assigned a \lstinline{width} of 10\% to ensure that both elements fit horizontally in the parent.
+
+To further reduce wasted space, the \lstinline{border} and \lstinline{padding} of the buttons are set to 0.
+The button's \lstinline{display} property is set to \lstinline{block} as otherwise, it would inherit the \lstinline{inline-block} property from its parent and attempt to arrange horizontally.
+Lastly, the buttons are set to take up the entire width of the parent element.
+
+\begin{lstlisting}[firstnumber=47]
+th > section {
+    width: 80%;
+    display: inline-block;
+    padding: 0;
+    margin: 0;
+}
+
+.sort {
+    width: 10%;
+}
+
+.sort > button {
+    padding: 0;
+    border: 0;
+    display: block;
+    width: 100%;
+}
+\end{lstlisting}
+
 \subsubsection{Editing highlight}
+
+The current row selected for highlighting is specified using a class.
+As such, it is possible to give this row unique styling.
+For example, currently the row is given a yellow background.
+
+\begin{lstlisting}[firstnumber=65]
+.editing {
+    background-color: yellow;
+}
+\end{lstlisting}
+
 \subsubsection{Table borders}
+
+Table borders do not render properly with a scrolling body and fixed header.
+To resolve this, borders are rendered using the \lstinline{box-shadow} property.
+
+Two box shadows are defined, one extends outwards from the right and bottom by one pixel in each direction.
+The other is given the \lstinline{inset} property, so that it extends inwards from the left and top.
+This creates a full border with a width of 1 pixel in each direction.
+As these borders are offset from the element, adjacent elements will overlap borders, preventing borders from combining into extra thick borders.
+
+\begin{lstlisting}[firstnumber=69]
+#table,
+table,
+td,
+th {
+    box-shadow: 1px 1px black, inset 1px 1px black;
+}
+\end{lstlisting}
 
 %\newpage
 %
