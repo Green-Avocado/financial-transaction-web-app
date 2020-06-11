@@ -8,5 +8,5 @@ Several security flaws are present, including SQL injection, possible XSS, lack 
 
 ## Description
 
-Under Construction
+Proof-of-concept for integrating various databases with a front-end web application for managing financial transactions.
 
