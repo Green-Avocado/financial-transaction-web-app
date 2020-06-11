@@ -2101,6 +2101,8 @@ function clearIndexedDb(database) {
 
 \subsection{Global Variables}
 
+Variables to store the database object, the version number, and the state of the database.
+
 \begin{lstlisting}[firstnumber=1]
 let db;
 let dbVersion = 1;
@@ -2110,6 +2112,15 @@ var fileEditted = false;
 \end{lstlisting}
 
 \subsection{initDb()}
+
+Deletes the database if it previously existed by calling \lstinline{indexedDB.deleteDatabase()} to clear it from previous use.
+
+Once the old database has been deleted, a new database is created with a name \lstinline{'FileStorage'} and a version number determined by the \lstinline{dbVersion} global variable.
+
+The global variable \lstinline{db} is set to the database object for future reference.
+An object store is created using \lstinline{db.createObjectStore()}, called files, which is keyed using the \lstinline{'id'} field.
+
+Lastly, \lstinline{dbReady} is set to \lstinline{true} to signal to other functions that the database can be used for reading and writing.
 
 \begin{lstlisting}[firstnumber=7]
 function initDb() {
@@ -2137,6 +2148,11 @@ function initDb() {
 
 \subsection{fileUploadChanged()}
 
+This function is called whenever the user performs an action that would change the contents of the file upload in the input section.
+
+In this case, the function sets the label to display the number of files present in the element.
+The global variable \lstinline{fileEditted} is set to \lstinline{true} so that the app will know that the row has to be updated if the user is editing a row.
+
 \begin{lstlisting}[firstnumber=29]
 function fileUploadChanged() {
     fileIn = document.getElementById('fileUpload');
@@ -2149,6 +2165,21 @@ function fileUploadChanged() {
 \end{lstlisting}
 
 \subsection{uploadFile()}
+
+Calls the \lstinline{fileIdGenerator()} function to create a unique ID to reference the file being uploaded.
+
+If a file exists in the file upload at the index specified, the function reads the file as a binary string and converts to base64 for storage.
+
+The file creates an object with the file ID, type, name, and base64 encoded data.
+A transaction is created with a request to add the object to the local database.
+Because the key has been set to use the \lstinline{id} property, the ID will automatically use the ID from the object.
+
+Once the transaction is complete, the new ID and file name is added to an array.
+The index is incremented to prepare for the next file, and the function calls itself with this new index.
+
+Once the function reaches an index it cannot read (i.e. the function has reached the end of the list), the file upload element is cleared and the array of IDs and names is added to the \lstinline{data} array.
+The function then passes this argument to the callback function, which is specified as an argument of this function.
+The callback function is likely the function responsible for adding or editing transactions.
 
 \begin{lstlisting}[firstnumber=38]
 function uploadFile(data, cb, fileList, index) {
@@ -2194,6 +2225,17 @@ function uploadFile(data, cb, fileList, index) {
 
 \subsection{addFile()}
 
+This function is responsible for appending files to an existing list.
+
+Similar to the \lstinline{uploadFile()} function, an initial index is provided and the function reads through each index until it reaches one where there is not file, indicating the end of the list.
+
+The method for reading and sending files to the local database is identical to the \lstinline{uploadFile()} function.
+Files are stored as an object with an ID, type, name, and base64 encoded data.
+A transaction is created with a request to add this object to the database.
+
+Once added, the function gets the parent element of the file input element and adds a new row including the file, with a hyperlink to download the file and a button to remove it.
+The index is then incremented and the function calls itself, attempting to read the next file in the list.
+
 \begin{lstlisting}[firstnumber=78]
 function addFile(fileIn, index) {
     fileId = fileIdGenerator();
@@ -2238,6 +2280,23 @@ function addFile(fileIn, index) {
 
 \subsection{updateExistingFileName()}
 
+Note: The name of this function was from when the app only handled a single file per row.
+The purpose of this function is to edit all files in a row.
+The name is no longer accurate, however, it was kept to simplify the upgrade.
+
+This function is used to edit the files stored in a row when the editing a row and the file upload has been changed, indicating that the existing files should be overwritten.
+
+The function loops through the list of files for that row and gets the ID of each file, using the \lstinline{onclick} attribute of the anchor tags.
+Each of these IDs is passed to the \lstinline{deleteFileFromIndexedDB()} function to have them removed.
+
+A string \lstinline{fileContent} is created to store the contents of the list of files as its being constructed.
+
+Each file is added to this element with the proper HTML formatting using a loop.
+Each entry contains the correct name and file ID.
+
+Once all files have been added, a new file input element is appended to the bottom of the list to allow new files to be easily uploaded.
+The contents of the cell are then replaced by this \lstinline{fileContent} string to update the UI.
+
 \begin{lstlisting}[firstnumber=118]
 function updateExistingFileName(data) {
     for(let i = 0; i < data[0].getElementsByTagName('tr').length; i++) {
@@ -2259,6 +2318,9 @@ function updateExistingFileName(data) {
 
 \subsection{removeFileFromTable()}
 
+When an individual file is being removed, this function gets the ID of the file as an argument and passes it to the \lstinline{deleteFileFromIndexedDB()} function to have it removed from the local database.
+The row element that contains the link to this file is also removed.
+
 \begin{lstlisting}[firstnumber=135]
 function removeFileFromTable(fileId, cell) {
     var row = cell.parentElement.parentElement;
@@ -2272,6 +2334,8 @@ function removeFileFromTable(fileId, cell) {
 
 \subsection{deleteFileFromIndexedDB()}
 
+Given a file ID to remove, this function creates a transaction to the local database, with a request to delete the entry at the given ID.
+
 \begin{lstlisting}[firstnumber=144]
 function deleteFileFromIndexedDB(fileId) {
     let trans = db.transaction(['files'], 'readwrite');
@@ -2280,6 +2344,14 @@ function deleteFileFromIndexedDB(fileId) {
 \end{lstlisting}
 
 \subsection{removeFileUpload()}
+
+This function is responsible for clearing the file upload in the input, which is done when the \lstinline{x} button is pressed, when a transaction is added, or when a row is edited.
+
+The function sets the file upload to \lstinline{null}, effectively clearing it.
+
+The label for the file upload is set to \lstinline{Upload file}, to indicate that no file currently exists in the element.
+
+The \lstinline{fileEditted} variable is set to true to indicate that a change has been made and that, if this process is an edit, a row has to be updated.
 
 \begin{lstlisting}[firstnumber=149]
 function removeFileUpload() {
@@ -2290,6 +2362,16 @@ function removeFileUpload() {
 \end{lstlisting}
 
 \subsection{downloadFile()}
+
+A \lstinline{readonly} transaction is created with a request to read the object at the specified ID.
+
+If the request is successful, an anchor element is created with the attributes to download the base64 encoded data as a file.
+The type of this file is set using the \lstinline{type} property of the object being read.
+The name of the file is set using the \lstinline{name} property.
+
+The anchor element is set to not display and is added to the HTML page.
+A click on this element is simulated, which prompts the user to download the file.
+The anchor element is then removed.
 
 \begin{lstlisting}[firstnumber=155]
 function downloadFile(fileId) {
@@ -2320,6 +2402,9 @@ function downloadFile(fileId) {
 \end{lstlisting}
 
 \subsection{window.onbeforeunload = function()}
+
+This function is meant to execute before the page exits.
+The purpose of this function is to remove the local database.
 
 \begin{lstlisting}[firstnumber=1]
 window.onbeforeunload = function(){
